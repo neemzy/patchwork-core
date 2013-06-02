@@ -6,7 +6,7 @@ class BeanHelper extends \RedBean_BeanHelper_Facade
 {
     public function getModelForBean(\RedBean_OODBBean $bean)
     {
-        $modelName = 'Patchwork\\Model\\'.ucfirst($bean->getMeta('type'));
+        $modelName = MODEL_NAMESPACE.ucfirst($bean->getMeta('type'));
 
         if (! class_exists($modelName)) {
             return null;
