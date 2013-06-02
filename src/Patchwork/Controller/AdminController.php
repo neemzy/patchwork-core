@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Patchwork\Helper\RedBean as R;
 use PHPImageWorkshop\ImageWorkshop;
 
-abstract class AdminController implements ControllerProviderInterface
+class AdminController implements ControllerProviderInterface
 {
     private $class;
 

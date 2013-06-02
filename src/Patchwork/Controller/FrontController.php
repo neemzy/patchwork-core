@@ -8,7 +8,7 @@ use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class FrontController implements ControllerProviderInterface
+class FrontController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {

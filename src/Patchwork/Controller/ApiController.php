@@ -8,7 +8,7 @@ use Silex\ControllerCollection;
 use Patchwork\Helper\RedBean as R;
 use Patchwork\Helper\Tools;
 
-abstract class ApiController implements ControllerProviderInterface
+class ApiController implements ControllerProviderInterface
 {
     public function connect(Application $app)
     {
