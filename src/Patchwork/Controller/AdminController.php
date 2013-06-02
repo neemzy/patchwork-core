@@ -13,6 +13,20 @@ use PHPImageWorkshop\ImageWorkshop;
 
 abstract class AdminController implements ControllerProviderInterface
 {
+    private $class;
+
+
+
+    public static function mountFor($class)
+    {
+        $instance = new self();
+        $instance->class = $class;
+
+        return $instance;
+    }
+
+
+
     public function connect(Application $app)
     {
         return $this->route(
@@ -39,9 +53,13 @@ abstract class AdminController implements ControllerProviderInterface
 
 
 
-    protected function route($app, $auth, $class)
+    protected function route($app, $auth, $class = null)
     {
         $ctrl = $app['controllers_factory'];
+        
+        if ($class === null) {
+            $class = $this->class;
+        }
 
 
 
