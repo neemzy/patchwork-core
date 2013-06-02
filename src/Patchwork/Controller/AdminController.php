@@ -17,7 +17,7 @@ class AdminController implements ControllerProviderInterface
 
 
 
-    public static function mountFor($class)
+    public static function getInstanceFor($class)
     {
         $instance = new self();
         $instance->class = $class;

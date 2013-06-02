@@ -10,6 +10,20 @@ use Patchwork\Helper\Tools;
 
 class ApiController implements ControllerProviderInterface
 {
+    private $class;
+
+
+
+    public static function getInstanceFor($class)
+    {
+        $instance = new self();
+        $instance->class = $class;
+
+        return $instance;
+    }
+
+
+
     public function connect(Application $app)
     {
         return $this->route($app);
@@ -17,9 +31,13 @@ class ApiController implements ControllerProviderInterface
 
 
 
-    protected function route($app, $class)
+    protected function route($app, $class = null)
     {
         $ctrl = $app['controllers_factory'];
+        
+        if ($class === null) {
+            $class = $this->class;
+        }
 
 
 
