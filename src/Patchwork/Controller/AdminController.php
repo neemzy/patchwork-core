@@ -134,7 +134,7 @@ class AdminController implements ControllerProviderInterface
                 }
 
                 if (R::typeHasField($class, 'image')) {
-                    $dir = dirname(dirname(dirname(__DIR__))).'/public/assets/img/'.$class.'/';
+                    $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
                     unlink($dir.$bean->image);
                 }
 
@@ -229,7 +229,7 @@ class AdminController implements ControllerProviderInterface
                             $app['session']->getFlashBag()->set('error', true);
                             $app['session']->getFlashBag()->set('message', 'Seuls les formats JPEG, PNG et GIF sont autorisés');
                         } else {
-                            $dir = dirname(dirname(dirname(__DIR__))).'/public/assets/img/'.$class.'/';
+                            $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
                             $file = $id_bean.'.'.$extension;
 
                             if ($bean->image) {
@@ -258,7 +258,7 @@ class AdminController implements ControllerProviderInterface
                 $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
 
                 $bean = R::load($class, $id);
-                $dir = dirname(dirname(dirname(__DIR__))).'/public/assets/img/'.$class.'/';
+                $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
                 unlink($dir.$bean->image);
                 $bean->image = null;
                 R::store($bean);
