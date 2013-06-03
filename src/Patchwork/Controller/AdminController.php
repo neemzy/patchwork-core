@@ -99,6 +99,37 @@ class AdminController implements ControllerProviderInterface
 
 
 
+        // Clone
+
+        $ctrl->get(
+            '/clone/{id}',
+            function ($id) use ($app, $class) {
+                $app['session']->getFlashBag()->clear();
+                $app['session']->getFlashBag()->set('message', 'La duplication a bien été effectuée');
+
+                $bean = R::load($class, $id);
+                $clone = R::dup($bean);
+
+                if (R::typeHasField($class, 'position')) {
+                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position ASC LIMIT 1');
+                    $clone->position = $position + 1;
+                }
+
+                R::store($clone);
+
+                if (R::typeHasField($class, 'image')) {
+                    $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
+                    $clone->image = $clone->id.'.'.array_pop(explode('.', $bean->image));
+                    R::store($clone);
+                    copy($dir.$bean->image, $dir.$clone->image);
+                }
+
+                return $app->redirect($app['url_generator']->generate($class.'.list'));
+            }
+        )->bind($class.'.clone')->assert('id', '\d+')->before($auth);
+
+
+
         // Toggle
 
         $ctrl->get(
@@ -139,7 +170,6 @@ class AdminController implements ControllerProviderInterface
                 }
 
                 R::trash($bean);
-
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
         )->bind($class.'.delete')->assert('id', '\d+')->before($auth);
@@ -197,19 +227,11 @@ class AdminController implements ControllerProviderInterface
                 }
 
                 if ((R::typeHasField($class, 'position')) && (! $id)) {
-                    $position = 0;
-                    $beans = R::findAll($class);
-
-                    if (is_array($beans)) {
-                        foreach ($beans as $b) {
-                            $position = max($position, $b->position);
-                        }
-                    }
-
+                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position ASC LIMIT 1');
                     $bean->position = $position + 1;
                 }
 
-                $id_bean = R::store($bean);
+                R::store($bean);
 
                 if ((R::typeHasField($class, 'image')) && ($request->files->has('image')) && ($image = $request->files->get('image'))) {
                     if ($error = $image->getError()) {
@@ -230,7 +252,7 @@ class AdminController implements ControllerProviderInterface
                             $app['session']->getFlashBag()->set('message', 'Seuls les formats JPEG, PNG et GIF sont autorisés');
                         } else {
                             $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
-                            $file = $id_bean.'.'.$extension;
+                            $file = $bean->id.'.'.$extension;
 
                             if ($bean->image) {
                                 unlink($dir.$bean->image);
@@ -243,7 +265,7 @@ class AdminController implements ControllerProviderInterface
                     }
                 }
 
-                return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $id_bean)));
+                return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $bean->id)));
             }
         )->assert('id', '\d+')->value('id', 0)->before($auth);
 
