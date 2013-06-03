@@ -47,7 +47,7 @@ class ApiController implements ControllerProviderInterface
             '/',
             function () use ($app, $class) {
                 $data = R::findAndExport($class, '1');
-                return Tools::JSONResponse($data);
+                return Tools::jsonResponse($data);
             }
         )->bind('api.'.$class.'.getAll');
 
