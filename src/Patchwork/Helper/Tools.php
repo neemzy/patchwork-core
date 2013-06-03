@@ -72,10 +72,6 @@ class Tools
 
     public static function jsonResponse($data, $code = 200)
     {
-        if (! is_array($data)) {
-            $data = array($data);
-        }
-
         $response = new Response(json_encode($data));
         $response->setStatusCode($code);
         $response->headers->set('Content-Type', 'application/json');
