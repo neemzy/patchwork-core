@@ -9,7 +9,7 @@ class RedBean extends \RedBean_Facade
         try {
             $columns = self::getColumns($type);
             return isset($columns[$field]);
-        } catch (Exception $e) {
+        } catch (\RedBean_Exception_SQL $e) {
             return false;
         }
     }
