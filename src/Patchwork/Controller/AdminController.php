@@ -111,13 +111,13 @@ class AdminController implements ControllerProviderInterface
                 $clone = R::dup($bean);
 
                 if (R::typeHasField($class, 'position')) {
-                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position ASC LIMIT 1');
+                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
                     $clone->position = $position + 1;
                 }
 
                 R::store($clone);
 
-                if (R::typeHasField($class, 'image')) {
+                if ((R::typeHasField($class, 'image')) && ($bean->image)) {
                     $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
                     $clone->image = $clone->id.'.'.array_pop(explode('.', $bean->image));
                     R::store($clone);
