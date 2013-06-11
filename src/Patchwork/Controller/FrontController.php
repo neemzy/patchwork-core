@@ -68,6 +68,17 @@ class FrontController implements ControllerProviderInterface
 
 
 
+        // Admin root
+
+        $ctrl->get(
+            '/admin',
+            function () use ($app) {
+                return $app->redirect($app['url_generator']->generate(ADMIN_ROOT));
+            }
+        );
+
+
+
         // Homepage
 
         $ctrl->get(
