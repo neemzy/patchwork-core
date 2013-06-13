@@ -227,7 +227,7 @@ class AdminController implements ControllerProviderInterface
                 }
 
                 if ((R::typeHasField($class, 'position')) && (! $id)) {
-                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position ASC LIMIT 1');
+                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
                     $bean->position = $position + 1;
                 }
 
