@@ -72,8 +72,7 @@ class Tools
 
     public static function jsonResponse($data, $code = null)
     {
-        $response = new Response(json_encode($data));
-        $response->setStatusCode($code ? $code : ($data ? 200 : 404));
+        $response = new Response(json_encode($data, JSON_NUMERIC_CHECK), $code ? $code : ($data ? 200 : 404));
         $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
