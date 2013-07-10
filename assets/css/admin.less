@@ -1,7 +1,16 @@
+@import 'config.less';
+@import 'bootstrap.min.css';
+
 /** Misc **/
 
 body { padding: 60px 0 40px; }
 .nav-collapse { height: auto !important; }
+[class^="icon-"], [class*=" icon-"] { background-image: url('@{asset_path}/img/glyphicons-halflings.png'); }
+
+.icon-white, .nav-tabs > .active > a > [class^="icon-"], .nav-tabs > .active > a > [class*=" icon-"], .nav-pills > .active > a > [class^="icon-"],
+.nav-pills > .active > a > [class*=" icon-"], .nav-list > .active > a > [class^="icon-"], .nav-list > .active > a > [class*=" icon-"], .navbar-inverse .nav > .active > a > [class^="icon-"],
+.navbar-inverse .nav > .active > a > [class*=" icon-"], .dropdown-menu > li > a:hover > [class^="icon-"], .dropdown-menu > li > a:hover > [class*=" icon-"],
+.dropdown-menu > .active > a > [class^="icon-"], .dropdown-menu > .active > a > [class*=" icon-"] { background-image: url('@{asset_path}/img/glyphicons-halflings-white.png'); }
 
 
 
