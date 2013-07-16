@@ -70,12 +70,12 @@ class FrontController implements ControllerProviderInterface
 
 
 
-        // Twitter Bootstrap
+        // Authorized vendor assets
 
         $ctrl->get(
-            '/vendor/twitter/bootstrap/{filename}',
-            function ($filename) use ($app) {
-                $filename = BASE_PATH.'/vendor/twitter/bootstrap/'.$filename;
+            '/vendor/{vendor}/{filename}',
+            function ($vendor, $filename) use ($app) {
+                $filename = BASE_PATH.'/vendor/'.$vendor.'/'.$filename;
                 try {
                     $file = new File($filename, true);
                     return new Response(file_get_contents($filename), 200, array('Content-Type' => ($file->getExtension() == 'js' ? 'application/javascript' : $file->getMimeType())));
@@ -83,7 +83,7 @@ class FrontController implements ControllerProviderInterface
                     $app->abort(404);
                 }
             }
-        )->assert('filename', '.+');
+        )->assert('vendor', '(neemzy/patchwork-core/assets|twitter/bootstrap)')->assert('filename', '.+');
 
 
 
