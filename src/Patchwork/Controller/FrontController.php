@@ -7,6 +7,8 @@ use Silex\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
 class FrontController implements ControllerProviderInterface
 {
@@ -65,6 +67,23 @@ class FrontController implements ControllerProviderInterface
                 return $response;
             }
         );
+
+
+
+        // Twitter Bootstrap
+
+        $ctrl->get(
+            '/vendor/twitter/bootstrap/{filename}',
+            function ($filename) use ($app) {
+                $filename = BASE_PATH.'/vendor/twitter/bootstrap/'.$filename;
+                try {
+                    $file = new File($filename, true);
+                    return new Response(file_get_contents($filename), 200, array('Content-Type' => ($file->getExtension() == 'js' ? 'application/javascript' : $file->getMimeType())));
+                } catch (FileNotFoundException $e) {
+                    $app->abort(404);
+                }
+            }
+        )->assert('filename', '.+');
 
 
 
