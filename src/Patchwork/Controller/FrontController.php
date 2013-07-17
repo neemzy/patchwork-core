@@ -51,19 +51,14 @@ class FrontController implements ControllerProviderInterface
                     $app->abort(404);
                 }
 
-                //$lessc = new
+                $lessc = new \lessc();
 
                 if (! $app['debug']) {
-                    if (! file_exists($css)) {
-                        system('lessc -x '.$less.' > '.$css);
-                    }
-
-
+                    $lessc->setFormatter('compressed');
+                    $lessc->checkedCompile($less, $css);
                     $response = new Response(file_get_contents($css));
                 } else {
-                    $output = array();
-                    exec('lessc '.$less, $output);
-                    $response = new Response(implode(PHP_EOL, $output));
+                    $response = new Response($lessc->compileFile($less));
                 }
                 
                 $response->headers->set('Content-Type', 'text/css');
