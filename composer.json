@@ -21,7 +21,8 @@
         "gabordemooij/redbean": "*",
         "entea/silex-twig-simple-asset-extension": "dev-master",
         "sybio/image-workshop": "*",
-        "twitter/bootstrap": "dev-master"
+        "twitter/bootstrap": "dev-master",
+        "leafo/lessphp": "0.3.*@dev"
     },
 
     "autoload": {

@@ -51,10 +51,13 @@ class FrontController implements ControllerProviderInterface
                     $app->abort(404);
                 }
 
+                //$lessc = new
+
                 if (! $app['debug']) {
                     if (! file_exists($css)) {
                         system('lessc -x '.$less.' > '.$css);
                     }
+
 
                     $response = new Response(file_get_contents($css));
                 } else {
