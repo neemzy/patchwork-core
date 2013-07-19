@@ -8,8 +8,8 @@ use Silex\ControllerCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Constraints as Assert;
-use Patchwork\Helper\RedBean as R;
 use PHPImageWorkshop\ImageWorkshop;
+use Patchwork\Helper\RedBean as R;
 
 class AdminController implements ControllerProviderInterface
 {
@@ -196,21 +196,24 @@ class AdminController implements ControllerProviderInterface
                 $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
 
                 $bean = R::load($class, $id);
-                $data = array();
-                $data_stripped = array();
                 $asserts = $bean->getAsserts();
                 
                 foreach ($asserts as $key => $assert) {
-                    $data[$key] = $request->get($key);
-                    $data_stripped[$key] = strip_tags($data[$key]);
+                    $bean->$key = $request->get($key);
                 }
 
-                $asserts = new Assert\Collection($asserts);
-                $errors = $app['validator']->validateValue($data_stripped, $asserts);
+                if ((R::typeHasField($class, 'position')) && (! $id)) {
+                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
+                    $bean->position = $position + 1;
+                }
 
-                if (count($errors)) {
+                try {
+                    $bean->bindApp($app);
+                    R::store($bean);
+                } catch (Exception $e) {
                     $app['session']->getFlashBag()->set('error', true);
-                    $message = '<p>L\'enregistrement a échoué pour les raisons suivantes :</p><ul>';
+                    $message = '<p>'.$e->getMessage().'</p><ul>';
+                    $errors = $e->getDetails();
 
                     foreach ($errors as $error) {
                         $message .= '<li><strong>'.$app['translator']->trans($error->getPropertyPath()).'</strong> : '.$app['translator']->trans($error->getMessage()).'</li>';
@@ -221,17 +224,6 @@ class AdminController implements ControllerProviderInterface
 
                     return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));
                 }
-
-                foreach ($data as $key => $val) {
-                    $bean->$key = $val;
-                }
-
-                if ((R::typeHasField($class, 'position')) && (! $id)) {
-                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
-                    $bean->position = $position + 1;
-                }
-
-                R::store($bean);
 
                 if ((R::typeHasField($class, 'image')) && ($request->files->has('image')) && ($image = $request->files->get('image'))) {
                     if ($error = $image->getError()) {
@@ -260,7 +252,6 @@ class AdminController implements ControllerProviderInterface
 
                             $image->move($dir, $file);
                             $bean->setImage($dir, $file);
-                            R::store($bean);
                         }
                     }
                 }
