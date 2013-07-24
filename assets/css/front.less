@@ -110,7 +110,24 @@ canvas { -ms-touch-action: double-tap-zoom; }
 
 
 
+/** Mixins **/
+
+.font-face(@name, @file) {
+    font-family: @name;
+    src: url('../font/@{file}.eot?') format('embedded-opentype'),
+         url('../font/@{file}.woff') format('woff'),
+         url('../font/@{file}.otf') format('opentype'),
+         url('../font/fonts.svg#@{file}') format('svg');
+}
+
+
+
 /** Classes **/
+
+.font-reset {
+    font-weight: normal;
+    font-style: normal;
+}
 
 .container {
     .block;
