@@ -58,14 +58,14 @@ class Tools
 
     public static function twitter($url, $text = '')
     {
-        return 'javascript:void(0);" onclick="window.open(\'http://twitter.com/share?url='.rawurlencode($url).'&amp;text='.rawurlencode($text).'\', \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=640,height=435\');';
+        return 'http://twitter.com/share?url='.rawurlencode($url).'&amp;text='.rawurlencode($text).'" onclick="window.open(this.href, \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=640,height=435\'); return false;';
     }
 
 
 
     public static function facebook($url)
     {
-        return 'javascript:void(0);" onclick="window.open(\'http://www.facebook.com/sharer/sharer.php?u='.rawurlencode($url).'\', \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=640,height=350\');';
+        return 'http://www.facebook.com/sharer/sharer.php?u='.rawurlencode($url).'" onclick="window.open(this.href, \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=640,height=350\'); return false';
     }
 
 
