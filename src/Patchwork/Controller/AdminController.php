@@ -87,10 +87,10 @@ class AdminController implements ControllerProviderInterface
 
                 if (($up) && ($bean->position > 1)) {
                     $bean->position--;
-                    R::exec('UPDATE '.$class.' SET position=position+1 WHERE position=?', array($bean->position));
-                } else if (( ! $up) && ($bean->position < R::count($class))) {
+                    R::exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', array($bean->position));
+                } else if ((! $up) && ($bean->position < R::count($class))) {
                     $bean->position++;
-                    R::exec('UPDATE '.$class.' SET position=position-1 WHERE position=?', array($bean->position));
+                    R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', array($bean->position));
                 }
 
                 R::store($bean);
@@ -157,12 +157,7 @@ class AdminController implements ControllerProviderInterface
                 $bean = R::load($class, $id);
 
                 if (R::typeHasField($class, 'position')) {
-                    $beans = R::find($class, 'position > ?', array($bean->position));
-
-                    foreach ($beans as $b) {
-                        $b->position--;
-                        R::store($b);
-                    }
+                    R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position > ?', array($bean->position));
                 }
 
                 if (R::typeHasField($class, 'image')) {
