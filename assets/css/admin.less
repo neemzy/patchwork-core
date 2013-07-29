@@ -17,26 +17,31 @@ body { padding: 60px 0 40px; }
 
 /** Lists **/
 
-.page-header .btn {
-    position: absolute;
-    right: 0;
-    top: 10px;
+.page-header {
+    position: relative;
+
+    .btn {
+        position: absolute;
+        right: 0;
+        top: 10px;
+    }
 }
 
-.page-header { position: relative; }
-.nav-tabs.nav-stacked { margin-bottom: 50px; }
+.nav-tabs.nav-stacked {
+    margin-bottom: 50px;
 
-.nav-tabs.nav-stacked > li {
-    display: block;
-    height: 26px;
-    line-height: 26px;
-    padding: 8px;
-    border: 1px solid #DDDDDD;
-    white-space: nowrap;
-    overflow: hidden;
+    & > li {
+        display: block;
+        height: 26px;
+        line-height: 26px;
+        padding: 8px;
+        border: 1px solid #DDDDDD;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .btn-group { float: right; }
 }
-
-.nav-tabs.nav-stacked > li .btn-group { float: right; }
 
 
 
@@ -44,7 +49,12 @@ body { padding: 60px 0 40px; }
 
 form { text-align: right; }
 .label-like { margin-bottom: 5px; }
-label, .label-like { line-height: 31px; }
+
+label, .label-like {
+    line-height: 31px;
+    span { vertical-align: 3px; }
+}
+
 [type=text], [type=email], [type=password], select, textarea { margin-left: 10px !important; }
 [type=text], [type=email], [type=password], textarea { width: 500px; }
 select, textarea.nic { width: 514px; }
@@ -55,12 +65,12 @@ textarea { height: 200px; }
 [type=file] {
     display: block;
     margin-bottom: 10px;
-}
 
-[type=file] + .btn {
-    position: absolute;
-    right: 0;
-    top: 0;
+    & + .btn {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
 }
 
 .holder {
@@ -71,8 +81,7 @@ textarea { height: 200px; }
     margin: 0 0 10px 10px;
     text-align: left;
     list-style-type: none;
+    label { display: inline; }
+    [type=text], [type=email], [type=password], select, textarea { margin-left: 0 !important; }
+    .nicEdit-main { line-height: 20px; }
 }
-
-.holder label { display: inline; }
-.holder [type=text], .holder [type=email], .holder [type=password], .holder select, .holder textarea { margin-left: 0 !important; }
-.holder .nicEdit-main { line-height: 20px; }
