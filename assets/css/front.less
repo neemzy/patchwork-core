@@ -1,4 +1,5 @@
 @import 'config.less';
+@import '../../../../twitter/bootstrap/less/utilities.less';
 
 /** Reset **/
 
@@ -26,8 +27,8 @@ body {
 }
 
 hr {
-    clear: both;
-    visibility: hidden;
+    .cb;
+    .invisible;
     height: 0;
     border: none;
 }
@@ -67,7 +68,7 @@ table { border-collapse: collapse; }
 img { border: none; }
 ul { list-style-type: none; }
 ul, ol { list-style-position: inside; }
-label { .block; }
+label { .show; }
 canvas { -ms-touch-action: double-tap-zoom; }
 
 
@@ -92,7 +93,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
     white-space: nowrap;
 }
 
-::-webkit-validation-bubble-icon { .hidden; }
+::-webkit-validation-bubble-icon { .hide; }
 ::-webkit-input-placeholder { .placeholder; }
 ::-moz-placeholder { .placeholder; }
 :-ms-input-placeholder { .placeholder; }
@@ -120,6 +121,31 @@ canvas { -ms-touch-action: double-tap-zoom; }
          url('../font/fonts.svg#@{file}') format('svg');
 }
 
+.sprite-hover(@xpos: 0) {
+    background-position: @xpos top;
+
+    &:hover {
+        background-position: @xpos bottom;
+    }
+}
+
+.radius(@radius: 5px) {
+    border-radius: @radius;
+}
+
+.box-shadow(@value: none) {
+    -webkit-box-shadow: @value;
+    box-shadow: @value;
+}
+
+.transition(@property: all, @duration: .5s, @easing: linear) {
+    -webkit-transition: @property @duration @easing;
+    -moz-transition: @property @duration @easing;
+    -o-transition: @property @duration @easing;
+    -ms-transition: @property @duration @easing;
+    transition: @property @duration @easing;
+}
+
 
 
 /** Classes **/
@@ -130,14 +156,14 @@ canvas { -ms-touch-action: double-tap-zoom; }
 }
 
 .container {
-    .block;
+    .show;
     .auto;
     width: 100%;
     max-width: 980px;
 }
 
 .away {
-    .block;
+    .show;
     text-align: left !important;
     text-indent: -99999px;
 }
@@ -147,17 +173,16 @@ canvas { -ms-touch-action: double-tap-zoom; }
     opacity: 1;
 }
 
-.center { text-align: center; }
-.auto { margin: 0 auto; }
-.block { display: block; }
-.hidden { display: none; }
+.cb { clear: both; }
+.pr { position: relative; }
 .inline-top, .inline-middle, .notice { display: inline-block; }
 .inline-top { vertical-align: top; }
 .inline-middle { vertical-align: middle; }
-.pr { position: relative; }
 .bullets { list-style-type: square; }
+.auto { margin: 0 auto; }
 .sans { font-family: Helvetica, Arial, sans-serif; }
 .serif { font-family: Georgia, Times New Roman, serif; }
+.center { text-align: center; }
 .upper { text-transform: uppercase; }
 .under:hover { text-decoration: underline; }
 .gt:before { content: '> '; }
