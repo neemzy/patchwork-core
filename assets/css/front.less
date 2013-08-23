@@ -39,8 +39,8 @@ input, button, select, textarea {
 }
 
 input, textarea {
-    .ph-color();
-    .ph-opacity();
+    .placeholder(color, #999999);
+    .placeholder(opacity, 1);
 }
 
 [type=checkbox] { vertical-align: -2px; }
@@ -113,33 +113,40 @@ canvas { -ms-touch-action: double-tap-zoom; }
 
 /** Mixins **/
 
-.ph-color(@color: #999999) {
-    &.placeholder { color: @color; }
-    &::-webkit-input-placeholder { color: @color; }
-    &::-moz-placeholder { color: @color; }
-    &:-ms-input-placeholder { color: @color; }
+.font-face(@name, @file) {
+    font-family: @name;
+    src: url('../font/@{file}.eot?') format('embedded-opentype'),
+         url('../font/@{file}.woff') format('woff'),
+         url('../font/@{file}.otf') format('opentype'),
+         url('../font/fonts.svg#@{file}') format('svg');
 }
 
-.ph-style(@style: italic) {
-    &.placeholder { font-style: @style; }
-    &::-webkit-input-placeholder { font-style: @style; }
-    &::-moz-placeholder { font-style: @style; }
-    &:-ms-input-placeholder { font-style: @style; }
+.placeholder(@property, @value: '') {
+    -less-property: ~`(
+        function() {
+            var selectors = [
+                '.placeholder',
+                '::-webkit-input-placeholder',
+                '::-moz-placeholder',
+                ':-ms-input-placeholder'
+            ], ruleset = ' property;';
+
+            for (i in selectors) {
+                ruleset += '\n    &' + selectors[i] + ' { @{property} ' + ': @{value}' + '; }';
+            }
+
+            return ruleset;
+        }
+    )()`;
 }
 
-.ph-transform(@transform: uppercase) {
-    &.placeholder { text-transform: @transform; }
-    &::-webkit-input-placeholder { text-transform: @transform; }
-    &::-moz-placeholder { text-transform: @transform; }
-    &:-ms-input-placeholder { text-transform: @transform; }
+.opacity(@opacity: 1) {
+    @ms: @opacity * 100;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@{ms})";
+    opacity: @opacity;
 }
 
-.ph-opacity(@opacity: 1) {
-    &.placeholder { .opacity(@opacity); }
-    &::-webkit-input-placeholder { .opacity(@opacity); }
-    &::-moz-placeholder { .opacity(@opacity); }
-    &:-ms-input-placeholder { .opacity(@opacity); }
-}
+.radius(@radius: 5px) { border-radius: @radius; }
 
 .box-shadow(@value: none) {
     -webkit-box-shadow: @value;
@@ -154,25 +161,9 @@ canvas { -ms-touch-action: double-tap-zoom; }
     transition: @property @duration @easing;
 }
 
-.opacity(@opacity: 1) {
-    @ms: @opacity * 100;
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@{ms})";
-    opacity: @opacity;
-}
-
-.radius(@radius: 5px) { border-radius: @radius; }
-
 .sprite-hover(@xpos: 0) {
     background-position: @xpos top;
     &:hover { background-position: @xpos bottom; }
-}
-
-.font-face(@name, @file) {
-    font-family: @name;
-    src: url('../font/@{file}.eot?') format('embedded-opentype'),
-         url('../font/@{file}.woff') format('woff'),
-         url('../font/@{file}.otf') format('opentype'),
-         url('../font/fonts.svg#@{file}') format('svg');
 }
 
 
