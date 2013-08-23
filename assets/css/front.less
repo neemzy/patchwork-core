@@ -39,10 +39,10 @@ input, button, select, textarea {
     font-size: inherit;
 }
 
-input, textarea {
+/*input, textarea {
     .placeholder(color, #999999);
     .placeholder(opacity, 1);
-}
+}*/
 
 [type=checkbox] { vertical-align: -2px; }
 [type=radio] { vertical-align: -3px; }
@@ -122,7 +122,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
          url('../font/fonts.svg#@{file}') format('svg');
 }
 
-.placeholder(@property, @value: '') {
+/*.placeholder(@property, @value: '') {
     -less-property: ~`(
         function() {
             var selectors = [
@@ -139,7 +139,16 @@ canvas { -ms-touch-action: double-tap-zoom; }
             return ruleset;
         }
     )()`;
+}*/
+
+.placeholder {
+    color: #999999;
+    opacity: 1;
 }
+
+::-webkit-input-placeholder { .placeholder; }
+::-moz-placeholder { .placeholder; }
+:-ms-input-placeholder { .placeholder; }
 
 .opacity(@opacity: 1) {
     @ms: @opacity * 100;
