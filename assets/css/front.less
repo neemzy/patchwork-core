@@ -38,7 +38,11 @@ input, button, select, textarea {
     font-size: inherit;
 }
 
-input, textarea { .placeholder(); }
+input, textarea {
+    .ph-color();
+    .ph-opacity();
+}
+
 [type=checkbox] { vertical-align: -2px; }
 [type=radio] { vertical-align: -3px; }
 button, a { cursor: pointer; }
@@ -109,32 +113,33 @@ canvas { -ms-touch-action: double-tap-zoom; }
 
 /** Mixins **/
 
-.placeholder(@color: #999999) {
+.ph-color(@color: #999999) {
     &.placeholder { color: @color; }
     &::-webkit-input-placeholder { color: @color; }
-
-    &::-moz-placeholder {
-        color: @color;
-        opacity: 1;
-    }
-
+    &::-moz-placeholder { color: @color; }
     &:-ms-input-placeholder { color: @color; }
 }
 
-.font-face(@name, @file) {
-    font-family: @name;
-    src: url('../font/@{file}.eot?') format('embedded-opentype'),
-         url('../font/@{file}.woff') format('woff'),
-         url('../font/@{file}.otf') format('opentype'),
-         url('../font/fonts.svg#@{file}') format('svg');
+.ph-style(@style: italic) {
+    &.placeholder { font-style: @style; }
+    &::-webkit-input-placeholder { font-style: @style; }
+    &::-moz-placeholder { font-style: @style; }
+    &:-ms-input-placeholder { font-style: @style; }
 }
 
-.sprite-hover(@xpos: 0) {
-    background-position: @xpos top;
-    &:hover { background-position: @xpos bottom; }
+.ph-transform(@transform: uppercase) {
+    &.placeholder { text-transform: @transform; }
+    &::-webkit-input-placeholder { text-transform: @transform; }
+    &::-moz-placeholder { text-transform: @transform; }
+    &:-ms-input-placeholder { text-transform: @transform; }
 }
 
-.radius(@radius: 5px) { border-radius: @radius; }
+.ph-opacity(@opacity: 1) {
+    &.placeholder { .opacity(@opacity); }
+    &::-webkit-input-placeholder { .opacity(@opacity); }
+    &::-moz-placeholder { .opacity(@opacity); }
+    &:-ms-input-placeholder { .opacity(@opacity); }
+}
 
 .box-shadow(@value: none) {
     -webkit-box-shadow: @value;
@@ -147,6 +152,27 @@ canvas { -ms-touch-action: double-tap-zoom; }
     -o-transition: @property @duration @easing;
     -ms-transition: @property @duration @easing;
     transition: @property @duration @easing;
+}
+
+.opacity(@opacity: 1) {
+    @ms: @opacity * 100;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=@{ms})";
+    opacity: @opacity;
+}
+
+.radius(@radius: 5px) { border-radius: @radius; }
+
+.sprite-hover(@xpos: 0) {
+    background-position: @xpos top;
+    &:hover { background-position: @xpos bottom; }
+}
+
+.font-face(@name, @file) {
+    font-family: @name;
+    src: url('../font/@{file}.eot?') format('embedded-opentype'),
+         url('../font/@{file}.woff') format('woff'),
+         url('../font/@{file}.otf') format('opentype'),
+         url('../font/fonts.svg#@{file}') format('svg');
 }
 
 
