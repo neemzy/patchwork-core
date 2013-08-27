@@ -144,11 +144,11 @@ canvas { -ms-touch-action: double-tap-zoom; }
 .radius(@radius: 5px) { border-radius: @radius; }
 
 .transit(@property: all, @duration: .5s, @easing: linear) {
-    -webkit-transition: @property @duration @easing !important;
-    -moz-transition: @property @duration @easing !important;
-    -ms-transition: @property @duration @easing !important;
-    -o-transition: @property @duration @easing !important;
-    transition: @property @duration @easing !important;
+    -webkit-transition: @property @duration @easing;
+    -moz-transition: @property @duration @easing;
+    -ms-transition: @property @duration @easing;
+    -o-transition: @property @duration @easing;
+    transition: @property @duration @easing;
 }
 
 .sprite(@xpos: 0) {
