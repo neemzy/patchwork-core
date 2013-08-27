@@ -98,6 +98,9 @@ canvas { -ms-touch-action: double-tap-zoom; }
 }
 
 ::-webkit-validation-bubble-icon { .hide; }
+::-webkit-input-placeholder { .placeholder; }
+:-ms-input-placeholder { .placeholder; }
+::-moz-placeholder { .placeholder; }
 :-moz-ui-invalid { box-shadow: none; }
 
 ::-moz-focus-inner {
@@ -139,14 +142,10 @@ canvas { -ms-touch-action: double-tap-zoom; }
     )()`;
 }*/
 
-.placeholder {
+.placeholder(@useless_param_because_it_straps_in_my_boots: none) {
     color: #999999;
     opacity: 1;
 }
-
-::-webkit-input-placeholder { .placeholder; }
-::-moz-placeholder { .placeholder; }
-:-ms-input-placeholder { .placeholder; }
 
 .opacity(@opacity: 1) {
     @ms: @opacity * 100;
