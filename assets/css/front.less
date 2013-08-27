@@ -33,14 +33,11 @@ hr {
 }
 
 input, button, select, textarea {
+    .placeholder(color, #999999);
+    .placeholder(opacity, 1);
     font-family: inherit;
     font-size: inherit;
 }
-
-/*input, textarea {
-    .placeholder(color, #999999);
-    .placeholder(opacity, 1);
-}*/
 
 [type=checkbox] { vertical-align: -2px; }
 [type=radio] { vertical-align: -3px; }
@@ -142,7 +139,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
     )()`;
 }*/
 
-.placeholder(@useless_param_because_it_straps_in_my_boots: none) {
+.placeholder {
     color: #999999;
     opacity: 1;
 }
