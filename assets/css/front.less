@@ -143,7 +143,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
 
 .radius(@radius: 5px) { border-radius: @radius; }
 
-.transition(@property: all, @duration: .5s, @easing: linear) {
+.transit(@property: all, @duration: .5s, @easing: linear) {
     -webkit-transition: @property @duration @easing !important;
     -moz-transition: @property @duration @easing !important;
     -ms-transition: @property @duration @easing !important;
@@ -151,7 +151,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
     transition: @property @duration @easing !important;
 }
 
-.sprite-hover(@xpos: 0) {
+.sprite(@xpos: 0) {
     background-position: @xpos top;
     &:hover { background-position: @xpos bottom; }
 }
