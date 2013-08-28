@@ -128,6 +128,14 @@ canvas { -ms-touch-action: double-tap-zoom; }
     transition: @property @duration @easing;
 }
 
+.transform(@transform: none) {
+    -webkit-transform: @transform;
+    -moz-transform: @transform;
+    -ms-transform: @transform;
+    -o-transform: @transform;
+    transform: @transform;
+}
+
 .sprite(@xpos: 0) {
     background-position: @xpos top;
     &:hover { background-position: @xpos bottom; }
