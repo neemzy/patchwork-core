@@ -110,12 +110,12 @@ canvas { -ms-touch-action: double-tap-zoom; }
 
 /** Mixins **/
 
-.font-face(@name, @file) {
+.font-face(@name, @file, @path: '../font') {
     font-family: @name;
-    src: url('../font/@{file}.eot?') format('embedded-opentype'),
-         url('../font/@{file}.woff') format('woff'),
-         url('../font/@{file}.otf') format('opentype'),
-         url('../font/fonts.svg#@{file}') format('svg');
+    src: url('@{path}/@{file}.eot?') format('embedded-opentype'),
+         url('@{path}/@{file}.woff') format('woff'),
+         url('@{path}/@{file}.otf') format('opentype'),
+         url('@{path}/fonts.svg#@{file}') format('svg');
 }
 
 .radius(@radius: 5px) { border-radius: @radius; }
