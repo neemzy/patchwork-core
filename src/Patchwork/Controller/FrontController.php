@@ -43,6 +43,7 @@ class FrontController implements ControllerProviderInterface
         $ctrl->get(
             '/assets/css/{file}.less',
             function ($file) use ($app) {
+                $lessc = new \lessc();
                 $dir = BASE_PATH.'/public/assets/css/';
                 $less = $dir.$file.'.less';
                 $css = $dir.$file.'.css';
@@ -50,8 +51,6 @@ class FrontController implements ControllerProviderInterface
                 if (! file_exists($less)) {
                     $app->abort(404);
                 }
-
-                $lessc = new \lessc();
 
                 if (! $app['debug']) {
                     $lessc->setFormatter('compressed');
@@ -74,6 +73,7 @@ class FrontController implements ControllerProviderInterface
             '/vendor/{vendor}/{filename}',
             function ($vendor, $filename) use ($app) {
                 $filename = BASE_PATH.'/vendor/'.$vendor.'/'.$filename;
+
                 try {
                     $file = new File($filename, true);
                     return new Response(file_get_contents($filename), 200, array('Content-Type' => ($file->getExtension() == 'js' ? 'application/javascript' : $file->getMimeType())));

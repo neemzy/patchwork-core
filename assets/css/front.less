@@ -93,7 +93,9 @@ canvas { -ms-touch-action: double-tap-zoom; }
 }
 
 ::-webkit-validation-bubble-icon { .hide; }
-:-moz-ui-invalid { box-shadow: none; }
+::-webkit-input-placeholder { .placeholder; }
+::-moz-placeholder { .placeholder; }
+:-moz-ui-invalid { .box-shadow(none); }
 
 ::-moz-focus-inner {
     margin: 0;
@@ -101,6 +103,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
     border: none;
 }
 
+:-ms-input-placeholder { .placeholder; }
 @-ms-viewport { width: device-width; }
 
 
@@ -133,6 +136,11 @@ canvas { -ms-touch-action: double-tap-zoom; }
 
 
 /** Classes **/
+
+.placeholder {
+    .opacity(1);
+    color: #999999;
+}
 
 .font-reset {
     font-weight: normal;
