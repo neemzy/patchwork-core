@@ -33,8 +33,6 @@ hr {
 }
 
 input, button, select, textarea {
-    /*.placeholder(color, #999999);
-    .placeholder(opacity, 1);*/
     font-family: inherit;
     font-size: inherit;
 }
@@ -116,30 +114,6 @@ canvas { -ms-touch-action: double-tap-zoom; }
          url('../font/@{file}.otf') format('opentype'),
          url('../font/fonts.svg#@{file}') format('svg');
 }
-
-/*.placeholder(@property, @value) {
-    -less-property: ~`(
-        function() {
-            var selectors = [
-                '.placeholder',
-                '::-webkit-input-placeholder',
-                '::-moz-placeholder',
-                ':-ms-input-placeholder'
-            ], ruleset = ' property;';
-
-            for (i in selectors) {
-                ruleset += '\n    &' + selectors[i] + ' { @{property} ' + ': @{value}' + '; }';
-            }
-
-            return ruleset;
-        }
-    )()`;
-}*/
-.placeholderfix { color: #999999; opacity: 1; }
-.placeholder { .placeholderfix; }
-::-webkit-input-placeholder { .placeholderfix; }
-:-ms-input-placeholder { .placeholderfix; }
-::-moz-placeholder { .placeholderfix; }
 
 .radius(@radius: 5px) { border-radius: @radius; }
 
