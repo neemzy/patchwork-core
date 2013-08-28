@@ -63,7 +63,7 @@ class FrontController implements ControllerProviderInterface
                 $response->headers->set('Content-Type', 'text/css');
                 return $response;
             }
-        );
+        )->assert('file', '.+');
 
 
 
