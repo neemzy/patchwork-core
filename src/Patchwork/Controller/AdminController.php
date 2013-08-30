@@ -42,7 +42,7 @@ class AdminController implements ControllerProviderInterface
                     $password = strip_tags($password);
                 }
 
-                if (($username != BO_USER) || ($password != BO_PASS)) {
+                if (($username != ADMIN_USER) || ($password != ADMIN_PASS)) {
                     $response = new Response();
                     $response->headers->set('WWW-Authenticate', sprintf('Basic realm="%s"', 'Administration'));
                     $response->setStatusCode(401, 'Please sign in.');
