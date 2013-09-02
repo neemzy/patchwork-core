@@ -1,17 +1,10 @@
-@import 'config.less';
 @import '../../../../twitter/bootstrap/less/bootstrap.less';
+@import 'config.less';
 
-/** Misc **/
+/** Bootstrap **/
 
 body { padding: 60px 0 40px; }
 .nav-collapse { height: auto !important; }
-[class^="icon-"], [class*=" icon-"] { background-image: url('@{asset_path}/../../../twitter/bootstrap/img/glyphicons-halflings.png'); }
-
-.icon-white, .nav-tabs > .active > a > [class^="icon-"], .nav-tabs > .active > a > [class*=" icon-"], .nav-pills > .active > a > [class^="icon-"],
-.nav-pills > .active > a > [class*=" icon-"], .nav-list > .active > a > [class^="icon-"], .nav-list > .active > a > [class*=" icon-"],
-.navbar-inverse .nav > .active > a > [class^="icon-"], .navbar-inverse .nav > .active > a > [class*=" icon-"], .dropdown-menu > li > a:hover > [class^="icon-"],
-.dropdown-menu > li > a:hover > [class*=" icon-"], .dropdown-menu > .active > a > [class^="icon-"],
-.dropdown-menu > .active > a > [class*=" icon-"] { background-image: url('@{asset_path}/../../../twitter/bootstrap/img/glyphicons-halflings-white.png'); }
 
 
 
@@ -48,16 +41,19 @@ body { padding: 60px 0 40px; }
 /** Forms **/
 
 form { text-align: right; }
+label { font-weight: normal; }
 .label-like { margin-bottom: 5px; }
 
 label, .label-like {
     line-height: 31px;
-    span { vertical-align: 3px; }
+    span { vertical-align: middle; }
 }
 
-[type=text], [type=email], [type=password], select, textarea { margin-left: 10px !important; }
-[type=text], [type=email], [type=password], textarea { width: 500px; }
-select, textarea.nic { width: 514px; }
+[type=text], [type=email], [type=password], select, textarea {
+    width: 500px;
+    margin-left: 10px !important;
+}
+
 select { padding: 4px 4px 4px 3px; }
 textarea { height: 200px; }
 [type=checkbox], [type=radio] { margin-top: 0; }
@@ -77,7 +73,7 @@ textarea { height: 200px; }
     display: inline-block;
     vertical-align: top;
     position: relative;
-    width: 514px;
+    width: 500px;
     margin: 0 0 10px 10px;
     text-align: left;
     list-style-type: none;
