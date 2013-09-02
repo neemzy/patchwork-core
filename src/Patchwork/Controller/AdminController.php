@@ -248,6 +248,7 @@ class AdminController implements ControllerProviderInterface
 
                             $image->move($dir, $file);
                             $bean->setImage($dir, $file);
+                            R::store($bean);
                         }
                     }
                 }
