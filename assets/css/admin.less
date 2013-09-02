@@ -25,12 +25,15 @@ body { padding: 60px 0 40px; }
 
     & > li {
         display: block;
-        height: 26px;
-        line-height: 26px;
+        line-height: 30px;
         padding: 8px;
         border: 1px solid #DDDDDD;
         white-space: nowrap;
         overflow: hidden;
+
+        & + li {
+            margin-top: 0;
+        }
     }
 
     .btn-group { float: right; }
