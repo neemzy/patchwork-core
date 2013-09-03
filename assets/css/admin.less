@@ -44,26 +44,34 @@ body { padding: 60px 0 40px; }
 /** Forms **/
 
 form { text-align: right; }
-label { font-weight: normal; }
-.label-like { margin-bottom: 5px; }
 
-label, .label-like {
-    line-height: 31px;
-    span { vertical-align: middle; }
+label, .labelize {
+    .show;
+    margin-bottom: 10px;
+    font-weight: normal;
 }
 
-[type=text], [type=email], [type=password], select, textarea {
+[type=text], [type=email], [type=password], select, textarea, .holder {
     width: 500px;
     margin-left: 10px !important;
 }
 
 select { padding: 4px 4px 4px 3px; }
-textarea { height: 200px; }
-[type=checkbox], [type=radio] { margin-top: 0; }
+
+textarea {
+    max-width: 500px;
+    min-width: 500px;
+    height: 200px;
+    min-height: 200px;
+}
+
+[type=checkbox], [type=radio] {
+    vertical-align: middle;
+    margin-top: 0 !important;
+}
 
 [type=file] {
-    display: block;
-    margin-bottom: 10px;
+    .show;
 
     & + .btn {
         position: absolute;
@@ -73,14 +81,11 @@ textarea { height: 200px; }
 }
 
 .holder {
+    position: relative;
     display: inline-block;
     vertical-align: top;
-    position: relative;
-    width: 500px;
-    margin: 0 0 10px 10px;
     text-align: left;
     list-style-type: none;
-    label { display: inline; }
+
     [type=text], [type=email], [type=password], select, textarea { margin-left: 0 !important; }
-    .nicEdit-main { line-height: 20px; }
 }
