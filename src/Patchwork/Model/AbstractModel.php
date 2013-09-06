@@ -9,17 +9,6 @@ use Patchwork\Helper\Exception;
 
 abstract class AbstractModel extends \RedBean_SimpleModel
 {
-    private $app;
-
-
-
-    public function bindApp(Application $app)
-    {
-        $this->app = $app;
-    }
-
-
-
     abstract public function getAsserts();
 
 
