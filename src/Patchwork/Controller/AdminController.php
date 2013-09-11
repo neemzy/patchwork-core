@@ -84,7 +84,6 @@ class AdminController implements ControllerProviderInterface
             '/move/{id}/{up}',
             function ($id, $up) use ($app, $class) {
                 $bean = R::load($class, $id);
-                $bean->bindApp($app);
 
                 if (($up) && ($bean->position > 1)) {
                     $bean->position--;
@@ -111,7 +110,6 @@ class AdminController implements ControllerProviderInterface
 
                 $bean = R::load($class, $id);
                 $clone = R::dup($bean);
-                $clone->bindApp($app);
 
                 if (R::typeHasField($class, 'position')) {
                     $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
@@ -139,7 +137,6 @@ class AdminController implements ControllerProviderInterface
             '/toggle/{id}',
             function ($id) use ($app, $class) {
                 $bean = R::load($class, $id);
-                $bean->bindApp($app);
                 $bean->active = !$bean->active;
                 R::store($bean);
 
@@ -195,7 +192,6 @@ class AdminController implements ControllerProviderInterface
                 $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
 
                 $bean = R::load($class, $id);
-                $bean->bindApp($app);
                 $asserts = $bean->getAsserts();
                 
                 foreach ($asserts as $key => $assert) {
@@ -271,7 +267,6 @@ class AdminController implements ControllerProviderInterface
                 $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
 
                 $bean = R::load($class, $id);
-                $bean->bindApp($app);
 
                 $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
                 unlink($dir.$bean->image);

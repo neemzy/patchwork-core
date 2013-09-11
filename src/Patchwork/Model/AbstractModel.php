@@ -9,30 +9,21 @@ use Patchwork\Helper\Exception;
 
 abstract class AbstractModel extends \RedBean_SimpleModel
 {
-    private $app;
-
-
-
-    public function bindApp(Application $app)
-    {
-        $this->app = $app;
-    }
-
-
-
     abstract public function getAsserts();
 
 
 
     public function update()
     {
+        global $app;
+
         $fields = $this->bean->export();
 
         foreach ($fields as &$field) {
             $field = strip_tags($field);
         }
 
-        $errors = $this->app['validator']->validateValue(
+        $errors = $app['validator']->validateValue(
             $fields,
             new Assert\Collection(
                 array(
