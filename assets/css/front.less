@@ -25,13 +25,6 @@ body {
     color: #333333;
 }
 
-hr {
-    .cb;
-    .invisible;
-    height: 0;
-    border: none;
-}
-
 input, button, select, textarea {
     font-family: inherit;
     font-size: inherit;
@@ -150,6 +143,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
 .placeholder { .placeholder-defaults(); }
 .cb { clear: both; }
 .pr { position: relative; }
+.inline { display: inline; }
 .inline-top, .inline-middle, .notice { display: inline-block; }
 .inline-top { vertical-align: top; }
 .inline-middle { vertical-align: middle; }
@@ -159,9 +153,18 @@ canvas { -ms-touch-action: double-tap-zoom; }
 .serif { font-family: Georgia, Times New Roman, serif; }
 .center { text-align: center; }
 .upper { text-transform: uppercase; }
-.under:hover { text-decoration: underline; }
-.gt:before { content: '> '; }
-.required:after { content: ' *'; }
+
+.under {
+    &:hover { text-decoration: underline; }
+}
+
+.gt {
+    &:before { content: '> '; }
+}
+
+.required {
+    &:after { content: ' *'; }
+}
 
 .font-reset {
     font-weight: normal;
