@@ -30,8 +30,8 @@ input, button, select, textarea {
     font-size: inherit;
 }
 
-[type=checkbox] { vertical-align: -2px; }
-[type=radio] { vertical-align: -3px; }
+input[type=checkbox] { vertical-align: -2px; }
+input[type=radio] { vertical-align: -3px; }
 button, a { cursor: pointer; }
 a { text-decoration: none; }
 
@@ -148,7 +148,6 @@ canvas { -ms-touch-action: double-tap-zoom; }
 .inline-top { vertical-align: top; }
 .inline-middle { vertical-align: middle; }
 .bullets { list-style-type: square; }
-.auto { margin: 0 auto; }
 .sans { font-family: Helvetica, Arial, sans-serif; }
 .serif { font-family: Georgia, Times New Roman, serif; }
 .center { text-align: center; }
@@ -172,8 +171,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
 }
 
 .container {
-    .show;
-    .auto;
+    .center-block;
     width: 100%;
     max-width: 980px;
 }

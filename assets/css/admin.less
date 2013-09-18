@@ -4,7 +4,6 @@
 /** Bootstrap **/
 
 body { padding: 60px 0 40px; }
-.nav-collapse { height: auto !important; }
 
 
 
@@ -51,9 +50,9 @@ label, .labelize {
     font-weight: normal;
 }
 
-[type=text], [type=email], [type=password], select, textarea, .holder {
+input[type=text], input[type=email], input[type=password], select, textarea, .holder {
     width: 500px;
-    margin-left: 10px !important;
+    margin-left: 10px;
 }
 
 select { padding: 4px 4px 4px 3px; }
@@ -65,12 +64,12 @@ textarea {
     min-height: 200px;
 }
 
-[type=checkbox], [type=radio] {
+input[type=checkbox], input[type=radio] {
     vertical-align: middle;
-    margin-top: 0 !important;
+    margin-top: 0;
 }
 
-[type=file] {
+input[type=file] {
     .show;
 
     & + .btn {
@@ -92,5 +91,5 @@ textarea {
     text-align: left;
     list-style-type: none;
 
-    [type=text], [type=email], [type=password], select, textarea { margin-left: 0 !important; }
+    input[type=text], input[type=email], input[type=password], select, textarea { margin-left: 0; }
 }
