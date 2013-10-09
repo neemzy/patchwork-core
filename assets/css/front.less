@@ -3,13 +3,16 @@
 
 /** Reset **/
 
-*, *:before, *:after {
+*, :before, :after {
     .box-sizing(border-box);
-    content: '';
     margin: 0;
     padding: 0;
     outline: none;
     -webkit-tap-highlight-color: transparent;
+}
+
+:before, :after {
+    content: '';
 }
 
 html {
