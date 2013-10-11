@@ -70,10 +70,12 @@ class Tools
 
 
 
-    public static function jsonResponse($data, $code = null, $options = JSON_NUMERIC_CHECK)
+    public static function jsonResponse($data, $code = 200, $options = JSON_NUMERIC_CHECK)
     {
-        $response = new Response(json_encode($data, $options), $code ? $code : ($data ? 200 : 404));
-        $response->headers->set('Content-Type', 'application/json');
-        return $response;
+        return new Response(
+            json_encode($data, $options),
+            $code,
+            array('Content-Type' => 'application/json')
+        );
     }
 }
