@@ -15,15 +15,13 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
     public function update()
     {
-        global $app;
-
         $fields = $this->bean->export();
 
         foreach ($fields as &$field) {
             $field = strip_tags($field);
         }
 
-        $errors = $app['validator']->validateValue(
+        $errors = R::$app['validator']->validateValue(
             $fields,
             new Assert\Collection(
                 array(
