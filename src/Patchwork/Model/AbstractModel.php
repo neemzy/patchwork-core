@@ -2,8 +2,8 @@
 
 namespace Patchwork\Model;
 
-use Silex\Application;
 use Symfony\Component\Validator\Constraints as Assert;
+use Patchwork\App;
 use Patchwork\Helper\RedBean as R;
 use Patchwork\Helper\Exception;
 
@@ -21,7 +21,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
             $field = strip_tags($field);
         }
 
-        $errors = R::$app['validator']->validateValue(
+        $errors = App::getInstance()['validator']->validateValue(
             $fields,
             new Assert\Collection(
                 array(
