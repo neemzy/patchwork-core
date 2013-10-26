@@ -78,4 +78,16 @@ class Tools
             array('Content-Type' => 'application/json')
         );
     }
+
+
+
+    public static function dump($var, $pre_wrap = false)
+    {
+        ob_start();
+        var_dump($var);
+        $dump = ob_get_clean();
+
+        $pre_wrap && $dump = '<pre class="debug">'.$dump.'</pre>';
+        return $dump;
+    }
 }
