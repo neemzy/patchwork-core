@@ -2,6 +2,8 @@
 
 namespace Patchwork;
 
+use Silex\Application;
+
 class App
 {
     const DEFAULT_NAME = 'default';
@@ -20,7 +22,7 @@ class App
         }
 
         if (! array_key_exists($name, self::$instances)) {
-            self::$instances[$name] = new Silex\Application($param);
+            self::$instances[$name] = new Application($param);
         }
 
         return self::$instances[$name];
