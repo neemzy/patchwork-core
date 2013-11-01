@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use Patchwork\Helper\Tools;
 
 class FrontController implements ControllerProviderInterface
 {
@@ -55,7 +56,7 @@ class FrontController implements ControllerProviderInterface
                 if (! $app['debug']) {
                     $lessc->setFormatter('compressed');
                     $lessc->checkedCompile($less, $css);
-                    $response = new Response(file_get_contents($css));
+                    $response = Tools::staticResponse($css);
                 } else {
                     $response = new Response($lessc->compileFile($less));
                 }
