@@ -72,9 +72,9 @@ class FrontController implements ControllerProviderInterface
         // JSMin
 
         $ctrl->get(
-            '/{path}/{filename}',
+            '/{path}/{filename}.js',
             function ($path, $filename) use ($app) {
-                $filename = BASE_PATH.'/'.((strpos($path, 'assets') === 0) ? 'public/' : '').$path.'/'.$filename;
+                $filename = BASE_PATH.'/'.((strpos($path, 'assets') === 0) ? 'public/' : '').$path.'/'.$filename.'.js';
 
                 if (! file_exists($filename)) {
                     $app->abort(404);
