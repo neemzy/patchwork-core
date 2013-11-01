@@ -82,8 +82,6 @@ class FrontController implements ControllerProviderInterface
 
                 $js = file_get_contents($filename);
 
-                $app['debug'] = false;
-
                 if (! $app['debug']) {
                     $response = Tools::staticResponse($filename, JSMin::minify($js));
                 } else {
