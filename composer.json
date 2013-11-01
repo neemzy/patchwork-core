@@ -22,7 +22,7 @@
         "gabordemooij/redbean": "*",
         "entea/silex-twig-simple-asset-extension": "dev-master",
         "sybio/image-workshop": "*",
-        "twbs/bootstrap": "dev-master",
+        "twbs/bootstrap": "dev-master#147837efaa48696debf93c62e8d872f72d866117",
         "leafo/lessphp": "0.4.*@dev",
         "ajbdev/requirejs": "dev-master",
         "neemzy/environ": "dev-master"
