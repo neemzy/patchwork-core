@@ -82,7 +82,7 @@ class FrontController implements ControllerProviderInterface
                     $app->abort(404);
                 }
             }
-        )->assert('vendor', '(neemzy/patchwork-core/assets|twitter/bootstrap|ajbdev/requirejs)')->assert('filename', '.+');
+        )->assert('vendor', '(neemzy/patchwork-core/assets|twbs/bootstrap|ajbdev/requirejs)')->assert('filename', '.+');
 
 
 
