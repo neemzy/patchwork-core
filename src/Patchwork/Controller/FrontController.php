@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
+use JsMin\Minify as JSMin;
 use Patchwork\Helper\Tools;
 
 class FrontController implements ControllerProviderInterface
@@ -42,12 +43,12 @@ class FrontController implements ControllerProviderInterface
         // LESS
 
         $ctrl->get(
-            '/assets/css/{file}.less',
-            function ($file) use ($app) {
+            '/assets/css/{filename}.less',
+            function ($filename) use ($app) {
                 $lessc = new \lessc();
                 $dir = BASE_PATH.'/public/assets/css/';
-                $less = $dir.$file.'.less';
-                $css = $dir.$file.'.css';
+                $less = $dir.$filename.'.less';
+                $css = $dir.$filename.'.css';
 
                 if (! file_exists($less)) {
                     $app->abort(404);
@@ -64,7 +65,35 @@ class FrontController implements ControllerProviderInterface
                 $response->headers->set('Content-Type', 'text/css');
                 return $response;
             }
-        )->assert('file', '.+');
+        )->assert('filename', '.+');
+
+
+
+        // JSMin
+
+        $ctrl->get(
+            '/{path}/{filename}',
+            function ($path, $filename) use ($app) {
+                $filename = BASE_PATH.'/'.((strpos($path, 'assets') === 0) ? 'public/' : '').$path.'/'.$filename;
+
+                if (! file_exists($filename)) {
+                    $app->abort(404);
+                }
+
+                $js = file_get_contents($filename);
+
+                $app['debug'] = false;
+
+                if (! $app['debug']) {
+                    $response = Tools::staticResponse($filename, JSMin::minify($js));
+                } else {
+                    $response = new Response($js);
+                }
+                
+                $response->headers->set('Content-Type', 'application/javascript');
+                return $response;
+            }
+        )->assert('path', '(vendor|assets/js)')->assert('filename', '.+');
 
 
 
@@ -77,12 +106,14 @@ class FrontController implements ControllerProviderInterface
 
                 try {
                     $file = new File($filename, true);
-                    return new Response(file_get_contents($filename), 200, array('Content-Type' => ($file->getExtension() == 'js' ? 'application/javascript' : $file->getMimeType())));
+                    $response = Tools::staticResponse($filename);
+                    $response->headers->set('Content-Type', $file->getMimeType());
+                    return $response;
                 } catch (FileNotFoundException $e) {
                     $app->abort(404);
                 }
             }
-        )->assert('vendor', '(neemzy/patchwork-core/assets|twbs/bootstrap|ajbdev/requirejs)')->assert('filename', '.+');
+        )->assert('vendor', '(neemzy/patchwork-core/assets|twbs/bootstrap)')->assert('filename', '.+');
 
 
 

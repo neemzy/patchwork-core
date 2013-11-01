@@ -70,10 +70,10 @@ class Tools
 
 
 
-    public static function staticResponse($file)
+    public static function staticResponse($file, $contents = null)
     {
         $last_modified = filemtime($file);
-        $contents = file_get_contents($file);
+        $contents = $contents ? $contents : file_get_contents($file);
         $etag = md5($contents);
 
         return new Response(
