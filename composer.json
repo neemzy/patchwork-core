@@ -25,6 +25,7 @@
         "twbs/bootstrap": "3.0.0",
         "leafo/lessphp": "0.4.*@dev",
         "ajbdev/requirejs": "dev-master",
+        "nick4fake/jsmin": "dev-master",
         "neemzy/environ": "dev-master"
     },
 
