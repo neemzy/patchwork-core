@@ -24,6 +24,7 @@
         "sybio/image-workshop": "*",
         "twitter/bootstrap": "dev-master",
         "leafo/lessphp": "0.4.*@dev",
+        "ajbdev/requirejs": "dev-master",
         "neemzy/environ": "dev-master"
     },
 
