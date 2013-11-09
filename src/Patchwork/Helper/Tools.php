@@ -70,6 +70,13 @@ class Tools
 
 
 
+    public static function pinterest($url, $media)
+    {
+        return 'http://pinterest.com/pin/create/button/?url='.rawurlencode($url).'&amp;media='.rawurlencode($media).'" onclick="window.open(this.href, \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=750,height=316\');return false';
+    }
+
+
+
     public static function staticResponse($file, $contents = null)
     {
         $last_modified = filemtime($file);
