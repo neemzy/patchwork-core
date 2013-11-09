@@ -58,7 +58,7 @@ class ApiController implements ControllerProviderInterface
         $ctrl->get(
             '/{id}',
             function ($id) use ($app, $class) {
-                $code = !! ($data = R::findAndExport($class, 'id = ?', array($id)));
+                $code = ($data = R::findAndExport($class, 'id = ?', array($id))) ? 200 : 404;
                 return Tools::jsonResponse($data);
             }
         )->bind('api.'.$class.'.getOne')->assert('id', '\d+');
