@@ -41,7 +41,7 @@ class ApiController implements ControllerProviderInterface
 
 
 
-        // Get list
+        // Read list
 
         $ctrl->get(
             '/',
@@ -49,11 +49,11 @@ class ApiController implements ControllerProviderInterface
                 $data = R::findAndExport($class, 1);
                 return Tools::jsonResponse($data);
             }
-        )->bind('api.'.$class.'.getAll');
+        )->bind('api.'.$class.'.list');
 
 
 
-        // Get item
+        // Read item
 
         $ctrl->get(
             '/{id}',
@@ -61,7 +61,7 @@ class ApiController implements ControllerProviderInterface
                 $data = R::findAndExport($class, 'id = ?', array($id));
                 return Tools::jsonResponse($data, ($data ? 200 : 404));
             }
-        )->bind('api.'.$class.'.getOne')->assert('id', '\d+');
+        )->bind('api.'.$class.'.read')->assert('id', '\d+');
 
 
 
