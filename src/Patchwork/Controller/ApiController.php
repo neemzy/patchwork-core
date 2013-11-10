@@ -10,7 +10,7 @@ use Patchwork\Helper\Tools;
 
 class ApiController implements ControllerProviderInterface
 {
-    private $class;
+    protected $class;
 
 
 
