@@ -20,7 +20,7 @@ class AdminController implements ControllerProviderInterface
 
     public static function getInstanceFor($class)
     {
-        $instance = new self();
+        $instance = new static();
         $instance->class = $class;
 
         return $instance;
