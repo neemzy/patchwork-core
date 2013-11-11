@@ -2,61 +2,14 @@
 
 namespace Patchwork\Controller;
 
-use Silex\Application;
-use Silex\ControllerProviderInterface;
-use Silex\ControllerCollection;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Constraints as Assert;
-use PHPImageWorkshop\ImageWorkshop;
 use Patchwork\Helper\RedBean as R;
 use Patchwork\Helper\Exception;
 
-class AdminController implements ControllerProviderInterface
+class AdminController extends AbstractController
 {
-    private $class;
-
-
-
-    public static function getInstanceFor($class)
+    protected function route($app, $class = null)
     {
-        $instance = new static();
-        $instance->class = $class;
-
-        return $instance;
-    }
-
-
-
-    public function connect(Application $app)
-    {
-        return $this->route(
-            $app,
-            function () use ($app) {
-                $username = $app['request']->server->get('PHP_AUTH_USER', false);
-                $password = $app['request']->server->get('PHP_AUTH_PW');
-
-                if ((! $username || ! $password) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
-                    list($username, $password) = explode(':', base64_decode($matches[1]));
-                    $username = strip_tags($username);
-                    $password = strip_tags($password);
-                }
-
-                if (($username != ADMIN_USER) || ($password != ADMIN_PASS)) {
-                    $response = new Response();
-                    $response->headers->set('WWW-Authenticate', sprintf('Basic realm="%s"', 'Administration'));
-                    $response->setStatusCode(401, 'Please sign in.');
-                    return $response;
-                }
-            }
-        );
-    }
-
-
-
-    protected function route($app, $auth, $class = null)
-    {
-        $ctrl = $app['controllers_factory'];
+        $ctrl = parent::route($app);
         
         if ($class === null) {
             $class = $this->class;
@@ -74,7 +27,7 @@ class AdminController implements ControllerProviderInterface
                     array($class.'s' => R::findAll($class, (R::typeHasField($class, 'position') ? 'ORDER BY position ASC' : '')))
                 );
             }
-        )->bind($class.'.list')->before($auth);
+        )->bind($class.'.list')->before($this->auth);
 
 
 
@@ -96,7 +49,7 @@ class AdminController implements ControllerProviderInterface
                 R::store($bean);
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
-        )->bind($class.'.move')->assert('id', '\d+')->assert('up', '0|1')->before($auth);
+        )->bind($class.'.move')->assert('id', '\d+')->assert('up', '0|1')->before($this->auth);
 
 
 
@@ -127,7 +80,7 @@ class AdminController implements ControllerProviderInterface
 
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
-        )->bind($class.'.clone')->assert('id', '\d+')->before($auth);
+        )->bind($class.'.clone')->assert('id', '\d+')->before($this->auth);
 
 
 
@@ -142,7 +95,7 @@ class AdminController implements ControllerProviderInterface
 
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
-        )->bind($class.'.toggle')->assert('id', '\d+')->before($auth);
+        )->bind($class.'.toggle')->assert('id', '\d+')->before($this->auth);
 
 
 
@@ -168,7 +121,7 @@ class AdminController implements ControllerProviderInterface
                 R::trash($bean);
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
-        )->bind($class.'.delete')->assert('id', '\d+')->before($auth);
+        )->bind($class.'.delete')->assert('id', '\d+')->before($this->auth);
 
 
 
@@ -179,7 +132,7 @@ class AdminController implements ControllerProviderInterface
             function ($id) use ($app, $class) {
                 return $app['twig']->render('admin/'.$class.'/post.twig', array($class => R::load($class, $id)));
             }
-        )->bind($class.'.post')->assert('id', '\d+')->value('id', 0)->before($auth);
+        )->bind($class.'.post')->assert('id', '\d+')->value('id', 0)->before($this->auth);
 
 
 
@@ -187,7 +140,7 @@ class AdminController implements ControllerProviderInterface
 
         $ctrl->post(
             '/post/{id}',
-            function (Request $request, $id) use ($app, $class) {
+            function ($id) use ($app, $class) {
                 $app['session']->getFlashBag()->clear();
                 $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
 
@@ -195,7 +148,7 @@ class AdminController implements ControllerProviderInterface
                 $asserts = $bean->getAsserts();
                 
                 foreach ($asserts as $key => $assert) {
-                    $bean->$key = $request->get($key);
+                    $bean->$key = $app['request']->get($key);
                 }
 
                 if ((R::typeHasField($class, 'position')) && (! $id)) {
@@ -220,7 +173,7 @@ class AdminController implements ControllerProviderInterface
                     return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));
                 }
 
-                if ((R::typeHasField($class, 'image')) && ($request->files->has('image')) && ($image = $request->files->get('image'))) {
+                if ((R::typeHasField($class, 'image')) && ($app['request']->files->has('image')) && ($image = $app['request']->files->get('image'))) {
                     if ($error = $image->getError()) {
                         $message = 'Une erreur est survenue lors de l\'envoi du fichier';
 
@@ -254,7 +207,7 @@ class AdminController implements ControllerProviderInterface
 
                 return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $bean->id)));
             }
-        )->assert('id', '\d+')->value('id', 0)->before($auth);
+        )->assert('id', '\d+')->value('id', 0)->before($this->auth);
 
 
 
@@ -275,7 +228,7 @@ class AdminController implements ControllerProviderInterface
                 R::store($bean);
                 return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $id)));
             }
-        )->bind($class.'.delete_image')->assert('id', '\d+')->before($auth);
+        )->bind($class.'.delete_image')->assert('id', '\d+')->before($this->auth);
 
         
 

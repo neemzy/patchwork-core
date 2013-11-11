@@ -2,28 +2,17 @@
 
 namespace Patchwork\Controller;
 
-use Silex\Application;
-use Silex\ControllerProviderInterface;
-use Silex\ControllerCollection;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use JsMin\Minify as JSMin;
 use Patchwork\Helper\Tools;
 
-class FrontController implements ControllerProviderInterface
+class FrontController extends AbstractController
 {
-    public function connect(Application $app)
-    {
-        return $this->route($app);
-    }
-
-
-
     protected function route($app)
     {
-        $ctrl = $app['controllers_factory'];
+        $ctrl = parent::route($app);
 
 
 

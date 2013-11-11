@@ -2,38 +2,30 @@
 
 namespace Patchwork\Controller;
 
-use Silex\Application;
-use Silex\ControllerProviderInterface;
-use Silex\ControllerCollection;
 use Patchwork\Helper\RedBean as R;
+use Patchwork\Helper\Exception;
 use Patchwork\Helper\Tools;
 
-class ApiController implements ControllerProviderInterface
+class ApiController extends AbstractController
 {
     protected $class;
+    protected $readonly;
 
 
 
-    public static function getInstanceFor($class)
+    public static function getInstanceFor($class, $readonly = false)
     {
-        $instance = new static();
-        $instance->class = $class;
+        $instance = parent::getInstanceFor($class);
+        $instance->readonly = $readonly;
 
         return $instance;
     }
 
 
 
-    public function connect(Application $app)
-    {
-        return $this->route($app);
-    }
-
-
-
     protected function route($app, $class = null)
     {
-        $ctrl = $app['controllers_factory'];
+        $ctrl = parent::route($app);
         
         if ($class === null) {
             $class = $this->class;
@@ -70,7 +62,7 @@ class ApiController implements ControllerProviderInterface
 
         // Create/Update
 
-        $ctrl->match(
+        $this->readonly && $ctrl->match(
             '/{id}',
             function ($id) use ($app, $class) {
                 $id = +$id;
@@ -91,7 +83,7 @@ class ApiController implements ControllerProviderInterface
                     $bean->position = $position + 1;
                 }
 
-                $code = $id ? 202 : 201;
+                $code = $id ? 200 : 201;
 
                 try {
                     R::store($bean);
@@ -114,7 +106,7 @@ class ApiController implements ControllerProviderInterface
 
         // Delete
 
-        $ctrl->delete(
+        $this->readonly && $ctrl->delete(
             '/{id}',
             function ($id) use ($app, $class) {
                 $bean = R::load($class, $id);
