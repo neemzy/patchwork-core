@@ -3,6 +3,7 @@
 namespace Patchwork\Controller;
 
 use Silex\ControllerProviderInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Patchwork\App;
 
 abstract class AbstractController implements ControllerProviderInterface
