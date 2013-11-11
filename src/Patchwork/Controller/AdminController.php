@@ -38,15 +38,18 @@ class AdminController extends AbstractController
             function ($id, $up) use ($app, $class) {
                 $bean = R::load($class, $id);
 
-                if (($up) && ($bean->position > 1)) {
-                    $bean->position--;
-                    R::exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', array($bean->position));
-                } else if ((! $up) && ($bean->position < R::count($class))) {
-                    $bean->position++;
-                    R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', array($bean->position));
-                }
+                if ($bean->hasField('position')) {
+                    if ($up && ($bean->position > 1)) {
+                        $bean->position--;
+                        R::exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', array($bean->position));
+                    } else if ((! $up) && ($bean->position < R::count($class))) {
+                        $bean->position++;
+                        R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', array($bean->position));
+                    }
 
-                R::store($bean);
+                    R::store($bean);
+                }
+                
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
         )->bind($class.'.move')->assert('id', '\d+')->assert('up', '0|1')->before($this->auth);
@@ -63,15 +66,10 @@ class AdminController extends AbstractController
 
                 $bean = R::load($class, $id);
                 $clone = R::dup($bean);
-
-                if (R::typeHasField($class, 'position')) {
-                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
-                    $clone->position = $position + 1;
-                }
-
                 R::store($clone);
 
-                if ((R::typeHasField($class, 'image')) && ($bean->image)) {
+                // Image cloning
+                if ($bean->hasField('image') && $bean->image) {
                     $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
                     $clone->image = $clone->id.'.'.array_pop(explode('.', $bean->image));
                     R::store($clone);
@@ -90,8 +88,11 @@ class AdminController extends AbstractController
             '/toggle/{id}',
             function ($id) use ($app, $class) {
                 $bean = R::load($class, $id);
-                $bean->active = !$bean->active;
-                R::store($bean);
+
+                if ($bean->hasField('active ')) {
+                    $bean->active = !$bean->active;
+                    R::store($bean);
+                }
 
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
@@ -108,17 +109,8 @@ class AdminController extends AbstractController
                 $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
 
                 $bean = R::load($class, $id);
-
-                if (R::typeHasField($class, 'position')) {
-                    R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position > ?', array($bean->position));
-                }
-
-                if (R::typeHasField($class, 'image')) {
-                    $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
-                    unlink($dir.$bean->image);
-                }
-
                 R::trash($bean);
+
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
         )->bind($class.'.delete')->assert('id', '\d+')->before($this->auth);
@@ -151,11 +143,6 @@ class AdminController extends AbstractController
                     $bean->$key = $app['request']->get($key);
                 }
 
-                if ((R::typeHasField($class, 'position')) && (! $id)) {
-                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
-                    $bean->position = $position + 1;
-                }
-
                 try {
                     R::store($bean);
                 } catch (Exception $e) {
@@ -173,7 +160,8 @@ class AdminController extends AbstractController
                     return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));
                 }
 
-                if ((R::typeHasField($class, 'image')) && ($app['request']->files->has('image')) && ($image = $app['request']->files->get('image'))) {
+                // Image upload
+                if ($bean->hasField('image') && $app['request']->files->has('image') && ($image = $app['request']->files->get('image'))) {
                     if ($error = $image->getError()) {
                         $message = 'Une erreur est survenue lors de l\'envoi du fichier';
 
@@ -216,16 +204,19 @@ class AdminController extends AbstractController
         $ctrl->get(
             '/delete_image/{id}',
             function ($id) use ($app, $class) {
-                $app['session']->getFlashBag()->clear();
-                $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
-
                 $bean = R::load($class, $id);
 
-                $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
-                unlink($dir.$bean->image);
-                $bean->image = null;
+                if ($bean->hasField('image') && $bean->image) {
+                    $app['session']->getFlashBag()->clear();
+                    $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
 
-                R::store($bean);
+                    $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
+                    unlink($dir.$bean->image);
+
+                    $bean->image = null;
+                    R::store($bean);
+                }
+                
                 return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $id)));
             }
         )->bind($class.'.delete_image')->assert('id', '\d+')->before($this->auth);

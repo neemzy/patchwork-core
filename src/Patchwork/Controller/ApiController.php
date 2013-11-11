@@ -78,11 +78,6 @@ class ApiController extends AbstractController
                     $bean->$key = $app['request']->get($key);
                 }
 
-                if ((R::typeHasField($class, 'position')) && (! $id)) {
-                    $position = R::getCell('SELECT position FROM '.$class.' ORDER BY position DESC LIMIT 1');
-                    $bean->position = $position + 1;
-                }
-
                 $code = $id ? 200 : 201;
 
                 try {
@@ -113,15 +108,6 @@ class ApiController extends AbstractController
 
                 if (! $bean->id) {
                     $app->abort(404);
-                }
-
-                if (R::typeHasField($class, 'position')) {
-                    R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position > ?', array($bean->position));
-                }
-
-                if (R::typeHasField($class, 'image')) {
-                    $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
-                    unlink($dir.$bean->image);
                 }
 
                 R::trash($bean);
