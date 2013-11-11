@@ -89,7 +89,7 @@ class AdminController extends AbstractController
             function ($id) use ($app, $class) {
                 $bean = R::load($class, $id);
 
-                if ($bean->hasField('active ')) {
+                if ($bean->hasField('active')) {
                     $bean->active = !$bean->active;
                     R::store($bean);
                 }
