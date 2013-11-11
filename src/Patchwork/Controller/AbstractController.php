@@ -49,7 +49,7 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
 
-    public function connect(App $app)
+    public function connect(Silex\Application $app)
     {
         return $this->route($app);
     }
