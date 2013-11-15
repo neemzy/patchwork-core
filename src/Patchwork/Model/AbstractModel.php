@@ -49,11 +49,19 @@ abstract class AbstractModel extends \RedBean_SimpleModel
             $field = strip_tags($field);
         }
 
+        $asserts = $this->getAsserts();
+
+        foreach ($asserts as $key => $assert) {
+            if ($assert === null) {
+                unset($asserts[$key]);
+            }
+        }
+
         $errors = App::getInstance()['validator']->validateValue(
             $fields,
             new Assert\Collection(
                 array(
-                    'fields' => $this->getAsserts(),
+                    'fields' => $asserts,
                     'allowExtraFields' => true
                 )
             )
