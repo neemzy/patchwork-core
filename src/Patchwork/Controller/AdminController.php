@@ -70,7 +70,7 @@ class AdminController extends AbstractController
 
                 // Image cloning
                 if ($bean->hasField('image') && $bean->image) {
-                    $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
+                    $dir = $bean->getImageDir();
                     $clone->image = $clone->id.'.'.array_pop(explode('.', $bean->image));
                     R::store($clone);
                     copy($dir.$bean->image, $dir.$clone->image);
@@ -109,6 +109,12 @@ class AdminController extends AbstractController
                 $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
 
                 $bean = R::load($class, $id);
+
+                // Image deletion
+                if ($bean->hasField('image') && $bean->image) {
+                    unlink($bean->getImageDir().$bean->image);
+                }
+
                 R::trash($bean);
 
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
@@ -179,7 +185,7 @@ class AdminController extends AbstractController
                             $app['session']->getFlashBag()->set('error', true);
                             $app['session']->getFlashBag()->set('message', 'Seuls les formats JPEG, PNG et GIF sont autorisés');
                         } else {
-                            $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
+                            $dir = $bean->getImageDir();
                             $file = $bean->id.'.'.$extension;
 
                             if ($bean->image) {
@@ -187,7 +193,7 @@ class AdminController extends AbstractController
                             }
 
                             $image->move($dir, $file);
-                            $bean->setImage($dir, $file);
+                            $bean->setImage($file);
                             R::store($bean);
                         }
                     }
@@ -210,10 +216,9 @@ class AdminController extends AbstractController
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
 
-                    $dir = BASE_PATH.'/public/assets/img/'.$class.'/';
-                    unlink($dir.$bean->image);
-
+                    unlink($bean->getImageDir().$bean->image);
                     $bean->image = null;
+
                     R::store($bean);
                 }
                 

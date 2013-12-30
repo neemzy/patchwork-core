@@ -111,7 +111,6 @@ class ApiController extends AbstractController
                 }
 
                 R::trash($bean);
-
                 return Tools::jsonResponse(null, 204);
             }
         )->bind('api.'.$class.'.delete')->assert('id', '\d+');

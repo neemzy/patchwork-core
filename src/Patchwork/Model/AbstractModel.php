@@ -27,7 +27,14 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    public function setImage($dir, $file)
+    public function getImageDir()
+    {
+        return BASE_PATH.'/upload/'.$this->getType().'/';
+    }
+
+
+
+    public function setImage($file)
     {
         $this->image = $file;
     }
