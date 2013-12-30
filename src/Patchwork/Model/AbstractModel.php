@@ -29,7 +29,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
     public function getImageDir()
     {
-        return BASE_PATH.'/upload/'.$this->getType().'/';
+        return BASE_PATH.'/public/upload/'.$this->getType().'/';
     }
 
 
