@@ -61,20 +61,21 @@ class AdminController extends AbstractController
         $ctrl->get(
             '/clone/{id}',
             function ($id) use ($app, $class) {
-                $app['session']->getFlashBag()->clear();
-                $app['session']->getFlashBag()->set('message', 'La duplication a bien été effectuée');
-
                 $bean = R::load($class, $id);
                 $clone = R::dup($bean);
                 R::store($clone);
 
                 // Image cloning
                 if ($bean->hasField('image') && $bean->image) {
-                    $dir = $bean->getImageDir();
                     $clone->image = $clone->id.'.'.array_pop(explode('.', $bean->image));
                     R::store($clone);
+
+                    $dir = $bean->getImageDir();
                     copy($dir.$bean->image, $dir.$clone->image);
                 }
+
+                $app['session']->getFlashBag()->clear();
+                $app['session']->getFlashBag()->set('message', 'La duplication a bien été effectuée');
 
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
@@ -105,9 +106,6 @@ class AdminController extends AbstractController
         $ctrl->get(
             '/delete/{id}',
             function ($id) use ($app, $class) {
-                $app['session']->getFlashBag()->clear();
-                $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
-
                 $bean = R::load($class, $id);
 
                 // Image deletion
@@ -116,6 +114,9 @@ class AdminController extends AbstractController
                 }
 
                 R::trash($bean);
+
+                $app['session']->getFlashBag()->clear();
+                $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
 
                 return $app->redirect($app['url_generator']->generate($class.'.list'));
             }
@@ -139,9 +140,6 @@ class AdminController extends AbstractController
         $ctrl->post(
             '/post/{id}',
             function ($id) use ($app, $class) {
-                $app['session']->getFlashBag()->clear();
-                $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
-
                 $bean = R::load($class, $id);
                 $asserts = $bean->getAsserts();
                 
@@ -151,51 +149,59 @@ class AdminController extends AbstractController
 
                 try {
                     R::store($bean);
+
+                    // Image upload
+                    if ($bean->hasField('image') && $app['request']->files->has('image') && ($image = $app['request']->files->get('image'))) {
+                        if ($error = $image->getError()) {
+                            $message = 'Une erreur est survenue lors de l\'envoi du fichier';
+
+                            switch ($error) {
+                                case UPLOAD_ERR_INI_SIZE:
+                                case UPLOAD_ERR_FORM_SIZE:
+                                    $message = 'Le fichier sélectionné est trop lourd';
+                                    break;
+                            }
+                        } else if (! in_array($extension = strtolower($image->guessExtension()), array('jpeg', 'png', 'gif'))) {
+                            $message = 'Seuls les formats JPEG, PNG et GIF sont autorisés';
+                        }
+
+                        if (isset($message)) {
+                            throw new Exception($message);
+                        }
+
+                        $dir = $bean->getImageDir();
+                        $file = $bean->id.'.'.$extension;
+
+                        if ($bean->image) {
+                            unlink($dir.$bean->image);
+                        }
+
+                        $image->move($dir, $file);
+                        $bean->setImage($file);
+
+                        R::store($bean);
+
+                        $app['session']->getFlashBag()->clear();
+                        $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
+                    }
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->set('error', true);
-                    $message = '<p>'.$e->getMessage().'</p><ul>';
-                    $errors = $e->getDetails();
+                    $message = '<p>'.$e->getMessage().'</p>';
 
-                    foreach ($errors as $error) {
-                        $message .= '<li><strong>'.$app['translator']->trans($error->getPropertyPath()).'</strong> : '.$app['translator']->trans($error->getMessage()).'</li>';
+                    if (count($errors = $e->getDetails())) {
+                        $message .= '<ul>';
+
+                        foreach ($errors as $error) {
+                            $message .= '<li><strong>'.$app['translator']->trans($error->getPropertyPath()).'</strong> : '.$app['translator']->trans($error->getMessage()).'</li>';
+                        }
+
+                        $message .= '</ul>';
                     }
 
-                    $message .= '</ul>';
                     $app['session']->getFlashBag()->set('message', $message);
 
-                    return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));
-                }
-
-                // Image upload
-                if ($bean->hasField('image') && $app['request']->files->has('image') && ($image = $app['request']->files->get('image'))) {
-                    if ($error = $image->getError()) {
-                        $message = 'Une erreur est survenue lors de l\'envoi du fichier';
-
-                        switch ($error) {
-                            case UPLOAD_ERR_INI_SIZE:
-                            case UPLOAD_ERR_FORM_SIZE:
-                                $message = 'Le fichier sélectionné est trop lourd';
-                                break;
-                        }
-
-                        $app['session']->getFlashBag()->set('error', true);
-                        $app['session']->getFlashBag()->set('message', $message);
-                    } else {
-                        if (! in_array($extension = strtolower($image->guessExtension()), array('jpeg', 'png', 'gif'))) {
-                            $app['session']->getFlashBag()->set('error', true);
-                            $app['session']->getFlashBag()->set('message', 'Seuls les formats JPEG, PNG et GIF sont autorisés');
-                        } else {
-                            $dir = $bean->getImageDir();
-                            $file = $bean->id.'.'.$extension;
-
-                            if ($bean->image) {
-                                unlink($dir.$bean->image);
-                            }
-
-                            $image->move($dir, $file);
-                            $bean->setImage($file);
-                            R::store($bean);
-                        }
+                    if (! $bean->id) {
+                        return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));
                     }
                 }
 
@@ -213,13 +219,13 @@ class AdminController extends AbstractController
                 $bean = R::load($class, $id);
 
                 if ($bean->hasField('image') && $bean->image) {
-                    $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
-
                     unlink($bean->getImageDir().$bean->image);
                     $bean->image = null;
 
                     R::store($bean);
+
+                    $app['session']->getFlashBag()->clear();
+                    $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
                 }
                 
                 return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $id)));
