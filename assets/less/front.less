@@ -31,6 +31,9 @@ body {
     color: @font-color;
 }
 
+a { text-decoration: none; }
+a, button { cursor: pointer; }
+
 input, button, select, textarea {
     font-family: inherit;
     font-size: inherit;
@@ -39,8 +42,7 @@ input, button, select, textarea {
 
 input[type=checkbox] { vertical-align: -2px; }
 input[type=radio] { vertical-align: -3px; }
-button, a { cursor: pointer; }
-a { text-decoration: none; }
+input, textarea { .placeholder(); }
 textarea { .resizable(none); }
 textarea, sup, sub { vertical-align: baseline; }
 sup { bottom: 1ex; }
@@ -60,21 +62,13 @@ table { border-collapse: collapse; }
 ul { list-style-type: none; }
 ul, ol { list-style-position: inside; }
 canvas { -ms-touch-action: double-tap-zoom; }
-::-webkit-input-placeholder { .placeholder-defaults(); }
-::-moz-placeholder { .placeholder-defaults(); }
 :-moz-ui-invalid { .box-shadow(none); }
 ::-moz-focus-inner { border: none; }
-:-ms-input-placeholder { .placeholder-defaults(); }
 @-ms-viewport { width: device-width; }
 
 
 
 /** Mixins **/
-
-.placeholder-defaults() {
-    .opacity(1);
-    color: @placeholder;
-}
 
 .font-face(@name, @file, @path: '../font/') {
     font-family: @name;
