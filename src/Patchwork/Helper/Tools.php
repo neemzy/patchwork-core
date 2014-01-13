@@ -77,24 +77,6 @@ class Tools
 
 
 
-    public static function staticResponse($file, $contents = null)
-    {
-        $last_modified = filemtime($file);
-        $contents = $contents ? $contents : file_get_contents($file);
-        $etag = md5($contents);
-
-        return new Response(
-            $contents,
-            (@strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == $last_modified) || (trim($_SERVER['HTTP_IF_NONE_MATCH']) == $etag) ? 304 : 200,
-            array(
-                'Last-Modified' => gmdate('D, d M Y H:i:s', $last_modified).' GMT',
-                'Etag' => $etag
-            )
-        );
-    }
-
-
-
     public static function jsonResponse($data, $code = 200, $options = JSON_NUMERIC_CHECK)
     {
         return new Response(
