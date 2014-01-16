@@ -1,12 +1,13 @@
 @import '../../../../../node_modules/bootstrap/less/variables.less';
 @import '../../../../../node_modules/bootstrap/less/mixins.less';
 @import '../../../../../node_modules/bootstrap/less/alerts.less';
-@import 'alerts.less';
+@import 'hacks.less';
 
 /** Reset **/
 
 *, :before, :after {
-    .box-sizing(border-box);
+    box-sizing: border-box;
+    appearance: none;
     margin: 0;
     padding: 0;
     outline: none;
