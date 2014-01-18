@@ -1,7 +1,6 @@
 @import '../../../../../node_modules/bootstrap/less/variables.less';
 @import '../../../../../node_modules/bootstrap/less/mixins.less';
 @import '../../../../../node_modules/bootstrap/less/alerts.less';
-@import 'hacks.less';
 
 /** Reset **/
 
@@ -22,11 +21,11 @@ html {
 html, body { width: 100%; }
 
 body {
-    .font(@font-size);
+    .font-size(@font-size);
     min-width: 320px;
     min-height: 100%;
     background: @background none;
-    font-family: @font-face;
+    font-family: @font-family;
     -webkit-font-smoothing: antialiased;
     -webkit-text-size-adjust: 100%;
     color: @font-color;
@@ -67,6 +66,7 @@ canvas { -ms-touch-action: double-tap-zoom; }
 :-moz-ui-invalid { .box-shadow(none); }
 ::-moz-focus-inner { border: none; }
 @-ms-viewport { width: device-width; }
+[class^=alert-] { .alert(); }
 
 
 
@@ -101,7 +101,16 @@ canvas { -ms-touch-action: double-tap-zoom; }
     &:hover { background-position: -@xpos bottom; }
 }
 
-.font(@size) {
+.font-size(@size) {
     font-size: @size * 1px;
     font-size: @size / 10rem;
+}
+
+.font-reset() {
+    font-weight: normal !important;
+    font-style: normal !important;
+}
+
+.font-reset(@font-family) when (@font-family) {
+    font-family: @font-family;
 }
