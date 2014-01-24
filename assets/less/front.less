@@ -22,6 +22,7 @@ html, body { width: 100%; }
 
 body {
     .font-size(@font-size);
+    .text-size-adjust(100%);
     min-width: 320px;
     min-height: 100%;
     background: @background none;
@@ -110,4 +111,11 @@ canvas { -ms-touch-action: double-tap-zoom; }
     font-family: @font-family;
     font-weight: normal !important;
     font-style: normal !important;
+}
+
+.text-size-adjust(@value) {
+    -webkit-text-size-adjust: @value;
+    -moz-text-size-adjust: @value;
+    -ms-text-size-adjust: @value;
+    text-size-adjust: @value;
 }
