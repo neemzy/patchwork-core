@@ -2,7 +2,6 @@
 
 namespace Patchwork\Controller;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use Patchwork\Helper\RedBean as R;
 use Patchwork\Helper\Exception;
 
