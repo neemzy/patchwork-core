@@ -1,6 +1,7 @@
 {
     "name": "neemzy/patchwork-core",
-    "description": "Core classes for Patchwork",
+    "description": "Core files for Patchwork",
+    "minimum-stability": "dev",
 
     "authors": [
         {
@@ -22,7 +23,7 @@
         "gabordemooij/redbean": "*",
         "entea/silex-twig-simple-asset-extension": "dev-master",
         "sybio/image-workshop": "*",
-        "neemzy/environ": "@dev"
+        "neemzy/environ": "dev-master"
     },
 
     "autoload": {
