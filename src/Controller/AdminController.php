@@ -147,6 +147,8 @@ class AdminController extends AbstractController
                     $bean->$key = $app['request']->get($key);
                 }
 
+                $app['session']->getFlashBag()->clear();
+
                 try {
                     R::store($bean);
 
@@ -180,10 +182,9 @@ class AdminController extends AbstractController
                         $bean->setImage($file);
 
                         R::store($bean);
-
-                        $app['session']->getFlashBag()->clear();
-                        $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
                     }
+
+                    $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
                 } catch (Exception $e) {
                     $app['session']->getFlashBag()->set('error', true);
                     $message = '<p>'.$e->getMessage().'</p>';
