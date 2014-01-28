@@ -26,10 +26,8 @@
     },
 
     "autoload": {
-        "psr-0": {
-            "Patchwork": "src/"
+        "psr-4": {
+            "Patchwork\\": "src/"
         }
-    },
-
-    "minimum-stability": "dev"
+    }
 }
