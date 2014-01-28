@@ -22,7 +22,7 @@
         "gabordemooij/redbean": "*",
         "entea/silex-twig-simple-asset-extension": "dev-master",
         "sybio/image-workshop": "*",
-        "neemzy/environ": "dev-master"
+        "neemzy/environ": "@dev"
     },
 
     "autoload": {
