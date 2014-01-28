@@ -2,6 +2,7 @@
 
 namespace Patchwork\Controller;
 
+use Symfony\Component\Validator\Constraints as Assert;
 use Patchwork\Helper\RedBean as R;
 use Patchwork\Helper\Exception;
 
@@ -141,7 +142,7 @@ class AdminController extends AbstractController
             '/post/{id}',
             function ($id) use ($app, $class) {
                 $bean = R::load($class, $id);
-                $asserts = $bean->getAsserts();
+                $asserts = $bean->getAsserts(! $bean->id);
                 
                 foreach ($asserts as $key => $assert) {
                     $bean->$key = $app['request']->get($key);
