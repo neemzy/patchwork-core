@@ -18,22 +18,24 @@ abstract class AbstractController implements ControllerProviderInterface
         $this->auth = function () {
             $app = App::getInstance();
 
-            $username = $app['request']->server->get('PHP_AUTH_USER', false);
-            $password = $app['request']->server->get('PHP_AUTH_PW');
+            if (! $app['debug']) {
+                $username = $app['request']->server->get('PHP_AUTH_USER', false);
+                $password = $app['request']->server->get('PHP_AUTH_PW');
 
-            if ((! $username || ! $password) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
-                list($username, $password) = explode(':', base64_decode($matches[1]));
+                if ((! $username || ! $password) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
+                    list($username, $password) = explode(':', base64_decode($matches[1]));
 
-                $username = strip_tags($username);
-                $password = strip_tags($password);
-            }
+                    $username = strip_tags($username);
+                    $password = strip_tags($password);
+                }
 
-            if (($username != ADMIN_USER) || ($password != ADMIN_PASS)) {
-                $response = new Response();
-                $response->headers->set('WWW-Authenticate', sprintf('Basic realm="%s"', 'Administration'));
-                $response->setStatusCode(401, 'Please sign in.');
+                if (($username != ADMIN_USER) || ($password != ADMIN_PASS)) {
+                    $response = new Response();
+                    $response->headers->set('WWW-Authenticate', sprintf('Basic realm="%s"', 'Administration'));
+                    $response->setStatusCode(401, 'Please sign in.');
 
-                return $response;
+                    return $response;
+                }
             }
         };
     }
