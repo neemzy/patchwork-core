@@ -201,7 +201,7 @@ class AdminController extends AbstractController
 
                     $app['session']->getFlashBag()->set('message', $message);
 
-                    if (! $bean->id) {
+                    if ($bean->id == $id) {
                         return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));
                     }
                 }
