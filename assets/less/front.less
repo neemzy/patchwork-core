@@ -103,8 +103,11 @@ canvas { -ms-touch-action: double-tap-zoom; }
 }
 
 .font-size(@size) {
-    font-size: @size * 1px;
-    font-size: @size / 10rem;
+    font-size: unit(@size / 10, rem);
+
+    .oldie & {
+        font-size: unit(@size, px);
+    }
 }
 
 .font-reset(@font-family: inherit) {
