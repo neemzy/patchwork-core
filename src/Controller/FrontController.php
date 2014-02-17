@@ -47,7 +47,7 @@ class FrontController extends AbstractController
                     return $app->redirect($root, 301);
                 }
 
-                return $app['twig']->render('front/home.twig');
+                return $app['twig']->render('front/partials/home.twig');
             }
         )->bind('home');
 
