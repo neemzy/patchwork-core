@@ -1,4 +1,4 @@
-@import '../../../../../node_modules/bootstrap/less/bootstrap.less';
+@import '../../../../../node_modules/bootstrap/less/bootstrap';
 
 @icon-font-path: '../font/';
 
@@ -9,7 +9,11 @@ body { padding: 50px 0; }
 
 .form-group {
     div { max-width: 100%; }
-    &.well img { max-width: 92%; }
+
+    &.well {
+        line-height: 34px;
+        img { max-width: 92%; }
+    }
 }
 
 .form-control {
