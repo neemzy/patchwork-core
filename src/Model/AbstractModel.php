@@ -75,6 +75,13 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
+    public function getAll()
+    {
+        return R::findAll($this->getType());
+    }
+
+
+
     public function update()
     {
         if ($this->hasField('position')) {
