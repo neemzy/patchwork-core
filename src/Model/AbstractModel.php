@@ -61,6 +61,13 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
+    public function getImagePath($absolute = true)
+    {
+        return $this->getImageDir($absolute).$this->image;
+    }
+
+
+
     public function setImage($file)
     {
         $this->image = $file;
