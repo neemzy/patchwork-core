@@ -116,8 +116,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         }
 
         if ($this->hasField('image') && $this->image) {
-            $dir = BASE_PATH.'/public/assets/img/'.$this->getType().'/';
-            unlink($dir.$this->image);
+            unlink($this->getImagePath());
         }
     }
 }
