@@ -213,19 +213,7 @@ class AdminController extends AbstractController
                         $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
                     } catch (Exception $e) {
                         $app['session']->getFlashBag()->set('error', true);
-                        $message = '<p>'.$e->getMessage().'</p>';
-
-                        if (count($errors = $e->getDetails())) {
-                            $message .= '<ul>';
-
-                            foreach ($errors as $error) {
-                                $message .= '<li><strong>'.$app['translator']->trans($error->getPropertyPath()).'</strong> : '.$app['translator']->trans($error->getMessage()).'</li>';
-                            }
-
-                            $message .= '</ul>';
-                        }
-
-                        $app['session']->getFlashBag()->set('message', $message);
+                        $app['session']->getFlashBag()->set('message', $e->getHTML());
 
                         if ($bean->id == $id) {
                             return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));

@@ -20,4 +20,24 @@ class Exception extends \Exception
     {
         return $this->details;
     }
+
+
+
+    public function getHTML()
+    {
+        $html = '<p>'.$this->getMessage().'</p>';
+
+        if (count($errors = $this->getDetails())) {
+            $app = App::getInstance();
+            $html .= '<ul>';
+
+            foreach ($errors as $error) {
+                $html .= '<li><b>'.$app['translator']->trans($error->getPropertyPath()).'</b> : '.$app['translator']->trans($error->getMessage()).'</li>';
+            }
+
+            $html .= '</ul>';
+        }
+
+        return $html;
+    }
 }
