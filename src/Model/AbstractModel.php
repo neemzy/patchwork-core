@@ -54,9 +54,9 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    public function getImageDir()
+    public function getImageDir($absolute = true)
     {
-        return BASE_PATH.'/public/upload/'.$this->getType().'/';
+        return ($absolute ? BASE_PATH : '').'/public/upload/'.$this->getType().'/';
     }
 
 
