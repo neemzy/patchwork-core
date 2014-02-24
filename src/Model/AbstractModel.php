@@ -84,13 +84,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
     public function update()
     {
-        if ($this->hasField('position')) {
-            if ((! $this->position) || ($this->position && count(R::find($this->getType(), 'position = ? AND id != ?', array($this->position, $this->id))))) {
-                $position = R::getCell('SELECT position FROM '.$this->getType().' ORDER BY position DESC LIMIT 1');
-                $this->position = $position + 1;
-            }
-        }
-
         $fields = $this->bean->export();
 
         foreach ($fields as &$field) {
@@ -118,10 +111,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
     public function delete()
     {
-        if ($this->hasField('position')) {
-            R::exec('UPDATE '.$this->getType().' SET position = position - 1 WHERE position > ?', array($this->position));
-        }
-
         if ($this->hasField('image') && $this->image) {
             unlink($this->getImagePath());
         }
