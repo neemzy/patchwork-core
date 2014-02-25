@@ -27,7 +27,5 @@ abstract class BaseModel extends AbstractModel
     {
         $this->listDelete();
         $this->imageDelete();
-
-        parent::delete();
     }
 }
