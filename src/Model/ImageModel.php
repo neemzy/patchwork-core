@@ -3,9 +3,9 @@
 namespace Patchwork\Model;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use \RedBean_Facade as R;
 use PHPImageWorkshop\ImageWorkshop;
 use Patchwork\App;
-use Patchwork\Helper\RedBean as R;
 use Patchwork\Helper\Exception;
 
 trait ImageModel

@@ -2,7 +2,7 @@
 
 namespace Patchwork\Controller;
 
-use Patchwork\Helper\RedBean as R;
+use \RedBean_Facade as R;
 use Patchwork\Helper\Exception;
 use Patchwork\Helper\Tools;
 
@@ -35,96 +35,110 @@ class ApiController extends AbstractController
 
         // Read list
 
-        $ctrl->get(
-            '/',
-            function () use ($app, $class) {
-                $data = R::findAndExport($class, 1);
-                return Tools::jsonResponse($data);
-            }
-        )->bind('api.'.$class.'.list');
+        $ctrl
+            ->get(
+                '/',
+                function () use ($app, $class) {
+                    $data = R::findAndExport($class, 1);
+                    return Tools::jsonResponse($data);
+                }
+            )
+            ->bind('api.'.$class.'.list');
 
 
 
         // Read item
 
-        $ctrl->get(
-            '/{id}',
-            function ($id) use ($app, $class) {
-                if (! $data = R::findAndExport($class, 'id = ?', array($id))) {
-                    $app->abort(404);
-                }
+        $ctrl
+            ->get(
+                '/{id}',
+                function ($id) use ($app, $class) {
+                    if (! $data = R::findAndExport($class, 'id = ?', array($id))) {
+                        $app->abort(404);
+                    }
 
-                return Tools::jsonResponse($data);
-            }
-        )->bind('api.'.$class.'.read')->assert('id', '\d+');
+                    return Tools::jsonResponse($data);
+                }
+            )
+            ->bind('api.'.$class.'.read')
+            ->assert('id', '\d+');
 
 
 
         // Create/Update
 
-        $this->readonly && $ctrl->match(
-            '/{id}',
-            function ($id) use ($app, $class) {
-                $id = +$id;
-                $bean = R::load($class, $id);
+        $this->readonly && $ctrl
+            ->match(
+                '/{id}',
+                function ($id) use ($app, $class) {
+                    $id = +$id;
+                    $bean = R::load($class, $id);
 
-                if ($id != +$bean_id) {
-                    $app->abort(404);
-                }
-
-                $asserts = $bean->getAsserts();
-                
-                foreach ($asserts as $key => $assert) {
-                    $bean->$key = $app['request']->get($key);
-                }
-
-                $code = $id ? 200 : 201;
-
-                try {
-                    R::store($bean);
-                    $response = $bean->export();
-                } catch (Exception $e) {
-                    $errors = $e->getDetails();
-                    $response = array('errors' => array());
-                    $code = 400;
-
-                    foreach ($errors as $error) {
-                        $response['errors'][$error->getPropertyPath()] = $app['translator']->trans($error->getMessage());
+                    if ($id != +$bean_id) {
+                        $app->abort(404);
                     }
-                }
 
-                return Tools::jsonResponse($response, $code);
-            }
-        )->bind('api.'.$class.'.post')->assert('id', '\d*')->method('POST|PUT');
+                    $asserts = $bean->getAsserts();
+                    
+                    foreach ($asserts as $key => $assert) {
+                        $bean->$key = $app['request']->get($key);
+                    }
+
+                    $code = $id ? 200 : 201;
+
+                    try {
+                        R::store($bean);
+                        $response = $bean->export();
+                    } catch (Exception $e) {
+                        $errors = $e->getDetails();
+                        $response = array('errors' => array());
+                        $code = 400;
+
+                        foreach ($errors as $error) {
+                            $response['errors'][$error->getPropertyPath()] = $app['translator']->trans($error->getMessage());
+                        }
+                    }
+
+                    return Tools::jsonResponse($response, $code);
+                }
+            )
+            ->bind('api.'.$class.'.post')
+            ->assert('id', '\d*')
+            ->method('POST|PUT');
 
 
 
         // Delete
 
-        $this->readonly && $ctrl->delete(
-            '/{id}',
-            function ($id) use ($app, $class) {
-                $bean = R::load($class, $id);
+        $this->readonly && $ctrl
+            ->delete(
+                '/{id}',
+                function ($id) use ($app, $class) {
+                    $bean = R::load($class, $id);
 
-                if (! $bean->id) {
-                    $app->abort(404);
+                    if (! $bean->id) {
+                        $app->abort(404);
+                    }
+
+                    R::trash($bean);
+                    return Tools::jsonResponse(null, 204);
                 }
-
-                R::trash($bean);
-                return Tools::jsonResponse(null, 204);
-            }
-        )->bind('api.'.$class.'.delete')->assert('id', '\d+');
+            )
+            ->bind('api.'.$class.'.delete')
+            ->assert('id', '\d+');
 
 
 
         // Gotta catch'em all
 
-        $ctrl->match(
-            '{uri}',
-            function () use ($app) {
-                $app->abort(400);
-            }
-        )->assert('uri', '.*');
+        $ctrl
+            ->match(
+                '{uri}',
+                function () use ($app) {
+                    $app->abort(400);
+                }
+            )
+            ->assert('uri', '.*');
 
 
 

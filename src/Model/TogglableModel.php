@@ -2,7 +2,7 @@
 
 namespace Patchwork\Model;
 
-use Patchwork\Helper\RedBean as R;
+use \RedBean_Facade as R;
 
 trait TogglableModel
 {
