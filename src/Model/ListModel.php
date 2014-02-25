@@ -2,23 +2,30 @@
 
 namespace Patchwork\Model;
 
+use Patchwork\Helper\RedBean as R;
+
 trait ListModel
 {
-    protected function assets()
+    public function move($up)
     {
-        return array_merge(
-            parent::assets(),
-            array(
-                'position' => null
-            )
-        );
+        $class = $this->getType();
+
+        if ($up && ($this->position > 1)) {
+            $this->position--;
+            R::exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', array($this->position));
+        } else if ((! $up) && ($this->position < R::count($class))) {
+            $this->position++;
+            R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', array($this->position));
+        }
+
+        R::store($this);
     }
 
 
 
     public function getAll()
     {
-        return R::findAll($this->getType());
+        return R::findAll($this->getType(), 'ORDER BY position ASC');
     }
 
 

@@ -2,6 +2,8 @@
 
 namespace Patchwork\Helper;
 
+use Patchwork\App;
+
 class Exception extends \Exception
 {
     private $details;

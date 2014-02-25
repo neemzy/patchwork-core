@@ -11,8 +11,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 {
     abstract protected function asserts();
 
-
-
     public function getAsserts($files = true)
     {
         $asserts = $this->asserts();
@@ -54,27 +52,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    public function getImageDir($absolute = true)
-    {
-        return ($absolute ? BASE_PATH : '').'/public/upload/'.$this->getType().'/';
-    }
-
-
-
-    public function getImagePath($absolute = true)
-    {
-        return $this->getImageDir($absolute).$this->image;
-    }
-
-
-
-    public function setImage($file)
-    {
-        $this->image = $file;
-    }
-
-
-
     public function getAll()
     {
         return R::findAll($this->getType());
@@ -104,15 +81,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
         if (count($errors)) {
             throw new Exception('L\'enregistrement a échoué pour les raisons suivantes :', 0, null, $errors);
-        }
-    }
-
-
-
-    public function delete()
-    {
-        if ($this->hasField('image') && $this->image) {
-            unlink($this->getImagePath());
         }
     }
 }

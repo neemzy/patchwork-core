@@ -25,7 +25,7 @@ class AdminController extends AbstractController
                 function () use ($app, $class) {
                     return $app['twig']->render(
                         'admin/'.$class.'/list.twig',
-                        array($class.'s' => R::findAll($class, (R::typeHasField($class, 'position') ? 'ORDER BY position ASC' : '')))
+                        array($class.'s' => R::dispense($class)->getAll())
                     );
                 }
             )
@@ -41,18 +41,7 @@ class AdminController extends AbstractController
                 '/move/{id}/{up}',
                 function ($id, $up) use ($app, $class) {
                     $bean = R::load($class, $id);
-
-                    if ($bean->hasField('position')) {
-                        if ($up && ($bean->position > 1)) {
-                            $bean->position--;
-                            R::exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', array($bean->position));
-                        } else if ((! $up) && ($bean->position < R::count($class))) {
-                            $bean->position++;
-                            R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', array($bean->position));
-                        }
-
-                        R::store($bean);
-                    }
+                    $bean->move($up);
                     
                     return $app->redirect($app['url_generator']->generate($class.'.list'));
                 }
@@ -102,11 +91,7 @@ class AdminController extends AbstractController
                 '/toggle/{id}',
                 function ($id) use ($app, $class) {
                     $bean = R::load($class, $id);
-
-                    if ($bean->hasField('active')) {
-                        $bean->active = !$bean->active;
-                        R::store($bean);
-                    }
+                    $bean->toggle();
 
                     return $app->redirect($app['url_generator']->generate($class.'.list'));
                 }
@@ -124,12 +109,6 @@ class AdminController extends AbstractController
                 '/delete/{id}',
                 function ($id) use ($app, $class) {
                     $bean = R::load($class, $id);
-
-                    // Image deletion
-                    if ($bean->hasField('image') && $bean->image) {
-                        unlink($bean->getImageDir().$bean->image);
-                    }
-
                     R::trash($bean);
 
                     $app['session']->getFlashBag()->clear();
@@ -177,39 +156,6 @@ class AdminController extends AbstractController
 
                     try {
                         R::store($bean);
-
-                        // Image upload
-                        if ($bean->hasField('image') && $app['request']->files->has('image') && ($image = $app['request']->files->get('image'))) {
-                            if ($error = $image->getError()) {
-                                $message = 'Une erreur est survenue lors de l\'envoi du fichier';
-
-                                switch ($error) {
-                                    case UPLOAD_ERR_INI_SIZE:
-                                    case UPLOAD_ERR_FORM_SIZE:
-                                        $message = 'Le fichier sélectionné est trop lourd';
-                                        break;
-                                }
-                            } else if (! in_array($extension = strtolower($image->guessExtension()), array('jpeg', 'png', 'gif'))) {
-                                $message = 'Seuls les formats JPEG, PNG et GIF sont autorisés';
-                            }
-
-                            if (isset($message)) {
-                                throw new Exception($message);
-                            }
-
-                            $dir = $bean->getImageDir();
-                            $file = $bean->id.'.'.$extension;
-
-                            if ($bean->image) {
-                                unlink($dir.$bean->image);
-                            }
-
-                            $image->move($dir, $file);
-                            $bean->setImage($file);
-
-                            R::store($bean);
-                        }
-
                         $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
                     } catch (Exception $e) {
                         $app['session']->getFlashBag()->set('error', true);
@@ -229,23 +175,17 @@ class AdminController extends AbstractController
 
 
 
-        // Image delete
+        // Delete image
 
         $ctrl
             ->get(
                 '/delete_image/{id}',
                 function ($id) use ($app, $class) {
                     $bean = R::load($class, $id);
+                    $bean->deleteImage();
 
-                    if ($bean->hasField('image') && $bean->image) {
-                        unlink($bean->getImageDir().$bean->image);
-                        $bean->image = null;
-
-                        R::store($bean);
-
-                        $app['session']->getFlashBag()->clear();
-                        $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
-                    }
+                    $app['session']->getFlashBag()->clear();
+                    $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
                     
                     return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $id)));
                 }
