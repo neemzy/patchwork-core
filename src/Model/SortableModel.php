@@ -4,7 +4,7 @@ namespace Patchwork\Model;
 
 use \RedBean_Facade as R;
 
-trait ListModel
+trait SortableModel
 {
     public function move($up)
     {
@@ -40,7 +40,7 @@ trait ListModel
 
 
 
-    public function delete()
+    public function after_delete()
     {
         R::exec('UPDATE '.$this->getType().' SET position = position - 1 WHERE position > ?', array($this->position));
     }

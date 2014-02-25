@@ -60,17 +60,7 @@ class AdminController extends AbstractController
                 '/clone/{id}',
                 function ($id) use ($app, $class) {
                     $bean = R::load($class, $id);
-                    $clone = R::dup($bean);
-                    R::store($clone);
-
-                    // Image cloning
-                    if ($bean->hasField('image') && $bean->image) {
-                        $clone->image = $clone->id.'.'.array_pop(explode('.', $bean->image));
-                        R::store($clone);
-
-                        $dir = $bean->getImageDir();
-                        copy($dir.$bean->image, $dir.$clone->image);
-                    }
+                    $bean->dup();
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'La duplication a bien été effectuée');

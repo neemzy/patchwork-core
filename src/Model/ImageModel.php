@@ -74,11 +74,24 @@ trait ImageModel
         $iw->save($dir, $file, false, null, 90);
         
         $this->image = $file;
+        R::store($this);
     }
 
 
 
-    public function update()
+    public function cloneImageFor($clone)
+    {
+        if ($this->image) {
+            $clone->image = $clone->id.'.'.array_pop(explode('.', $this->image));
+            R::store($clone);
+
+            copy($this->getImagePath(), $clone->getImagePath());
+        }
+    }
+
+
+
+    public function after_update()
     {
         $app = App::getInstance();
 
@@ -100,6 +113,7 @@ trait ImageModel
                 throw new Exception($message);
             }
 
+            $app['request']->files->remove('image');
             $this->setImage($image, $extension);
         }
     }

@@ -45,13 +45,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    public function hasField($field)
-    {
-        return array_key_exists($field, $this->getAsserts());
-    }
-
-
-
     public function getAll()
     {
         return R::findAll($this->getType());
