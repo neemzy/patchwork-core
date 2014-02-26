@@ -12,23 +12,9 @@ trait ImageModel
 {
     private $imageFile;
 
-
-
-    private static function getResizeValues($currentWidth, $currentHeight, $desiredWidth, $desiredHeight)
-    {
-        $width = null;
-        $height = null;
-        $currentRatio = $currentWidth / $currentHeight;
-        $desiredRatio = $desiredWidth / $desiredHeight;
-
-        if ($currentRatio > $desiredRatio) {
-            $height = $desiredHeight;
-        } else {
-            $width = $desiredWidth;
-        }
-
-        return array($width, $height);
-    }
+    abstract public function getWidth();
+    
+    abstract public function getHeight();
 
 
 
@@ -69,9 +55,21 @@ trait ImageModel
         $this->image = $file;
         $iw = ImageWorkshop::initFromPath($this->getImagePath());
 
-        list($width, $height) = self::getResizeValues($iw->getWidth(), $iw->getHeight(), static::WIDTH, static::HEIGHT);
+        $width = null;
+        $height = null;
+        $currentRatio = $iw->getWidth() / $iw->getHeight();
+        $finalWidth = $this->getWidth();
+        $finalHeight = $this->getHeight();
+        $finalRatio = $finalWidth / $finalHeight;
+
+        if ($currentRatio > $finalRatio) {
+            $height = $finalHeight;
+        } else {
+            $width = $finalWidth;
+        }
+
         $iw->resizeInPixel($width, $height, true, 0, 0, 'MM');
-        $iw->cropInPixel(static::WIDTH, static::HEIGHT, 0, 0, 'MM');
+        $iw->cropInPixel($finalWidth, $finalHeight, 0, 0, 'MM');
 
         $iw->save($dir, $file, false, null, 90);
         R::store($this);
