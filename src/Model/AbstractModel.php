@@ -54,7 +54,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    public function update()
+    public function update($bubble = true)
     {
         $fields = $this->bean->export();
 
