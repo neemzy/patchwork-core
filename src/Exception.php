@@ -8,7 +8,7 @@ class Exception extends \Exception
 
 
 
-    public function __construct($message, $code = 0, \Exception $previous = null, $details = array())
+    public function __construct($message, $code = 0, \Exception $previous = null, $details = [])
     {
         parent::__construct($message, $code, $previous);
         $this->details = $details;

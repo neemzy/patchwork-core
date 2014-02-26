@@ -82,7 +82,7 @@ class Tools
         return new Response(
             json_encode($data, $options),
             $code,
-            array('Content-Type' => 'application/json')
+            ['Content-Type' => 'application/json']
         );
     }
 

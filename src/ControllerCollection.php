@@ -4,7 +4,7 @@ namespace Patchwork;
 
 class ControllerCollection extends \Silex\ControllerCollection
 {
-    public function cancel($path, $methods = array('GET', 'POST', 'PUSH', 'DELETE'))
+    public function cancel($path, $methods = ['GET', 'POST', 'PUSH', 'DELETE'])
     {
         $methods = array_map('strtoupper', (array)$methods);
 

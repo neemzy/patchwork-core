@@ -8,7 +8,7 @@ class App
 {
     const DEFAULT_NAME = 'default';
 
-    private static $instances = array();
+    private static $instances = [];
 
 
 
@@ -18,7 +18,7 @@ class App
             $name = array_key_exists('name', $param) ? $param['name'] : self::DEFAULT_NAME;
         } else {
             $name = $param;
-            $param = array();
+            $param = [];
         }
 
         if (! array_key_exists($name, self::$instances)) {

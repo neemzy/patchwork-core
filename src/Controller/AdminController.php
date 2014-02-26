@@ -25,7 +25,7 @@ class AdminController extends AbstractController
                 function () use ($app) {
                     return $app['twig']->render(
                         'admin/'.$this->class.'/list.twig',
-                        array($this->class.'s' => R::dispense($this->class)->getAll())
+                        [$this->class.'s' => R::dispense($this->class)->getAll()]
                     );
                 }
             )
@@ -115,7 +115,7 @@ class AdminController extends AbstractController
             ->get(
                 '/post/{bean}',
                 function ($bean) use ($app) {
-                    return $app['twig']->render('admin/'.$this->class.'/post.twig', array($this->class => $bean));
+                    return $app['twig']->render('admin/'.$this->class.'/post.twig', [$this->class => $bean]);
                 }
             )
             ->bind($this->class.'.post')
@@ -148,11 +148,11 @@ class AdminController extends AbstractController
                         $app['session']->getFlashBag()->set('message', $e->getHTML());
 
                         if ($new && $bean->id) {
-                            return $app['twig']->render('admin/'.$this->class.'/post.twig', array($this->class => $bean));
+                            return $app['twig']->render('admin/'.$this->class.'/post.twig', [$this->class => $bean]);
                         }
                     }
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.post', array('bean' => $bean->id)));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                 }
             )
             ->convert('bean', $this->beanProvider)
@@ -172,7 +172,7 @@ class AdminController extends AbstractController
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
                     
-                    return $app->redirect($app['url_generator']->generate($this->class.'.post', array('bean' => $bean->id)));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                 }
             )
             ->bind($this->class.'.delete_image')

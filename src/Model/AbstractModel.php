@@ -66,12 +66,10 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
         $errors = App::getInstance()['validator']->validateValue(
             $fields,
-            new Assert\Collection(
-                array(
-                    'fields' => $asserts,
-                    'allowExtraFields' => true
-                )
-            )
+            new Assert\Collection([
+                'fields' => $asserts,
+                'allowExtraFields' => true
+            ])
         );
 
         if (count($errors)) {

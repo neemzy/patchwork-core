@@ -53,7 +53,7 @@ class ApiController extends AbstractController
             ->get(
                 '/{bean}',
                 function ($bean) use ($app) {
-                    if (! $data = R::findAndExport($this->class, 'id = ?', array($bean->id))) {
+                    if (! $data = R::findAndExport($this->class, 'id = ?', [$bean->id])) {
                         $app->abort(404);
                     }
 
@@ -84,7 +84,7 @@ class ApiController extends AbstractController
                         $response = $bean->export();
                     } catch (Exception $e) {
                         $errors = $e->getDetails();
-                        $response = array('errors' => array());
+                        $response = ['errors' => []];
                         $code = 400;
 
                         foreach ($errors as $error) {

@@ -103,7 +103,7 @@ trait ImageModel
                         $message = 'Le fichier sélectionné est trop lourd';
                         break;
                 }
-            } else if (! in_array($extension = strtolower($image->guessExtension()), array('jpeg', 'png', 'gif'))) {
+            } else if (! in_array($extension = strtolower($image->guessExtension()), ['jpeg', 'png', 'gif'])) {
                 $message = 'Seuls les formats JPEG, PNG et GIF sont autorisés';
             }
 
