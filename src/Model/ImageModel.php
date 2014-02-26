@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use \RedBean_Facade as R;
 use PHPImageWorkshop\ImageWorkshop;
 use Patchwork\App;
-use Patchwork\Helper\Exception;
+use Patchwork\Exception;
 
 trait ImageModel
 {

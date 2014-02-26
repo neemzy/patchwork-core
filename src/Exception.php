@@ -1,8 +1,6 @@
 <?php
 
-namespace Patchwork\Helper;
-
-use Patchwork\App;
+namespace Patchwork;
 
 class Exception extends \Exception
 {

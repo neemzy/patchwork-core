@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Helper;
+namespace Patchwork;
 
 class ControllerCollection extends \Silex\ControllerCollection
 {

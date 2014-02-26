@@ -5,7 +5,7 @@ namespace Patchwork\Model;
 use Symfony\Component\Validator\Constraints as Assert;
 use \RedBean_Facade as R;
 use Patchwork\App;
-use Patchwork\Helper\Exception;
+use Patchwork\Exception;
 
 abstract class AbstractModel extends \RedBean_SimpleModel
 {

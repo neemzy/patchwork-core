@@ -3,7 +3,7 @@
 namespace Patchwork\Controller;
 
 use \RedBean_Facade as R;
-use Patchwork\Helper\Exception;
+use Patchwork\Exception;
 
 class AdminController extends AbstractController
 {

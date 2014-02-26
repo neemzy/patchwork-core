@@ -3,8 +3,8 @@
 namespace Patchwork\Controller;
 
 use \RedBean_Facade as R;
-use Patchwork\Helper\Exception;
-use Patchwork\Helper\Tools;
+use Patchwork\Exception;
+use Patchwork\Tools;
 
 class ApiController extends AbstractController
 {
