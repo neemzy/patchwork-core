@@ -4,12 +4,14 @@ namespace Patchwork\Controller;
 
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
+use \RedBean_Facade as R;
 use Patchwork\App;
 
 abstract class AbstractController implements ControllerProviderInterface
 {
     protected $class;
     protected $auth;
+    protected $beanProvider;
 
 
 
@@ -37,6 +39,10 @@ abstract class AbstractController implements ControllerProviderInterface
                     return $response;
                 }
             }
+        };
+
+        $this->beanProvider = function ($id) {
+            return R::load($this->class, $id);
         };
     }
 

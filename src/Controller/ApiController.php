@@ -27,8 +27,8 @@ class ApiController extends AbstractController
     {
         $ctrl = parent::route($app);
         
-        if ($class === null) {
-            $class = $this->class;
+        if ($class) {
+            $this->class = $class;
         }
 
 
@@ -38,12 +38,12 @@ class ApiController extends AbstractController
         $ctrl
             ->get(
                 '/',
-                function () use ($app, $class) {
-                    $data = R::findAndExport($class, 1);
+                function () use ($app) {
+                    $data = R::findAndExport($this->class, 1);
                     return Tools::jsonResponse($data);
                 }
             )
-            ->bind('api.'.$class.'.list');
+            ->bind('api.'.$this->class.'.list');
 
 
 
@@ -51,17 +51,17 @@ class ApiController extends AbstractController
 
         $ctrl
             ->get(
-                '/{id}',
-                function ($id) use ($app, $class) {
-                    if (! $data = R::findAndExport($class, 'id = ?', array($id))) {
+                '/{bean}',
+                function ($bean) use ($app) {
+                    if (! $data = R::findAndExport($this->class, 'id = ?', array($bean->id))) {
                         $app->abort(404);
                     }
 
                     return Tools::jsonResponse($data);
                 }
             )
-            ->bind('api.'.$class.'.read')
-            ->assert('id', '\d+');
+            ->bind('api.'.$this->class.'.read')
+            ->convert('bean', $this->beanProvider);
 
 
 
@@ -69,22 +69,15 @@ class ApiController extends AbstractController
 
         $this->readonly && $ctrl
             ->match(
-                '/{id}',
-                function ($id) use ($app, $class) {
-                    $id = +$id;
-                    $bean = R::load($class, $id);
-
-                    if ($id != +$bean_id) {
-                        $app->abort(404);
-                    }
-
+                '/{bean}',
+                function ($bean) use ($app) {
                     $asserts = $bean->getAsserts();
                     
                     foreach ($asserts as $key => $assert) {
                         $bean->$key = $app['request']->get($key);
                     }
 
-                    $code = $id ? 200 : 201;
+                    $code = $bean->id ? 200 : 201;
 
                     try {
                         R::store($bean);
@@ -102,8 +95,9 @@ class ApiController extends AbstractController
                     return Tools::jsonResponse($response, $code);
                 }
             )
-            ->bind('api.'.$class.'.post')
-            ->assert('id', '\d*')
+            ->bind('api.'.$this->class.'.post')
+            ->convert('bean', $this->beanProvider)
+            ->value('bean', 0)
             ->method('POST|PUT');
 
 
@@ -113,8 +107,8 @@ class ApiController extends AbstractController
         $this->readonly && $ctrl
             ->delete(
                 '/{id}',
-                function ($id) use ($app, $class) {
-                    $bean = R::load($class, $id);
+                function ($id) use ($app) {
+                    $bean = R::load($this->class, $id);
 
                     if (! $bean->id) {
                         $app->abort(404);
@@ -124,8 +118,8 @@ class ApiController extends AbstractController
                     return Tools::jsonResponse(null, 204);
                 }
             )
-            ->bind('api.'.$class.'.delete')
-            ->assert('id', '\d+');
+            ->bind('api.'.$this->class.'.delete')
+            ->convert('bean', $this->beanProvider);
 
 
 

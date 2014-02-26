@@ -11,8 +11,8 @@ class AdminController extends AbstractController
     {
         $ctrl = parent::route($app);
         
-        if ($class === null) {
-            $class = $this->class;
+        if ($class) {
+            $this->class = $class;
         }
 
 
@@ -22,14 +22,14 @@ class AdminController extends AbstractController
         $ctrl
             ->get(
                 '/list',
-                function () use ($app, $class) {
+                function () use ($app) {
                     return $app['twig']->render(
-                        'admin/'.$class.'/list.twig',
-                        array($class.'s' => R::dispense($class)->getAll())
+                        'admin/'.$this->class.'/list.twig',
+                        array($this->class.'s' => R::dispense($this->class)->getAll())
                     );
                 }
             )
-            ->bind($class.'.list')
+            ->bind($this->class.'.list')
             ->before($this->auth);
 
 
@@ -38,16 +38,15 @@ class AdminController extends AbstractController
 
         $ctrl
             ->get(
-                '/move/{id}/{up}',
-                function ($id, $up) use ($app, $class) {
-                    $bean = R::load($class, $id);
+                '/move/{bean}/{up}',
+                function ($bean, $up) use ($app) {
                     $bean->move($up);
                     
-                    return $app->redirect($app['url_generator']->generate($class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
             )
-            ->bind($class.'.move')
-            ->assert('id', '\d+')
+            ->bind($this->class.'.move')
+            ->convert('bean', $this->beanProvider)
             ->assert('up', '0|1')
             ->before($this->auth);
 
@@ -57,19 +56,18 @@ class AdminController extends AbstractController
 
         $ctrl
             ->get(
-                '/clone/{id}',
-                function ($id) use ($app, $class) {
-                    $bean = R::load($class, $id);
+                '/clone/{bean}',
+                function ($bean) use ($app) {
                     $bean->dup();
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'La duplication a bien été effectuée');
 
-                    return $app->redirect($app['url_generator']->generate($class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
             )
-            ->bind($class.'.clone')
-            ->assert('id', '\d+')
+            ->bind($this->class.'.clone')
+            ->convert('bean', $this->beanProvider)
             ->before($this->auth);
 
 
@@ -78,16 +76,15 @@ class AdminController extends AbstractController
 
         $ctrl
             ->get(
-                '/toggle/{id}',
-                function ($id) use ($app, $class) {
-                    $bean = R::load($class, $id);
+                '/toggle/{bean}',
+                function ($bean) use ($app) {
                     $bean->toggle();
 
-                    return $app->redirect($app['url_generator']->generate($class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
             )
-            ->bind($class.'.toggle')
-            ->assert('id', '\d+')
+            ->bind($this->class.'.toggle')
+            ->convert('bean', $this->beanProvider)
             ->before($this->auth);
 
 
@@ -96,19 +93,18 @@ class AdminController extends AbstractController
 
         $ctrl
             ->get(
-                '/delete/{id}',
-                function ($id) use ($app, $class) {
-                    $bean = R::load($class, $id);
+                '/delete/{bean}',
+                function ($bean) use ($app) {
                     R::trash($bean);
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
 
-                    return $app->redirect($app['url_generator']->generate($class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
             )
-            ->bind($class.'.delete')
-            ->assert('id', '\d+')
+            ->bind($this->class.'.delete')
+            ->convert('bean', $this->beanProvider)
             ->before($this->auth);
 
 
@@ -117,14 +113,14 @@ class AdminController extends AbstractController
 
         $ctrl
             ->get(
-                '/post/{id}',
-                function ($id) use ($app, $class) {
-                    return $app['twig']->render('admin/'.$class.'/post.twig', array($class => R::load($class, $id)));
+                '/post/{bean}',
+                function ($bean) use ($app) {
+                    return $app['twig']->render('admin/'.$this->class.'/post.twig', array($this->class => $bean));
                 }
             )
-            ->bind($class.'.post')
-            ->assert('id', '\d+')
-            ->value('id', 0)
+            ->bind($this->class.'.post')
+            ->convert('bean', $this->beanProvider)
+            ->value('bean', 0)
             ->before($this->auth);
 
 
@@ -133,10 +129,10 @@ class AdminController extends AbstractController
 
         $ctrl
             ->post(
-                '/post/{id}',
-                function ($id) use ($app, $class) {
-                    $bean = R::load($class, $id);
-                    $asserts = $bean->getAsserts(! $bean->id);
+                '/post/{bean}',
+                function ($bean) use ($app) {
+                    $new = !$bean->id;
+                    $asserts = $bean->getAsserts($new);
                     
                     foreach ($asserts as $key => $assert) {
                         $bean->$key = $app['request']->get($key);
@@ -151,16 +147,16 @@ class AdminController extends AbstractController
                         $app['session']->getFlashBag()->set('error', true);
                         $app['session']->getFlashBag()->set('message', $e->getHTML());
 
-                        if ($bean->id == $id) {
-                            return $app['twig']->render('admin/'.$class.'/post.twig', array($class => $bean));
+                        if ($new && $bean->id) {
+                            return $app['twig']->render('admin/'.$this->class.'/post.twig', array($this->class => $bean));
                         }
                     }
 
-                    return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $bean->id)));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.post', array('bean' => $bean->id)));
                 }
             )
-            ->assert('id', '\d+')
-            ->value('id', 0)
+            ->convert('bean', $this->beanProvider)
+            ->value('bean', 0)
             ->before($this->auth);
 
 
@@ -169,19 +165,18 @@ class AdminController extends AbstractController
 
         $ctrl
             ->get(
-                '/delete_image/{id}',
-                function ($id) use ($app, $class) {
-                    $bean = R::load($class, $id);
+                '/delete_image/{bean}',
+                function ($bean) use ($app) {
                     $bean->deleteImage();
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
                     
-                    return $app->redirect($app['url_generator']->generate($class.'.post', array('id' => $id)));
+                    return $app->redirect($app['url_generator']->generate($this->class.'.post', array('bean' => $bean->id)));
                 }
             )
-            ->bind($class.'.delete_image')
-            ->assert('id', '\d+')
+            ->bind($this->class.'.delete_image')
+            ->convert('bean', $this->beanProvider)
             ->before($this->auth);
 
         
