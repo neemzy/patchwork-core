@@ -34,7 +34,7 @@ trait ImageModel
 
     public function getImageDir($absolute = true)
     {
-        return ($absolute ? BASE_PATH : '').'/public/upload/'.$this->getType().'/';
+        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.$this->getType().'/';
     }
 
 
@@ -66,14 +66,14 @@ trait ImageModel
         $this->deleteImage(false);
         $image->move($dir, $file);
 
-        $iw = ImageWorkshop::initFromPath($dir.$file);
-        list($width, $height) = self::getResizeValues($iw->getWidth(), $iw->getHeight(), static::WIDTH, static::HEIGHT);
+        $this->image = $file;
+        $iw = ImageWorkshop::initFromPath($this->getImagePath());
 
+        list($width, $height) = self::getResizeValues($iw->getWidth(), $iw->getHeight(), static::WIDTH, static::HEIGHT);
         $iw->resizeInPixel($width, $height, true, 0, 0, 'MM');
         $iw->cropInPixel(static::WIDTH, static::HEIGHT, 0, 0, 'MM');
+
         $iw->save($dir, $file, false, null, 90);
-        
-        $this->image = $file;
         R::store($this);
     }
 
