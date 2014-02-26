@@ -30,12 +30,14 @@ trait SortableModel
 
 
 
-    public function update()
+    public function update($bubble = true)
     {
         if ((! $this->position) || ($this->position && count(R::find($this->getType(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
             $position = R::getCell('SELECT position FROM '.$this->getType().' ORDER BY position DESC LIMIT 1');
             $this->position = $position + 1;
         }
+
+        $bubble && parent::update();
     }
 
 
