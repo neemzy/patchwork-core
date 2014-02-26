@@ -23,9 +23,9 @@ trait SortableModel
 
 
 
-    public function getAll()
+    public function orderBy()
     {
-        return R::findAll($this->getType(), 'ORDER BY position ASC');
+        return 'position ASC';
     }
 
 

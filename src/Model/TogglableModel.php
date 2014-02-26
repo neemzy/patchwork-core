@@ -12,4 +12,11 @@ trait TogglableModel
 
         R::store($this);
     }
+
+
+
+    public function getActive($active = true)
+    {
+        return R::find($this->getType(), 'active = ? ORDER BY '.$this->orderBy(), array($active));
+    }
 }

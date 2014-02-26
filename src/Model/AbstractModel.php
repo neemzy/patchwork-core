@@ -38,16 +38,18 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    public function getType()
+    abstract protected function orderBy();
+
+    public function getAll()
     {
-        return $this->bean->getMeta('type');
+        return R::findAll($this->getType(), 'ORDER BY '.$this->orderBy());
     }
 
 
 
-    public function getAll()
+    public function getType()
     {
-        return R::findAll($this->getType());
+        return $this->bean->getMeta('type');
     }
 
 
