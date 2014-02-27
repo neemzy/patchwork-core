@@ -96,7 +96,7 @@ class AdminController extends AbstractController
             ->get(
                 '/delete/{bean}',
                 function ($bean) use ($app) {
-                    $bean->delete();
+                    $bean->trash();
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
