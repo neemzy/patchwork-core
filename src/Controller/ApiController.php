@@ -67,7 +67,7 @@ class ApiController extends AbstractController
 
         // Create/Update
 
-        $this->readonly && $ctrl
+        $this->readonly || $ctrl
             ->match(
                 '/{bean}',
                 function ($bean) use ($app) {
@@ -75,7 +75,7 @@ class ApiController extends AbstractController
                     $code = $bean->id ? 200 : 201;
 
                     try {
-                        R::store($bean);
+                        $bean->save();
                         $response = $bean->export();
                     } catch (Exception $e) {
                         $errors = $e->getDetails();
@@ -99,7 +99,7 @@ class ApiController extends AbstractController
 
         // Delete
 
-        $this->readonly && $ctrl
+        $this->readonly || $ctrl
             ->delete(
                 '/{id}',
                 function ($id) use ($app) {
@@ -109,7 +109,7 @@ class ApiController extends AbstractController
                         $app->abort(404);
                     }
 
-                    R::trash($bean);
+                    $bean->trash();
                     return Tools::jsonResponse(null, 204);
                 }
             )
