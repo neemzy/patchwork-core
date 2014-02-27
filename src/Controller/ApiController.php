@@ -71,12 +71,7 @@ class ApiController extends AbstractController
             ->match(
                 '/{bean}',
                 function ($bean) use ($app) {
-                    $asserts = $bean->getAsserts();
-                    
-                    foreach ($asserts as $key => $assert) {
-                        $bean->$key = $app['request']->get($key);
-                    }
-
+                    $bean->hydrate();
                     $code = $bean->id ? 200 : 201;
 
                     try {

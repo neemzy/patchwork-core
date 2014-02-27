@@ -9,14 +9,13 @@ trait TogglableModel
     public function toggle($force = null)
     {
         $this->active = ($force === null ? !$this->active : $force);
-
-        R::store($this);
+        $this->save();
     }
 
 
 
     public function getActive($active = true)
     {
-        return R::find($this->getType(), 'active = ? ORDER BY '.$this->orderBy(), [+$active]);
+        return R::find(static::unqualify(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
     }
 }

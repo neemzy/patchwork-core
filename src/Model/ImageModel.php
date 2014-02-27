@@ -3,7 +3,6 @@
 namespace Patchwork\Model;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use \RedBean_Facade as R;
 use PHPImageWorkshop\ImageWorkshop;
 use Patchwork\App;
 use Patchwork\Exception;
@@ -20,7 +19,7 @@ trait ImageModel
 
     public function getImageDir($absolute = true)
     {
-        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.$this->getType().'/';
+        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.static::unqualify().'/';
     }
 
 
@@ -38,7 +37,7 @@ trait ImageModel
             unlink($this->getImagePath());
             $this->image = null;
 
-            $persist && R::store($this);
+            $persist && $this->save();
         }
     }
 
@@ -72,7 +71,7 @@ trait ImageModel
         $iw->cropInPixel($finalWidth, $finalHeight, 0, 0, 'MM');
 
         $iw->save($dir, $file, false, null, 90);
-        R::store($this);
+        $this->save();
     }
 
 
@@ -81,7 +80,7 @@ trait ImageModel
     {
         if ($this->image) {
             $clone->image = $clone->id.'.'.array_pop(explode('.', $this->image));
-            R::store($clone);
+            $clone->save();
 
             copy($this->getImagePath(), $clone->getImagePath());
         }
@@ -93,26 +92,29 @@ trait ImageModel
     {
         $app = App::getInstance();
 
-        if ($app['request']->files->has('image') && ($image = $app['request']->files->get('image'))) {
-            if ($error = $image->getError()) {
-                $message = 'Une erreur est survenue lors de l\'envoi du fichier';
+        try {
+            if ($app['request']->files->has('image') && ($image = $app['request']->files->get('image'))) {
+                if ($error = $image->getError()) {
+                    $message = 'Une erreur est survenue lors de l\'envoi du fichier';
 
-                switch ($error) {
-                    case UPLOAD_ERR_INI_SIZE:
-                    case UPLOAD_ERR_FORM_SIZE:
-                        $message = 'Le fichier sélectionné est trop lourd';
-                        break;
+                    switch ($error) {
+                        case UPLOAD_ERR_INI_SIZE:
+                        case UPLOAD_ERR_FORM_SIZE:
+                            $message = 'Le fichier sélectionné est trop lourd';
+                            break;
+                    }
+                } else if (! in_array($extension = strtolower($image->guessExtension()), ['jpeg', 'png', 'gif'])) {
+                    $message = 'Seuls les formats JPEG, PNG et GIF sont autorisés';
                 }
-            } else if (! in_array($extension = strtolower($image->guessExtension()), ['jpeg', 'png', 'gif'])) {
-                $message = 'Seuls les formats JPEG, PNG et GIF sont autorisés';
-            }
 
-            if (isset($message)) {
-                throw new Exception($message);
-            }
+                if (isset($message)) {
+                    throw new Exception($message);
+                }
 
-            $app['request']->files->remove('image');
-            $this->setImage($image, $extension);
+                $app['request']->files->remove('image');
+                $this->setImage($image, $extension);
+            }
+        } catch (\RuntimeException $e) {
         }
     }
 

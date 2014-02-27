@@ -38,18 +38,44 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    abstract protected function orderBy();
-
-    public function getAll()
+    public static function unqualify()
     {
-        return R::findAll($this->getType(), 'ORDER BY '.$this->orderBy());
+        $class = explode('\\', get_called_class());
+
+        return strtolower(str_replace('Model', '', array_pop($class)));
     }
 
 
 
-    public function getType()
+    public static function orderBy()
     {
-        return $this->bean->getMeta('type');
+        return 'id ASC';
+    }
+
+
+
+    public static function getAll()
+    {
+        return R::findAll(static::unqualify(), 'ORDER BY '.static::orderBy());
+    }
+
+
+
+    public function hydrate()
+    {
+        $app = App::getInstance();
+        $pristine = !$this->id;
+        
+        foreach ($this->getAsserts($pristine) as $key => $assert) {
+            $this->$key = $app['request']->get($key);
+        }
+    }
+
+
+
+    public function save()
+    {
+        return R::store($this);
     }
 
 
@@ -77,5 +103,12 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         if (count($errors)) {
             throw new Exception('L\'enregistrement a échoué pour les raisons suivantes :', 0, null, $errors);
         }
+    }
+
+
+
+    public function trash()
+    {
+        return R::trash($this);
     }
 }

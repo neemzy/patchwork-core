@@ -8,7 +8,7 @@ trait SortableModel
 {
     public function move($up)
     {
-        $class = $this->getType();
+        $class = static::unqualify();
 
         if ($up && ($this->position > 1)) {
             $this->position--;
@@ -18,12 +18,12 @@ trait SortableModel
             R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', [$this->position]);
         }
 
-        R::store($this);
+        $this->save();
     }
 
 
 
-    public function orderBy()
+    public static function orderBy()
     {
         return 'position ASC';
     }
@@ -32,8 +32,8 @@ trait SortableModel
 
     public function update($bubble = true)
     {
-        if ((! $this->position) || ($this->position && count(R::find($this->getType(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
-            $position = R::getCell('SELECT position FROM '.$this->getType().' ORDER BY position DESC LIMIT 1');
+        if ((! $this->position) || ($this->position && count(R::find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
+            $position = R::getCell('SELECT position FROM '.static::unqualify().' ORDER BY position DESC LIMIT 1');
             $this->position = $position + 1;
         }
 
@@ -44,6 +44,6 @@ trait SortableModel
 
     public function after_delete()
     {
-        R::exec('UPDATE '.$this->getType().' SET position = position - 1 WHERE position > ?', [$this->position]);
+        R::exec('UPDATE '.static::unqualify().' SET position = position - 1 WHERE position > ?', [$this->position]);
     }
 }

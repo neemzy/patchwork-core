@@ -4,6 +4,7 @@ namespace Patchwork\Controller;
 
 use \RedBean_Facade as R;
 use Patchwork\Exception;
+use Patchwork\Tools;
 
 class AdminController extends AbstractController
 {
@@ -25,7 +26,7 @@ class AdminController extends AbstractController
                 function () use ($app) {
                     return $app['twig']->render(
                         'admin/'.$this->class.'/list.twig',
-                        [$this->class.'s' => R::dispense($this->class)->getAll()]
+                        [$this->class.'s' => call_user_func(Tools::qualify($this->class).'::getAll')]
                     );
                 }
             )
@@ -95,7 +96,7 @@ class AdminController extends AbstractController
             ->get(
                 '/delete/{bean}',
                 function ($bean) use ($app) {
-                    R::trash($bean);
+                    $bean->delete();
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
@@ -131,23 +132,20 @@ class AdminController extends AbstractController
             ->post(
                 '/post/{bean}',
                 function ($bean) use ($app) {
-                    $new = !$bean->id;
-                    $asserts = $bean->getAsserts($new);
-                    
-                    foreach ($asserts as $key => $assert) {
-                        $bean->$key = $app['request']->get($key);
-                    }
+                    $pristine = !$bean->id;
+                    $bean->hydrate();
 
                     $app['session']->getFlashBag()->clear();
 
                     try {
-                        R::store($bean);
+                        $bean->save();
+
                         $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
                     } catch (Exception $e) {
                         $app['session']->getFlashBag()->set('error', true);
                         $app['session']->getFlashBag()->set('message', $e->getHTML());
 
-                        if ($new && $bean->id) {
+                        if (!$pristine && $bean->id) {
                             return $app['twig']->render('admin/'.$this->class.'/post.twig', [$this->class => $bean]);
                         }
                     }
