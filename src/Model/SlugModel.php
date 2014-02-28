@@ -6,7 +6,7 @@ use Patchwork\App;
 
 trait SlugModel
 {
-    abstract public function getSlug();
+    abstract public function slugify();
 
     public static function findBySlug($slug)
     {
@@ -14,7 +14,7 @@ trait SlugModel
         $beans = static::getAll();
 
         foreach ($beans as $bean) {
-            if ($bean->getSlug() == $slug) {
+            if ($bean->slugify() == $slug) {
                 return $bean;
             }
         }
