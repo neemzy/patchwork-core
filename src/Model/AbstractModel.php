@@ -42,7 +42,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     {
         $class = explode('\\', get_called_class());
 
-        return strtolower(str_replace('Model', '', array_pop($class)));
+        return strtolower(array_pop($class));
     }
 
 
