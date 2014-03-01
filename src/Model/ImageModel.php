@@ -11,22 +11,28 @@ trait ImageModel
 {
     private $imageFile;
 
-    abstract public function getWidth();
-    
-    abstract public function getHeight();
 
 
-
-    public function getImageDir($absolute = true)
+    public static function getWidth()
     {
-        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.static::unqualify().'/';
+        return null;
+    }
+    
+    public static function getHeight()
+    {
+        return null;
     }
 
 
 
+    public static function getImageDir($absolute = true)
+    {
+        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.static::unqualify().'/';
+    }
+
     public function getImagePath($absolute = true)
     {
-        return $this->getImageDir($absolute).$this->image;
+        return static::getImageDir($absolute).$this->image;
     }
 
 
@@ -50,27 +56,34 @@ trait ImageModel
 
         $this->deleteImage(false);
         $image->move($dir, $file);
-
         $this->image = $file;
-        $iw = ImageWorkshop::initFromPath($this->getImagePath());
 
-        $width = null;
-        $height = null;
-        $currentRatio = $iw->getWidth() / $iw->getHeight();
-        $finalWidth = $this->getWidth();
-        $finalHeight = $this->getHeight();
-        $finalRatio = $finalWidth / $finalHeight;
+        $finalWidth = static::getWidth();
+        $finalHeight = static::getHeight();
 
-        if ($currentRatio > $finalRatio) {
-            $height = $finalHeight;
-        } else {
+        if ($finalWidth || $finalHeight) {
             $width = $finalWidth;
+            $height = $finalHeight;
+            $crop = ($finalWidth && $finalHeight);
+            $iw = ImageWorkshop::initFromPath($this->getImagePath());
+
+            if ($crop) {
+                $originalRatio = $iw->getWidth() / $iw->getHeight();
+                $finalRatio = $finalWidth / $finalHeight;
+
+                if ($originalRatio > $finalRatio) {
+                    $width = null;
+                } else {
+                    $height = null;
+                }
+            }
+
+            $iw->resizeInPixel($width, $height, true, 0, 0, 'MM');
+            $crop && $iw->cropInPixel($finalWidth, $finalHeight, 0, 0, 'MM');
+
+            $iw->save($dir, $file, false, null, 90);
         }
 
-        $iw->resizeInPixel($width, $height, true, 0, 0, 'MM');
-        $iw->cropInPixel($finalWidth, $finalHeight, 0, 0, 'MM');
-
-        $iw->save($dir, $file, false, null, 90);
         $this->save();
     }
 

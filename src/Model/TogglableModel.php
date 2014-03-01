@@ -6,16 +6,31 @@ use \RedBean_Facade as R;
 
 trait TogglableModel
 {
-    public function toggle($force = null)
+    public static function getActive($active = true)
     {
-        $this->active = ($force === null ? !$this->active : $force);
-        $this->save();
+        return R::find(static::unqualify(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
     }
 
 
 
-    public function getActive($active = true)
+    public static function getDefaultState()
     {
-        return R::find(static::unqualify(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
+        return false;
+    }
+
+
+
+    public function toggle($force = null, $persist = true)
+    {
+        $this->active = ($force === null ? !$this->active : $force);
+
+        $persist && $this->save();
+    }
+
+
+
+    public function dispense()
+    {
+        $this->toggle(static::getDefaultState(), false);
     }
 }

@@ -9,31 +9,8 @@ use Patchwork\Exception;
 
 abstract class AbstractModel extends \RedBean_SimpleModel
 {
-    abstract protected function asserts();
-
-    public function getAsserts($files = true)
-    {
-        $asserts = $this->asserts();
-
-        if (! $files) {
-            foreach ($asserts as $key => $assert) {
-                if (is_array($assert)) {
-                    foreach ($assert as $index => $rule) {
-                        if ($rule instanceof Assert\File) {
-                            unset($asserts[$key][$index]);
-                        }
-                    }
-
-                    if (! count($assert)) {
-                        unset($asserts[$key]);
-                    }
-                } else if ($assert instanceof Assert\File) {
-                    unset($asserts[$key]);
-                }
-            }
-        }
-
-        return $asserts;
+    protected static function asserts() {
+        return [];
     }
 
 
@@ -66,7 +43,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         $app = App::getInstance();
         $pristine = !$this->id;
         
-        foreach ($this->getAsserts($pristine) as $key => $assert) {
+        foreach ($this->asserts($pristine) as $key => $assert) {
             $this->$key = $app['request']->get($key);
         }
     }
@@ -88,13 +65,11 @@ abstract class AbstractModel extends \RedBean_SimpleModel
             $field = strip_tags($field);
         }
 
-        $asserts = $this->getAsserts(false);
-
         $errors = App::getInstance()['validator']->validateValue(
             $fields,
             new Assert\Collection(
                 [
-                    'fields' => $asserts,
+                    'fields' => $this->asserts(),
                     'allowExtraFields' => true
                 ]
             )
