@@ -119,8 +119,7 @@ trait ImageModel
                 if (isset($message)) {
                     throw new Exception($message);
                 }
-
-                $app['request']->files->remove('image');
+                
                 $this->setImage($image, $extension);
             }
         } catch (\RuntimeException $e) {
