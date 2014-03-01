@@ -30,19 +30,15 @@ trait SortableModel
 
 
 
-    public function update($bubble = true)
+    protected function sortableUpdate()
     {
         if ((! $this->position) || ($this->position && count(R::find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
             $position = R::getCell('SELECT position FROM '.static::unqualify().' ORDER BY position DESC LIMIT 1');
             $this->position = $position + 1;
         }
-
-        $bubble && parent::update();
     }
 
-
-
-    public function after_delete()
+    protected function sortableDelete()
     {
         R::exec('UPDATE '.static::unqualify().' SET position = position - 1 WHERE position > ?', [$this->position]);
     }

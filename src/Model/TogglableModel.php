@@ -13,24 +13,22 @@ trait TogglableModel
 
 
 
-    public static function getDefaultState()
+    public static function defaultState()
     {
         return false;
     }
 
 
 
-    public function toggle($force = null, $persist = true)
+    public function toggle($force = null)
     {
         $this->active = ($force === null ? !$this->active : $force);
-
-        $persist && $this->save();
     }
 
 
 
-    public function dispense()
+    protected function togglableUpdate()
     {
-        $this->toggle(static::getDefaultState(), false);
+        $this->active = $this->id ? !!$this->active : static::defaultState();
     }
 }

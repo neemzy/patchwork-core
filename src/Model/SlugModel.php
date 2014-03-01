@@ -2,7 +2,7 @@
 
 namespace Patchwork\Model;
 
-use Patchwork\App;
+use \RedBean_Facade as R;
 
 trait SlugModel
 {
@@ -10,15 +10,13 @@ trait SlugModel
 
     public static function findBySlug($slug)
     {
-        $app = App::getInstance();
-        $beans = static::getAll();
+        return R::findOne(static::unqualify(), 'slug = ?', $slug);
+    }
 
-        foreach ($beans as $bean) {
-            if ($bean->slugify() == $slug) {
-                return $bean;
-            }
-        }
 
-        return false;
+
+    protected function slugUpdate()
+    {
+        $this->slug = $this->slugify();
     }
 }

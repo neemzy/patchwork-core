@@ -80,6 +80,7 @@ class AdminController extends AbstractController
                 '/toggle/{bean}',
                 function ($bean) use ($app) {
                     $bean->toggle();
+                    $bean->save();
 
                     return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }

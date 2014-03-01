@@ -9,9 +9,9 @@ trait ClonableModel
     public function dup()
     {
         $clone = R::dup($this->bean);
-        R::store($clone);
+        $clone->save();
 
-        if (in_array(__NAMESPACE__.'\ImageModel', class_uses(__CLASS__))) {
+        if (static::uses('image')) {
             $this->cloneImageFor($clone);
         }
     }

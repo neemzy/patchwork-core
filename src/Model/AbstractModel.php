@@ -9,17 +9,54 @@ use Patchwork\Exception;
 
 abstract class AbstractModel extends \RedBean_SimpleModel
 {
-    protected static function asserts() {
-        return [];
+    public static function unqualify($class = null)
+    {
+        $class = explode('\\', $class ?: get_called_class());
+
+        return str_replace('model', '', strtolower(array_pop($class)));
     }
 
-
-
-    public static function unqualify()
+    protected static function getTraits($unqualified = true)
     {
-        $class = explode('\\', get_called_class());
+        $reflection = new \ReflectionClass(get_called_class());
+        $traits = array_keys($reflection->getTraits());
 
-        return strtolower(array_pop($class));
+        if ($unqualified) {
+            array_walk(
+                $traits,
+                function (&$trait) {
+                    $trait = static::unqualify($trait);
+                }
+            );
+        }
+
+        return $traits;
+    }
+
+    protected static function uses($trait)
+    {
+        return in_array($trait, static::getTraits());
+    }
+
+    public function __call($method, $arguments)
+    {
+        if (in_array($method, array('update', 'delete'))) {
+            $this->dispatch($method);
+            $this->$method();
+        }
+    }
+
+    protected function dispatch($method)
+    {
+        $base = ucfirst($method);
+
+        foreach ($traits = static::getTraits() as $trait) {
+            $method = $trait.$base;
+
+            if (method_exists($this, $method)) {
+                $this->$method();
+            }
+        }
     }
 
 
@@ -28,8 +65,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     {
         return 'id ASC';
     }
-
-
 
     public static function getAll()
     {
@@ -48,16 +83,19 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         }
     }
 
-
-
     public function save()
     {
         return R::store($this);
     }
 
+    public function trash()
+    {
+        return R::trash($this);
+    }
 
 
-    public function update($bubble = true)
+
+    private function update()
     {
         $fields = $this->bean->export();
 
@@ -80,10 +118,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         }
     }
 
-
-
-    public function trash()
+    private function delete()
     {
-        return R::trash($this);
     }
 }

@@ -13,12 +13,12 @@ trait ImageModel
 
 
 
-    public static function getWidth()
+    public static function width()
     {
         return null;
     }
     
-    public static function getHeight()
+    public static function height()
     {
         return null;
     }
@@ -47,8 +47,6 @@ trait ImageModel
         }
     }
 
-
-
     public function setImage(UploadedFile $image, $extension)
     {
         $dir = $this->getImageDir();
@@ -58,8 +56,8 @@ trait ImageModel
         $image->move($dir, $file);
         $this->image = $file;
 
-        $finalWidth = static::getWidth();
-        $finalHeight = static::getHeight();
+        $finalWidth = static::width();
+        $finalHeight = static::height();
 
         if ($finalWidth || $finalHeight) {
             $width = $finalWidth;
@@ -87,8 +85,6 @@ trait ImageModel
         $this->save();
     }
 
-
-
     public function cloneImageFor($clone)
     {
         if ($this->image) {
@@ -101,7 +97,7 @@ trait ImageModel
 
 
 
-    public function after_update()
+    protected function imageUpdate()
     {
         $app = App::getInstance();
 
@@ -131,8 +127,7 @@ trait ImageModel
         }
     }
 
-
-    public function delete()
+    protected function imageDelete()
     {
         $this->deleteImage();
     }
