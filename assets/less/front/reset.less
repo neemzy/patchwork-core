@@ -1,0 +1,119 @@
+@import '../../../../../../node_modules/bootstrap/less/alerts';
+
+
+
+*, :before, :after {
+    .appearance(none);
+
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+    font-size: 62.5%;
+}
+
+body {
+    .font-size(@font-size);
+    .text-size-adjust(100%);
+
+    width: 100%;
+    min-width: @min-width;
+    min-height: 100%;
+    background: @background none;
+    font-family: @font-family;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    color: @font-color;
+}
+
+a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+img {
+    max-width: 100%;
+    border: none;
+}
+
+ul, menu {
+    list-style-type: none;
+}
+
+ul, menu, ol {
+    list-style-position: inside;
+}
+
+button {
+    cursor: pointer;
+}
+
+button, input, select, textarea {
+    border-radius: 0;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+}
+
+input, textarea {
+    .placeholder();
+}
+
+textarea {
+    .resizable(none);
+
+    vertical-align: baseline;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+video {
+    max-width: 100%;
+    height: auto;
+}
+
+canvas {
+    -ms-touch-action: double-tap-zoom;
+}
+
+sup, sub {
+    vertical-align: baseline;
+    position: relative;
+    height: 0;
+    line-height: 1;
+}
+
+sup {
+    bottom: 1ex;
+}
+
+sub {
+    top: .5ex;
+}
+
+
+
+:-moz-ui-invalid {
+    .box-shadow(none);
+}
+
+::-moz-focus-inner {
+    border: none;
+}
+
+@-ms-viewport {
+    width: device-width;
+}
+
+[class^=alert-] {
+    .alert();
+}
