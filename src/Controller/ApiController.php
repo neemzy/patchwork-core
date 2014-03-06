@@ -2,6 +2,8 @@
 
 namespace Patchwork\Controller;
 
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpFoundation\Request;
 use \RedBean_Facade as R;
 use Patchwork\Exception;
 use Patchwork\Tools;
@@ -37,13 +39,15 @@ class ApiController extends AbstractController
 
         $ctrl
             ->get(
-                '/',
+                '{uri}',
                 function () use ($app) {
                     $data = R::findAndExport($this->class, 1);
                     return Tools::jsonResponse($data);
                 }
             )
-            ->bind('api.'.$this->class.'.list');
+            ->bind('api.'.$this->class.'.list')
+            ->assert('uri', '.{0}')
+            ->value('uri', '');
 
 
 
