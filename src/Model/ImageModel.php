@@ -50,7 +50,11 @@ trait ImageModel
     public function setImage(UploadedFile $image, $extension)
     {
         $dir = $this->getImageDir();
-        $file = $this->id.'.'.$extension;
+        $file = '';
+
+        while (file_exists($dir.$file)) {
+            $file = uniqid().'.'.$extension;
+        }
 
         $this->deleteImage(false);
         $image->move($dir, $file);
