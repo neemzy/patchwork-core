@@ -62,7 +62,7 @@ class AdminController extends AbstractController
                     $bean->dup();
 
                     $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', 'Cloning successful.');
+                    $app['session']->getFlashBag()->set('message', $app['translator']->trans('Cloning successful.'));
 
                     return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
@@ -100,7 +100,7 @@ class AdminController extends AbstractController
                     $bean->trash();
 
                     $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', 'Deletion successful.');
+                    $app['session']->getFlashBag()->set('message', $app['translator']->trans('Deletion successful.'));
 
                     return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
@@ -141,7 +141,7 @@ class AdminController extends AbstractController
                     try {
                         $bean->save();
 
-                        $app['session']->getFlashBag()->set('message', 'Save successful.');
+                        $app['session']->getFlashBag()->set('message', $app['translator']->trans('Save successful.'));
                     } catch (Exception $e) {
                         $app['session']->getFlashBag()->set('error', true);
                         $app['session']->getFlashBag()->set('message', $e->getHTML());
@@ -169,7 +169,7 @@ class AdminController extends AbstractController
                     $bean->deleteImage();
 
                     $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', 'Image deletion successful.');
+                    $app['session']->getFlashBag()->set('message', $app['translator']->trans('Image deletion successful.'));
                     
                     return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                 }
