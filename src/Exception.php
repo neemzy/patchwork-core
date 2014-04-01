@@ -4,7 +4,7 @@ namespace Patchwork;
 
 class Exception extends \Exception
 {
-    private $details;
+    protected $details;
 
 
 
@@ -25,10 +25,10 @@ class Exception extends \Exception
 
     public function getHTML()
     {
+        $app = App::getInstance();
         $html = '<p>'.$app['translator']->trans($this->getMessage()).'</p>';
 
         if (count($errors = $this->getDetails())) {
-            $app = App::getInstance();
             $html .= '<ul>';
 
             foreach ($errors as $error) {
