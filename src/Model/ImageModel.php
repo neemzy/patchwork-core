@@ -108,16 +108,16 @@ trait ImageModel
         try {
             if ($app['request']->files->has('image') && ($image = $app['request']->files->get('image'))) {
                 if ($error = $image->getError()) {
-                    $message = 'Une erreur est survenue lors de l\'envoi du fichier';
+                    $message = 'An error occured during the file upload.';
 
                     switch ($error) {
                         case UPLOAD_ERR_INI_SIZE:
                         case UPLOAD_ERR_FORM_SIZE:
-                            $message = 'Le fichier sélectionné est trop lourd';
+                            $message = 'The selected file is too big.';
                             break;
                     }
                 } else if (! in_array($extension = strtolower($image->guessExtension()), ['jpeg', 'png', 'gif'])) {
-                    $message = 'Seuls les formats JPEG, PNG et GIF sont autorisés';
+                    $message = 'Only JPEG, PNG and GIF types are allowed.';
                 }
 
                 if (isset($message)) {

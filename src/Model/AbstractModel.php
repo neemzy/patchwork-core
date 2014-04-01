@@ -114,7 +114,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         );
 
         if (count($errors)) {
-            throw new Exception('L\'enregistrement a échoué pour les raisons suivantes :', 0, null, $errors);
+            throw new Exception('Save failed for the following reasons :', 0, null, $errors);
         }
     }
 

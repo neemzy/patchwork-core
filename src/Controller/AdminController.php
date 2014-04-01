@@ -62,7 +62,7 @@ class AdminController extends AbstractController
                     $bean->dup();
 
                     $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', 'La duplication a bien été effectuée');
+                    $app['session']->getFlashBag()->set('message', 'Cloning successful.');
 
                     return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
@@ -100,7 +100,7 @@ class AdminController extends AbstractController
                     $bean->trash();
 
                     $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', 'La suppression a bien été effectuée');
+                    $app['session']->getFlashBag()->set('message', 'Deletion successful.');
 
                     return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
@@ -141,7 +141,7 @@ class AdminController extends AbstractController
                     try {
                         $bean->save();
 
-                        $app['session']->getFlashBag()->set('message', 'L\'enregistrement a bien été effectué');
+                        $app['session']->getFlashBag()->set('message', 'Save successful.');
                     } catch (Exception $e) {
                         $app['session']->getFlashBag()->set('error', true);
                         $app['session']->getFlashBag()->set('message', $e->getHTML());
@@ -169,7 +169,7 @@ class AdminController extends AbstractController
                     $bean->deleteImage();
 
                     $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', 'L\'image a bien été supprimée');
+                    $app['session']->getFlashBag()->set('message', 'Image deletion successful.');
                     
                     return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                 }
