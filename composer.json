@@ -18,7 +18,7 @@
         "symfony/validator": "~2.3",
         "symfony/translation": "~2.3",
         "symfony/config": "~2.3",
-        "monolog/monolog": "1.7.*@dev",
+        "monolog/monolog": "1.8.*@dev",
         "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
         "gabordemooij/redbean": "*",
         "entea/silex-twig-simple-asset-extension": "dev-master",
