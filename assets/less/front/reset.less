@@ -61,10 +61,6 @@ button, input, select, textarea {
     color: inherit;
 }
 
-input, textarea {
-    .placeholder();
-}
-
 textarea {
     .resizable(none);
 
@@ -102,12 +98,17 @@ sub {
 
 
 
-:-moz-ui-invalid {
-    .box-shadow(none);
+::placeholder {
+    color: @placeholder-color;
+    opacity: 1;
 }
 
 ::-moz-focus-inner {
     border: none;
+}
+
+:-moz-ui-invalid {
+    box-shadow: none;
 }
 
 @-ms-viewport {
