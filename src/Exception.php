@@ -25,7 +25,7 @@ class Exception extends \Exception
 
     public function getHTML()
     {
-        $html = '<p>'.$this->getMessage().'</p>';
+        $html = '<p>'.$app['translator']->trans($this->getMessage()).'</p>';
 
         if (count($errors = $this->getDetails())) {
             $app = App::getInstance();
