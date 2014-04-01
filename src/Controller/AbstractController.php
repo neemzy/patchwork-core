@@ -32,9 +32,8 @@ abstract class AbstractController implements ControllerProviderInterface
                 }
 
                 if (($username != ADMIN_USER) || ($password != ADMIN_PASS)) {
-                    $response = new Response();
-                    $response->headers->set('WWW-Authenticate', sprintf('Basic realm="%s"', 'Administration'));
-                    $response->setStatusCode(401, 'Please sign in.');
+                    $response = new Response(null, 401);
+                    $response->headers->set('WWW-Authenticate', 'Basic realm="Administration"');
 
                     return $response;
                 }
