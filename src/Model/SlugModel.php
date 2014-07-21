@@ -3,6 +3,7 @@
 namespace Patchwork\Model;
 
 use \RedBean_Facade as R;
+use Patchwork\Tools;
 
 trait SlugModel
 {
