@@ -2,8 +2,7 @@
 
 namespace Patchwork\Controller;
 
-use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use \RedBean_Facade as R;
 use Patchwork\Exception;
 use Patchwork\Tools;
@@ -58,7 +57,7 @@ class ApiController extends AbstractController
                 '/{bean}',
                 function ($bean) use ($app) {
                     if (! $data = R::findAndExport($this->class, 'id = ?', [$bean->id])) {
-                        $app->abort(404);
+                        $app->abort(Response::HTTP_NOT_FOUND);
                     }
 
                     return Tools::jsonResponse($data);
@@ -76,7 +75,7 @@ class ApiController extends AbstractController
                 '/{bean}',
                 function ($bean) use ($app) {
                     $bean->hydrate();
-                    $code = $bean->id ? 200 : 201;
+                    $code = $bean->id ? Response::HTTP_OK : Response::HTTP_CREATED;
 
                     try {
                         $bean->save();
@@ -84,7 +83,7 @@ class ApiController extends AbstractController
                     } catch (Exception $e) {
                         $errors = $e->getDetails();
                         $response = ['errors' => []];
-                        $code = 400;
+                        $code = Response::HTTP_BAD_REQUEST;
 
                         foreach ($errors as $error) {
                             $response['errors'][$error->getPropertyPath()] = $app['translator']->trans($error->getMessage());
@@ -110,11 +109,11 @@ class ApiController extends AbstractController
                     $bean = R::load($this->class, $id);
 
                     if (! $bean->id) {
-                        $app->abort(404);
+                        $app->abort(Response::HTTP_NOT_FOUND);
                     }
 
                     $bean->trash();
-                    return Tools::jsonResponse(null, 204);
+                    return Tools::jsonResponse(null, Response::HTTP_NO_CONTENT);
                 }
             )
             ->bind('api.'.$this->class.'.delete')
@@ -128,7 +127,7 @@ class ApiController extends AbstractController
             ->match(
                 '{uri}',
                 function () use ($app) {
-                    $app->abort(400);
+                    $app->abort(Response::HTTP_BAD_REQUEST);
                 }
             )
             ->assert('uri', '.*');

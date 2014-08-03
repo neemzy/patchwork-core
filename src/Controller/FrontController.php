@@ -44,7 +44,7 @@ class FrontController extends AbstractController
                 $root = str_replace('index.php/', '', $app['url_generator']->generate('home'));
 
                 if ($app['request']->getRequestURI() != $root) {
-                    return $app->redirect($root, 301);
+                    return $app->redirect($root, Response::HTTP_MOVED_PERMANENTLY);
                 }
 
                 return $app['twig']->render('front/partials/home.twig');

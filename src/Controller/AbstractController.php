@@ -32,7 +32,7 @@ abstract class AbstractController implements ControllerProviderInterface
                 }
 
                 if (($username != ADMIN_USER) || ($password != ADMIN_PASS)) {
-                    $response = new Response(null, 401);
+                    $response = new Response(null, Response::HTTP_UNAUTHORIZED);
                     $response->headers->set('WWW-Authenticate', 'Basic realm="Administration"');
 
                     return $response;

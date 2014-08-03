@@ -2,8 +2,7 @@
 
 namespace Patchwork;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class Tools
 {
@@ -14,13 +13,14 @@ class Tools
 
 
 
-    public static function jsonResponse($data, $code = 200, $options = JSON_NUMERIC_CHECK)
+    public static function jsonResponse($data, $code = JsonResponse::HTTP_OK, $options = JSON_NUMERIC_CHECK)
     {
-        return new Response(
-            json_encode($data, $options),
-            $code,
-            ['Content-Type' => 'application/json']
-        );
+        $response = new JsonResponse();
+        $response->setData($data);
+        $response->setStatusCode($code);
+        $response->setEncodingOptions($options);
+
+        return $response;
     }
 
 
