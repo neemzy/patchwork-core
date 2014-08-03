@@ -114,49 +114,42 @@ class AdminController extends AbstractController
         // Post
 
         $ctrl
-            ->get(
+            ->post(
                 '/post/{bean}',
                 function ($bean) use ($app) {
+                    if ($app['request']->getMethod() == 'POST') {
+                        $redirect = true;
+                        $pristine = !$bean->id;
+                        $bean->hydrate();
+
+                        $app['session']->getFlashBag()->clear();
+
+                        try {
+                            $bean->save();
+
+                            $app['session']->getFlashBag()->set('message', $app['translator']->trans('Save successful.'));
+                        } catch (Exception $e) {
+                            $app['session']->getFlashBag()->set('error', true);
+                            $app['session']->getFlashBag()->set('message', $e->getHTML());
+
+                            if (!$pristine && $bean->id) {
+                                $redirect = false;
+                            }
+                        }
+
+                        if ($redirect) {
+                            return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
+                        }
+                    }
+
                     return $app['twig']->render('admin/'.$this->class.'/post.twig', [$this->class => $bean]);
                 }
             )
             ->bind($this->class.'.post')
             ->convert('bean', $this->beanProvider)
             ->value('bean', 0)
-            ->before($this->auth);
-
-
-
-        // Submit
-
-        $ctrl
-            ->post(
-                '/post/{bean}',
-                function ($bean) use ($app) {
-                    $pristine = !$bean->id;
-                    $bean->hydrate();
-
-                    $app['session']->getFlashBag()->clear();
-
-                    try {
-                        $bean->save();
-
-                        $app['session']->getFlashBag()->set('message', $app['translator']->trans('Save successful.'));
-                    } catch (Exception $e) {
-                        $app['session']->getFlashBag()->set('error', true);
-                        $app['session']->getFlashBag()->set('message', $e->getHTML());
-
-                        if (!$pristine && $bean->id) {
-                            return $app['twig']->render('admin/'.$this->class.'/post.twig', [$this->class => $bean]);
-                        }
-                    }
-
-                    return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
-                }
-            )
-            ->convert('bean', $this->beanProvider)
-            ->value('bean', 0)
-            ->before($this->auth);
+            ->before($this->auth)
+            ->method('GET|POST');
 
 
 
