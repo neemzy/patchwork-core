@@ -75,6 +75,19 @@ trait FileModel
     public function deleteFile($field, $persist = true)
     {
         if ($this->$field) {
+            if ($persist) {
+                $asserts = $this->getAsserts(false, true);
+
+                foreach ($asserts[$field] as $constraint) {
+                    if ($constraint instanceof Assert\NotBlank) {
+                        $errors = new ConstraintViolationList();
+                        $errors->add(new ConstraintViolation('This value should not be blank.', null, [], null, '['.$field.']', null));
+
+                        throw new Exception('Files are errored :', 0, null, $errors);
+                    }
+                }
+            }
+
             unlink($this->getFilePath($field));
             $this->$field = null;
 
@@ -181,8 +194,10 @@ trait FileModel
                             $this->resize($key, $width, $height);
                         }
                     }
-                } else if ($required && !$this->$key) {
-                    $messages[] = 'This value should not be blank.';
+                } else {
+                    if ($required && !$this->$key) {
+                        $messages[] = 'This value should not be blank.';
+                    }
                 }
 
                 foreach ($messages as $message) {
