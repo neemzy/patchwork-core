@@ -138,7 +138,7 @@ class AdminController extends AbstractController
                         }
 
                         if ($redirect) {
-                            //return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
+                            return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                         }
                     }
 
