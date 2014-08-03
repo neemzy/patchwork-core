@@ -11,8 +11,8 @@ trait ClonableModel
         $clone = R::dup($this->bean);
         $clone->save();
 
-        if (static::uses('image')) {
-            $this->cloneImageFor($clone);
+        if (static::uses('file')) {
+            $this->cloneFilesFor($clone);
         }
     }
 }

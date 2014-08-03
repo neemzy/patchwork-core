@@ -119,7 +119,7 @@ class AdminController extends AbstractController
                 function ($bean) use ($app) {
                     if ($app['request']->getMethod() == 'POST') {
                         $redirect = true;
-                        $pristine = !$bean->id;
+                        $update = !$bean->isPristine();
                         $bean->hydrate();
 
                         $app['session']->getFlashBag()->clear();
@@ -132,13 +132,13 @@ class AdminController extends AbstractController
                             $app['session']->getFlashBag()->set('error', true);
                             $app['session']->getFlashBag()->set('message', $e->getHTML());
 
-                            if (!$pristine && $bean->id) {
+                            if ($update && $bean->id) {
                                 $redirect = false;
                             }
                         }
 
                         if ($redirect) {
-                            return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
+                            //return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                         }
                     }
 
@@ -153,21 +153,27 @@ class AdminController extends AbstractController
 
 
 
-        // Delete image
+        // Delete file
 
         $ctrl
             ->get(
-                '/delete_image/{bean}',
-                function ($bean) use ($app) {
-                    $bean->deleteImage();
-
+                '/delete_file/{bean}/{key}',
+                function ($bean, $key) use ($app) {
                     $app['session']->getFlashBag()->clear();
-                    $app['session']->getFlashBag()->set('message', $app['translator']->trans('Image deletion successful.'));
+
+                    try {
+                        $bean->deleteFile($key);
+
+                        $app['session']->getFlashBag()->set('message', $app['translator']->trans('File deletion successful.'));
+                    } catch (Exception $e) {
+                        $app['session']->getFlashBag()->set('error', true);
+                        $app['session']->getFlashBag()->set('message', $e->getHTML());
+                    }
                     
                     return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                 }
             )
-            ->bind($this->class.'.delete_image')
+            ->bind($this->class.'.delete_file')
             ->convert('bean', $this->beanProvider)
             ->before($this->auth);
 

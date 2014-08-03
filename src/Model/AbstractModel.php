@@ -73,10 +73,15 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
+    public function isPristine()
+    {
+        return !$this->id;
+    }
+
     public function hydrate()
     {
         $app = App::getInstance();
-        $pristine = !$this->id;
+        $pristine = $this->isPristine();
         
         foreach ($this->asserts($pristine) as $key => $assert) {
             $this->$key = $app['request']->get($key);
@@ -95,6 +100,11 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
+    protected function getAsserts()
+    {
+        return $this->asserts();
+    }
+
     private function update()
     {
         $fields = $this->bean->export();
@@ -107,7 +117,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
             $fields,
             new Assert\Collection(
                 [
-                    'fields' => $this->asserts(),
+                    'fields' => $this->getAsserts(),
                     'allowExtraFields' => true
                 ]
             )
