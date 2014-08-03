@@ -81,9 +81,8 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     public function hydrate()
     {
         $app = App::getInstance();
-        $pristine = $this->isPristine();
         
-        foreach ($this->asserts($pristine) as $key => $assert) {
+        foreach ($this->getAsserts() as $key => $assert) {
             $this->$key = $app['request']->get($key);
         }
     }
