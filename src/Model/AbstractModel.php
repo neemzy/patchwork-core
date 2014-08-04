@@ -84,11 +84,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
-    public function isPristine()
-    {
-        return !$this->id;
-    }
-
     public function hydrate()
     {
         $app = App::getInstance();
@@ -115,7 +110,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         return $this->asserts();
     }
 
-    private function update()
+    protected function validate()
     {
         $fields = $this->bean->export();
 
@@ -136,6 +131,13 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         if (count($errors)) {
             throw new Exception('Save failed for the following reasons :', 0, null, $errors);
         }
+    }
+
+
+
+    private function update()
+    {
+        $this->validate();
     }
 
     private function delete()

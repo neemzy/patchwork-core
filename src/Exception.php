@@ -11,6 +11,7 @@ class Exception extends \Exception
     public function __construct($message, $code = 0, \Exception $previous = null, $details = [])
     {
         parent::__construct($message, $code, $previous);
+
         $this->details = $details;
     }
 
@@ -18,7 +19,16 @@ class Exception extends \Exception
 
     public function getDetails()
     {
-        return $this->details;
+        if (is_array($this->details)) {
+            return $this->details;
+        }
+
+        return (array)$this->details->getIterator();
+    }
+
+    public function setDetails($details)
+    {
+        $this->details = $details;
     }
 
 

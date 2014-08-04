@@ -130,6 +130,13 @@ trait FileModel
     protected function fileUpdate()
     {
         $app = App::getInstance();
+        $exception = null;
+
+        try {
+            $this->validate();
+        } catch (Exception $e) {
+            $exception = $e;
+        }
 
         try {
             $errors = [];
@@ -154,7 +161,7 @@ trait FileModel
                         }
                     }
                     
-                    if (!count($messages)) {
+                    if (!$exception && !count($messages)) {
                         $this->upload($key, $file);
                     }
                 } else {
@@ -166,6 +173,13 @@ trait FileModel
                 foreach ($messages as $message) {
                     $errors[] = new ConstraintViolation($message, null, [], null, '['.$key.']', null);
                 }
+            }
+
+            if ($exception) {
+                $details = $exception->getDetails();
+                $exception->setDetails(array_merge($details, $errors));
+
+                throw $exception;
             }
 
             if (count($errors)) {

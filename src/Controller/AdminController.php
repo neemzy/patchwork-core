@@ -119,7 +119,6 @@ class AdminController extends AbstractController
                 function ($bean) use ($app) {
                     if ($app['request']->getMethod() == 'POST') {
                         $redirect = true;
-                        $update = !$bean->isPristine();
                         $bean->hydrate();
 
                         $app['session']->getFlashBag()->clear();
@@ -132,9 +131,7 @@ class AdminController extends AbstractController
                             $app['session']->getFlashBag()->set('error', true);
                             $app['session']->getFlashBag()->set('message', $e->getHTML());
 
-                            if ($update && $bean->id) {
-                                $redirect = false;
-                            }
+                            $redirect = false;
                         }
 
                         if ($redirect) {
