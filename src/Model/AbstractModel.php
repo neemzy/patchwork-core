@@ -16,10 +16,21 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         return str_replace('model', '', strtolower(array_pop($class)));
     }
 
+    private static function getRecursiveTraits($class)
+    {
+        $reflection = new \ReflectionClass($class);
+        $traits = array_keys($reflection->getTraits());
+
+        foreach ($traits as $trait) {
+            $traits = array_merge($traits, static::getRecursiveTraits($trait, $level));
+        }
+
+        return $traits;
+    }
+
     protected static function getTraits($unqualified = true)
     {
-        $reflection = new \ReflectionClass(get_called_class());
-        $traits = array_keys($reflection->getTraits());
+        $traits = static::getRecursiveTraits(get_called_class());
 
         if ($unqualified) {
             array_walk(
