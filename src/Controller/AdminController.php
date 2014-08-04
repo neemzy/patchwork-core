@@ -162,7 +162,7 @@ class AdminController extends AbstractController
                     $app['session']->getFlashBag()->clear();
 
                     try {
-                        $bean->deleteFile($key);
+                        $bean->deleteFile($key, true);
 
                         $app['session']->getFlashBag()->set('message', $app['translator']->trans('File deletion successful.'));
                     } catch (Exception $e) {

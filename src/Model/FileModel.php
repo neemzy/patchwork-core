@@ -5,14 +5,13 @@ namespace Patchwork\Model;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\ConstraintViolation;
 use Patchwork\App;
 use Patchwork\Exception;
 
 trait FileModel
 {
-    protected $fileFields = array();
+    protected $fileFields = [];
 
 
 
@@ -71,7 +70,7 @@ trait FileModel
 
 
 
-    public function deleteFile($key, $persist = true)
+    public function deleteFile($key, $persist = false)
     {
         if ($this->$key) {
             if ($persist) {
@@ -79,8 +78,8 @@ trait FileModel
 
                 foreach ($asserts[$key] as $constraint) {
                     if ($constraint instanceof Assert\NotBlank) {
-                        $errors = new ConstraintViolationList();
-                        $errors->add(new ConstraintViolation('This value should not be blank.', null, [], null, '['.$key.']', null));
+                        $errors = [];
+                        $errors[] = new ConstraintViolation('This value should not be blank.', null, [], null, '['.$key.']', null);
 
                         throw new Exception('Files are errored :', 0, null, $errors);
                     }
@@ -107,7 +106,7 @@ trait FileModel
             $file = uniqid().'.'.$extension;
         }
 
-        $this->deleteFile($key, false);
+        $this->deleteFile($key);
         $uploadedFile->move($dir, $file);
         $this->$key = $file;
     }
@@ -133,7 +132,7 @@ trait FileModel
         $app = App::getInstance();
 
         try {
-            $errors = new ConstraintViolationList();
+            $errors = [];
 
             foreach ($this->getAsserts(false, true) as $key => $asserts) {
                 $messages = [];
@@ -165,7 +164,7 @@ trait FileModel
                 }
 
                 foreach ($messages as $message) {
-                    $errors->add(new ConstraintViolation($message, null, [], null, '['.$key.']', null));
+                    $errors[] = new ConstraintViolation($message, null, [], null, '['.$key.']', null);
                 }
             }
 
@@ -179,9 +178,9 @@ trait FileModel
     protected function fileDelete()
     {
         try {
-            foreach ($this->getAsserts(false, true) as $field => $asserts) {
-                if ($this->$field) {
-                    $this->deleteFile($field);
+            foreach ($this->getAsserts(false, true) as $key => $asserts) {
+                if ($this->$key) {
+                    $this->deleteFile($key);
                 }
             }
         } catch (Exception $e) {
