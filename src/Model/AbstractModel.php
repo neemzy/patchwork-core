@@ -22,7 +22,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         $traits = array_keys($reflection->getTraits());
 
         foreach ($traits as $trait) {
-            $traits = array_merge($traits, static::getRecursiveTraits($trait, $level));
+            $traits = array_merge($traits, static::getRecursiveTraits($trait));
         }
 
         return $traits;
