@@ -2,6 +2,7 @@
 
 namespace Patchwork\Controller;
 
+use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 
 class FrontController extends AbstractController
@@ -9,12 +10,12 @@ class FrontController extends AbstractController
     /**
      * Crafts routes for this instance
      *
-     * @param $app   Patchwork\App Application instance
-     * @param $class string        Model unqualified classname
+     * @param $app   Silex\Application Application instance
+     * @param $class string            Model unqualified classname
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    protected function route($app)
+    protected function route(Application $app)
     {
         $ctrl = parent::route($app);
 

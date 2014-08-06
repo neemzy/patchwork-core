@@ -2,10 +2,10 @@
 
 namespace Patchwork\Controller;
 
+use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use \RedBean_Facade as R;
-use Patchwork\App;
 
 abstract class AbstractController implements ControllerProviderInterface
 {
@@ -77,7 +77,7 @@ abstract class AbstractController implements ControllerProviderInterface
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    public function connect(\Silex\Application $app)
+    public function connect(Application $app)
     {
         return $this->route($app);
     }
@@ -87,12 +87,12 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Crafts routes for this instance
      *
-     * @param $app   Patchwork\App Application instance
-     * @param $class string        Model unqualified classname
+     * @param $app   Silex\Application Application instance
+     * @param $class string            Model unqualified classname
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    protected function route($app)
+    protected function route(Application $app)
     {
         return $app['controllers_factory'];
     }

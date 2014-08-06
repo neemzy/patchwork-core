@@ -2,6 +2,7 @@
 
 namespace Patchwork\Controller;
 
+use Silex\Application;
 use \RedBean_Facade as R;
 use Patchwork\Exception;
 use Patchwork\Model\AbstractModel;
@@ -11,8 +12,8 @@ class AdminController extends AbstractController
     /**
      * Crafts routes for this instance
      *
-     * @param $app   Patchwork\App Application instance
-     * @param $class string        Model unqualified classname
+     * @param $app   Silex\Application Application instance
+     * @param $class string            Model unqualified classname
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
