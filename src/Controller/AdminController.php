@@ -17,7 +17,7 @@ class AdminController extends AbstractController
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    protected function route($app, $class = null)
+    protected function route(Application $app, $class = null)
     {
         $ctrl = parent::route($app);
         
