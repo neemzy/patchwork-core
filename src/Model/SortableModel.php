@@ -6,6 +6,13 @@ use \RedBean_Facade as R;
 
 trait SortableModel
 {
+    /**
+     * Moves this bean up or down by position
+     *
+     * @param $up bool Move way
+     *
+     * @return void
+     */
     public function move($up)
     {
         $class = static::unqualify();
@@ -23,6 +30,11 @@ trait SortableModel
 
 
 
+    /**
+     * Overrideable method to get the default sorting index and way
+     *
+     * @return string SQL snippet
+     */
     public static function orderBy()
     {
         return 'position ASC';
@@ -30,6 +42,12 @@ trait SortableModel
 
 
 
+    /**
+     * RedBean update method
+     * Automates position assigning
+     *
+     * @return void
+     */
     protected function sortableUpdate()
     {
         if ((! $this->position) || ($this->position && count(R::find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
@@ -38,6 +56,14 @@ trait SortableModel
         }
     }
 
+
+
+    /**
+     * RedBean deletion method
+     * Regulates the siblings' positions
+     *
+     * @return void
+     */
     protected function sortableDelete()
     {
         R::exec('UPDATE '.static::unqualify().' SET position = position - 1 WHERE position > ?', [$this->position]);

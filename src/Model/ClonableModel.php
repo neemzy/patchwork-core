@@ -6,6 +6,11 @@ use \RedBean_Facade as R;
 
 trait ClonableModel
 {
+    /**
+     * Duplicate this bean
+     *
+     * @return void
+     */
     public function dup()
     {
         $clone = R::dup($this->bean);

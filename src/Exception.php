@@ -4,10 +4,23 @@ namespace Patchwork;
 
 class Exception extends \Exception
 {
+    /**
+     * @var array|Symfony\Component\Validator\ConstraintViolationList Details list
+     */
     protected $details;
 
 
 
+    /**
+     * Constructor
+     *
+     * @param $message  string                                                    Exception message
+     * @param $code     int                                                       Exit code
+     * @param $previous Exception                                                 Parent exception
+     * @param $details  array|Symfony\Component\Validator\ConstraintViolationList Details list
+     *
+     * @return void
+     */
     public function __construct($message, $code = 0, \Exception $previous = null, $details = [])
     {
         parent::__construct($message, $code, $previous);
@@ -17,6 +30,11 @@ class Exception extends \Exception
 
 
 
+    /**
+     * Gets the details list
+     *
+     * @return array Details list
+     */
     public function getDetails()
     {
         if (is_array($this->details)) {
@@ -26,6 +44,15 @@ class Exception extends \Exception
         return (array)$this->details->getIterator();
     }
 
+
+
+    /**
+     * Sets the details list
+     *
+     * @param $details array|Symfony\Component\Validator\ConstraintViolationList details list
+     *
+     * @return void
+     */
     public function setDetails($details)
     {
         $this->details = $details;
@@ -33,6 +60,11 @@ class Exception extends \Exception
 
 
 
+    /**
+     * Displays the message and details list as HTML
+     *
+     * @return string Generated HTML
+     */
     public function getHTML()
     {
         $app = App::getInstance();

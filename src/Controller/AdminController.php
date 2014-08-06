@@ -4,10 +4,18 @@ namespace Patchwork\Controller;
 
 use \RedBean_Facade as R;
 use Patchwork\Exception;
-use Patchwork\Tools;
+use Patchwork\Model\AbstractModel;
 
 class AdminController extends AbstractController
 {
+    /**
+     * Crafts routes for this instance
+     *
+     * @param $app   Patchwork\App Application instance
+     * @param $class string        Model unqualified classname
+     *
+     * @return Silex\ControllerCollection Object encapsulating crafted routes
+     */
     protected function route($app, $class = null)
     {
         $ctrl = parent::route($app);
@@ -18,15 +26,16 @@ class AdminController extends AbstractController
 
 
 
-        // List
-
+        /**
+         * List items
+         */
         $ctrl
             ->get(
                 '/list',
                 function () use ($app) {
                     return $app['twig']->render(
                         'admin/'.$this->class.'/list.twig',
-                        [$this->class.'s' => call_user_func(Tools::qualify($this->class).'::getAll')]
+                        [$this->class.'s' => call_user_func(AbstractModel::qualify($this->class, 'getAll'))]
                     );
                 }
             )
@@ -35,8 +44,9 @@ class AdminController extends AbstractController
 
 
 
-        // Move
-
+        /**
+         * Move item up or down
+         */
         $ctrl
             ->get(
                 '/move/{bean}/{up}',
@@ -53,8 +63,9 @@ class AdminController extends AbstractController
 
 
 
-        // Clone
-
+        /**
+         * Clone item
+         */
         $ctrl
             ->get(
                 '/clone/{bean}',
@@ -73,8 +84,9 @@ class AdminController extends AbstractController
 
 
 
-        // Toggle
-
+        /**
+         * Toggle item's visibility
+         */
         $ctrl
             ->get(
                 '/toggle/{bean}',
@@ -91,8 +103,9 @@ class AdminController extends AbstractController
 
 
 
-        // Delete
-
+        /**
+         * Delete item
+         */
         $ctrl
             ->get(
                 '/delete/{bean}',
@@ -111,8 +124,9 @@ class AdminController extends AbstractController
 
 
 
-        // Post
-
+        /**
+         * Create/update item
+         */
         $ctrl
             ->post(
                 '/post/{bean}',
@@ -150,8 +164,9 @@ class AdminController extends AbstractController
 
 
 
-        // Delete file
-
+        /**
+         * Delete item's attached file
+         */
         $ctrl
             ->get(
                 '/delete_file/{bean}/{key}',

@@ -2,8 +2,9 @@
 
 namespace Patchwork\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use \RedBean_Facade as R;
+use Patchwork\App;
 use Patchwork\Exception;
 use Patchwork\Tools;
 
@@ -14,6 +15,13 @@ class ApiController extends AbstractController
 
 
 
+    /**
+     * Maps an instance of this controller to a model
+     *
+     * @param $class string Model unqualified classname
+     *
+     * @return Patchwork\Controller\ApiController Mapped instance
+     */
     public static function getInstanceFor($class, $readonly = false)
     {
         $instance = parent::getInstanceFor($class);
@@ -24,7 +32,15 @@ class ApiController extends AbstractController
 
 
 
-    protected function route($app, $class = null)
+    /**
+     * Crafts routes for this instance
+     *
+     * @param $app   Patchwork\App Application instance
+     * @param $class string        Model unqualified classname
+     *
+     * @return Silex\ControllerCollection Object encapsulating crafted routes
+     */
+    protected function route(App $app, $class = null)
     {
         $ctrl = parent::route($app);
         
@@ -34,14 +50,17 @@ class ApiController extends AbstractController
 
 
 
-        // Read list
-
+        /**
+         * List items
+         */
         $ctrl
             ->get(
                 '{uri}',
                 function () use ($app) {
-                    $data = R::findAndExport($this->class, 1);
-                    return Tools::jsonResponse($data);
+                    $response = new JsonResponse(R::findAndExport($this->class, 1));
+                    $response->setEncodingOptions(JSON_NUMERIC_CHECK);
+
+                    return $response;
                 }
             )
             ->bind('api.'.$this->class.'.list')
@@ -50,17 +69,21 @@ class ApiController extends AbstractController
 
 
 
-        // Read item
-
+        /**
+         * Read item
+         */
         $ctrl
             ->get(
                 '/{bean}',
                 function ($bean) use ($app) {
-                    if (! $data = R::findAndExport($this->class, 'id = ?', [$bean->id])) {
-                        $app->abort(Response::HTTP_NOT_FOUND);
+                    if (!$data = R::findAndExport($this->class, 'id = ?', [$bean->id])) {
+                        $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
-                    return Tools::jsonResponse($data);
+                    $response = new JsonResponse($data);
+                    $response->setEncodingOptions(JSON_NUMERIC_CHECK);
+
+                    return $response;
                 }
             )
             ->bind('api.'.$this->class.'.read')
@@ -68,8 +91,9 @@ class ApiController extends AbstractController
 
 
 
-        // Create/Update
-
+        /**
+         * Create/update item
+         */
         $this->readonly || $ctrl
             ->match(
                 '/{bean}',
@@ -79,18 +103,21 @@ class ApiController extends AbstractController
 
                     try {
                         $bean->save();
-                        $response = $bean->export();
+                        $data = $bean->export();
                     } catch (Exception $e) {
                         $errors = $e->getDetails();
-                        $response = ['errors' => []];
+                        $data = ['errors' => []];
                         $code = Response::HTTP_BAD_REQUEST;
 
                         foreach ($errors as $error) {
-                            $response['errors'][$error->getPropertyPath()] = $app['translator']->trans($error->getMessage());
+                            $data['errors'][$error->getPropertyPath()] = $app['translator']->trans($error->getMessage());
                         }
                     }
 
-                    return Tools::jsonResponse($response, $code);
+                    $response = new JsonResponse($data, $code);
+                    $response->setEncodingOptions(JSON_NUMERIC_CHECK);
+
+                    return $response;
                 }
             )
             ->bind('api.'.$this->class.'.post')
@@ -100,8 +127,9 @@ class ApiController extends AbstractController
 
 
 
-        // Delete
-
+        /**
+         * Delete item
+         */
         $this->readonly || $ctrl
             ->delete(
                 '/{id}',
@@ -109,11 +137,15 @@ class ApiController extends AbstractController
                     $bean = R::load($this->class, $id);
 
                     if (! $bean->id) {
-                        $app->abort(Response::HTTP_NOT_FOUND);
+                        $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
                     $bean->trash();
-                    return Tools::jsonResponse(null, Response::HTTP_NO_CONTENT);
+
+                    $response = new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+                    $response->setEncodingOptions(JSON_NUMERIC_CHECK);
+
+                    return $response;
                 }
             )
             ->bind('api.'.$this->class.'.delete')
@@ -121,13 +153,14 @@ class ApiController extends AbstractController
 
 
 
-        // Gotta catch'em all
-
+        /**
+         * Catch-all
+         */
         $ctrl
             ->match(
                 '{uri}',
                 function () use ($app) {
-                    $app->abort(Response::HTTP_BAD_REQUEST);
+                    $app->abort(JsonResponse::HTTP_BAD_REQUEST);
                 }
             )
             ->assert('uri', '.*');

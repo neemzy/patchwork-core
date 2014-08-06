@@ -2,19 +2,27 @@
 
 namespace Patchwork\Model;
 
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ConstraintViolation;
 use Patchwork\App;
 use Patchwork\Exception;
+use Patchwork\Model\AbstractModel;
 
 trait FileModel
 {
+    /**
+     * @var array File asserts keys list
+     */
     protected $fileFields = [];
 
 
 
+    /**
+     * Trait-overrideable assert list getter
+     *
+     * @return array Asserts
+     */
     protected function getAsserts($classic = true, $files = false)
     {
         $asserts = $this->asserts();
@@ -56,13 +64,23 @@ trait FileModel
 
 
 
-
-
+    /**
+     * Gets the upload directory path for the current class
+     *
+     * @return string Upload directory path
+     */
     public static function getUploadDir($absolute = true)
     {
         return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.static::unqualify().'/';
     }
 
+
+
+    /**
+     * Gets the path to this bean's uploaded file
+     *
+     * @return string Uploaded file path
+     */
     public function getFilePath($key, $absolute = true)
     {
         return static::getUploadDir($absolute).$this->$key;
@@ -70,6 +88,14 @@ trait FileModel
 
 
 
+    /**
+     * Deletes this bean's uploaded file
+     *
+     * @param $key     string File to delete
+     * @param $persist bool   Whether to persist the deletion into database
+     *
+     * @return void
+     */
     public function deleteFile($key, $persist = false)
     {
         if ($this->$key) {
@@ -95,6 +121,14 @@ trait FileModel
 
 
 
+    /**
+     * Saves an uploaded file for this bean
+     *
+     * @param $key          string                                             Key under which to save the file
+     * @param $uploadedFile Symfony\Component\HttpFoundation\File\UploadedFile File to save
+     *
+     * @return void
+     */
     public function upload($key, UploadedFile $uploadedFile)
     {
         $extension = $uploadedFile->guessExtension();
@@ -111,7 +145,16 @@ trait FileModel
         $this->$key = $file;
     }
 
-    public function cloneFilesFor($clone)
+
+
+    /**
+     * Copies this bean's file for another bean
+     *
+     * @param Patchwork\Model\AbstractModel string Target bean
+     *
+     * @return void
+     */
+    public function cloneFilesFor(Patchwork\Model\AbstractModel $clone)
     {
         foreach ($this->getAsserts(false, true) as $key => $asserts) {
             if ($this->$key) {
@@ -127,6 +170,12 @@ trait FileModel
 
 
 
+    /**
+     * RedBean update method
+     * Uploads and validates files
+     *
+     * @return void
+     */
     protected function fileUpdate()
     {
         $app = App::getInstance();
@@ -189,6 +238,14 @@ trait FileModel
         }
     }
 
+
+
+    /**
+     * RedBean deletion method
+     * Loop-deletes this bean's file
+     *
+     * @return void
+     */
     protected function fileDelete()
     {
         try {

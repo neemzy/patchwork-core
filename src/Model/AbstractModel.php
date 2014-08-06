@@ -6,9 +6,32 @@ use Symfony\Component\Validator\Constraints as Assert;
 use \RedBean_Facade as R;
 use Patchwork\App;
 use Patchwork\Exception;
+use Patchwork\Tools;
 
 abstract class AbstractModel extends \RedBean_SimpleModel
 {
+    /**
+     * Qualifies a model name
+     *
+     * @param $class  string The lowercase, short model name
+     * @param $method string Method to append to the qualified model name
+     *
+     * @return string The titlecased, namespaced model name
+     */
+    public static function qualify($class, $method = null)
+    {
+        return REDBEAN_MODEL_PREFIX.mb_convert_case($class, MB_CASE_TITLE).(!$method ?: '::'.$method);
+    }
+
+
+
+    /**
+     * Unqualifies a model name
+     *
+     * @param $class string The titlecase, namespaced model name (the current class's if not provided)
+     *
+     * @return string The lowercased, shortened model name
+     */
     public static function unqualify($class = null)
     {
         $class = explode('\\', $class ?: get_called_class());
@@ -16,21 +39,16 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         return str_replace('model', '', strtolower(array_pop($class)));
     }
 
-    private static function getRecursiveTraits($class)
-    {
-        $reflection = new \ReflectionClass($class);
-        $traits = array_keys($reflection->getTraits());
 
-        foreach ($traits as $trait) {
-            $traits = array_merge($traits, static::getRecursiveTraits($trait));
-        }
 
-        return $traits;
-    }
-
+    /**
+     * Gets the current class's used traits list
+     *
+     * @param $unqualified bool
+     */
     protected static function getTraits($unqualified = true)
     {
-        $traits = static::getRecursiveTraits(get_called_class());
+        $traits = Tools::getRecursiveTraits(get_called_class());
 
         if ($unqualified) {
             array_walk(
@@ -44,11 +62,31 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         return $traits;
     }
 
+
+
+    /**
+     * Determines if the current class uses a given trait
+     *
+     * @param $trait string Trait full name
+     *
+     * @return bool Whether this trait is in use in the current class
+     */
     protected static function uses($trait)
     {
         return in_array($trait, static::getTraits());
     }
 
+
+
+    /**
+     * Magic method
+     * Catches calls to update and deletion methods to dispatch them first
+     *
+     * @param $method    string Called method
+     * @param $arguments array  Paramaters
+     *
+     * @return void
+     */
     public function __call($method, $arguments)
     {
         if (in_array($method, array('update', 'delete'))) {
@@ -57,6 +95,15 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         }
     }
 
+
+
+    /**
+     * Calls a given method on all the current's class used traits, based on a prefix
+     *
+     * @param $method Method name
+     *
+     * @return void
+     */
     protected function dispatch($method)
     {
         $base = ucfirst($method);
@@ -72,11 +119,23 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
+    /**
+     * Overrideable method to get the default sorting index and way
+     *
+     * @return string SQL snippet
+     */
     public static function orderBy()
     {
         return 'id ASC';
     }
 
+
+
+    /**
+     * Gets all instances of the model
+     *
+     * @return array Instance collection
+     */
     public static function getAll()
     {
         return R::findAll(static::unqualify(), 'ORDER BY '.static::orderBy());
@@ -84,6 +143,11 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
+    /**
+     * Hydrates this bean with request data
+     *
+     * @return void
+     */
     public function hydrate()
     {
         $app = App::getInstance();
@@ -93,23 +157,47 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         }
     }
 
+
+
+    /**
+     * Saves this bean to database
+     *
+     * @return int|string bean id
+     */
     public function save()
     {
         return R::store($this);
     }
 
+    /**
+     * Deletes this bean from database
+     *
+     * @return void
+     */
     public function trash()
     {
-        return R::trash($this);
+        R::trash($this);
     }
 
 
 
+    /**
+     * Trait-overrideable assert list getter
+     *
+     * @return array Asserts
+     */
     protected function getAsserts()
     {
         return $this->asserts();
     }
 
+
+
+    /**
+     * Validates this bean's values against the model's asserts
+     *
+     * @throws Patchwork\Exception
+     */
     protected function validate()
     {
         $fields = $this->bean->export();
@@ -135,11 +223,23 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
 
+    /**
+     * RedBean update method
+     *
+     * @return void
+     */
     private function update()
     {
         $this->validate();
     }
 
+
+
+    /**
+     * RedBean deletion method
+     *
+     * @return void
+     */
     private function delete()
     {
     }

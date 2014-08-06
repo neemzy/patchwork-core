@@ -15,6 +15,12 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
 
+    /**
+     * Constructor
+     * Attaches a model provider and an authentication method to the controller
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->auth = function () {
@@ -47,6 +53,13 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
 
+    /**
+     * Maps an instance of this controller to a model
+     *
+     * @param $class string Model unqualified classname
+     *
+     * @return Patchwork\Controller\AbstractController Mapped instance
+     */
     public static function getInstanceFor($class)
     {
         $instance = new static();
@@ -57,6 +70,13 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
 
+    /**
+     * Silex method that binds the controller to the app
+     *
+     * @param $app Silex\Application Application instance
+     *
+     * @return Silex\ControllerCollection Object encapsulating crafted routes
+     */
     public function connect(\Silex\Application $app)
     {
         return $this->route($app);
@@ -64,6 +84,14 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
 
+    /**
+     * Crafts routes for this instance
+     *
+     * @param $app   Patchwork\App Application instance
+     * @param $class string        Model unqualified classname
+     *
+     * @return Silex\ControllerCollection Object encapsulating crafted routes
+     */
     protected function route($app)
     {
         return $app['controllers_factory'];

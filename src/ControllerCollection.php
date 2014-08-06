@@ -4,6 +4,14 @@ namespace Patchwork;
 
 class ControllerCollection extends \Silex\ControllerCollection
 {
+    /**
+     * Cancels a route (or more)
+     *
+     * @param $path    string       Route URI
+     * @param $methods array|string HTTP method(s)
+     *
+     * @return Patchwork\ControllerCollection Itself (for chaining)
+     */
     public function cancel($path, $methods = ['GET', 'POST', 'PUSH', 'DELETE'])
     {
         $methods = array_map('strtoupper', (array)$methods);

@@ -6,12 +6,25 @@ use Silex\Application;
 
 class App
 {
+    /**
+     * @var string Default instance name
+     */
     const DEFAULT_NAME = 'default';
 
+    /**
+     * @var array Instance collection
+     */
     private static $instances = [];
 
 
 
+    /**
+     * Gets an instance by its name
+     *
+     * @param $param string|array Requested instance name or parameter array
+     *
+     * @return App Requested instance, created on-the-fly if it doesn't exist
+     */
     public static function getInstance($param = self::DEFAULT_NAME)
     {
         if (is_array($param)) {
