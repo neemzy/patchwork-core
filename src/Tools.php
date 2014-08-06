@@ -4,27 +4,6 @@ namespace Patchwork;
 
 class Tools
 {
-    public static function twitter($url, $text = '')
-    {
-        return 'http://twitter.com/share?url='.rawurlencode($url).'&amp;text='.rawurlencode($text).'" onclick="window.open(this.href, \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=640,height=435\');return false';
-    }
-
-
-
-    public static function facebook($url)
-    {
-        return 'http://www.facebook.com/sharer/sharer.php?u='.rawurlencode($url).'" onclick="window.open(this.href, \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=640,height=350\');return false';
-    }
-
-
-
-    public static function pinterest($url, $media)
-    {
-        return 'http://pinterest.com/pin/create/button/?url='.rawurlencode($url).'&amp;media='.rawurlencode($media).'" onclick="window.open(this.href, \'\', \'directories=no,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=750,height=316\');return false';
-    }
-
-
-
     /**
      * Dumps a variable
      *
