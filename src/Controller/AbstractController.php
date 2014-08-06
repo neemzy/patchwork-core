@@ -6,6 +6,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 use \RedBean_Facade as R;
+use Patchwork\App;
 
 abstract class AbstractController implements ControllerProviderInterface
 {
