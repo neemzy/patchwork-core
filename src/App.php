@@ -21,7 +21,7 @@ class App
     /**
      * Gets an instance by its name
      *
-     * @param $param string|array Requested instance name or parameter array
+     * @param string|array $param Requested instance name or parameter array
      *
      * @return App Requested instance, created on-the-fly if it doesn't exist
      */

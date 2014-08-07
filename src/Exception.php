@@ -14,10 +14,10 @@ class Exception extends \Exception
     /**
      * Constructor
      *
-     * @param $message  string                                                    Exception message
-     * @param $code     int                                                       Exit code
-     * @param $previous Exception                                                 Parent exception
-     * @param $details  array|Symfony\Component\Validator\ConstraintViolationList Details list
+     * @param string                                                    $message  Exception message
+     * @param int                                                       $code     Exit code
+     * @param Exception                                                 $previous Parent exception
+     * @param array|Symfony\Component\Validator\ConstraintViolationList $details  Details list
      *
      * @return void
      */
@@ -49,7 +49,7 @@ class Exception extends \Exception
     /**
      * Sets the details list
      *
-     * @param $details array|Symfony\Component\Validator\ConstraintViolationList details list
+     * @param array|Symfony\Component\Validator\ConstraintViolationList $details details list
      *
      * @return void
      */

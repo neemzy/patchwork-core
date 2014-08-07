@@ -7,8 +7,8 @@ class ControllerCollection extends \Silex\ControllerCollection
     /**
      * Cancels a route (or more)
      *
-     * @param $path    string       Route URI
-     * @param $methods array|string HTTP method(s)
+     * @param string       $path    Route URI
+     * @param array|string $methods HTTP method(s)
      *
      * @return Patchwork\ControllerCollection Itself (for chaining)
      */

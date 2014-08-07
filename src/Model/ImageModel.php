@@ -43,8 +43,8 @@ trait ImageModel
     /**
      * Resizes this bean's image
      *
-     * @param $key     string Image to resize
-     * @param $quality int    Quality percentage
+     * @param string $key     Image to resize
+     * @param int    $quality Quality percentage
      *
      * @return void
      */
@@ -90,8 +90,8 @@ trait ImageModel
     /**
      * Saves an uploaded image for this bean
      *
-     * @param $key          string                                             Key under which to save the file
-     * @param $uploadedFile Symfony\Component\HttpFoundation\File\UploadedFile File to save
+     * @param string                                             $key          Key under which to save the file
+     * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile File to save
      *
      * @return void
      */

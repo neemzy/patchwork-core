@@ -7,8 +7,8 @@ class Tools
     /**
      * Dumps a variable
      *
-     * @param $var mixed Variable to dump
-     * @param $pre bool  Whether to wrap the result in a HTML <pre> tag or not
+     * @param mixed $var Variable to dump
+     * @param bool  $pre Whether to wrap the result in a HTML <pre> tag or not
      *
      * @return string Dumped variable
      */
@@ -27,7 +27,7 @@ class Tools
     /**
      * Makes a string URL-suitable
      *
-     * @param $string string String to vulgarize
+     * @param string $string String to vulgarize
      *
      * @return string Vulgarized string
      */
@@ -74,7 +74,7 @@ class Tools
     /**
      * Gets a recursive used traits list for a class
      *
-     * @param $class string Class full name
+     * @param string $class Class full name
      *
      * @return array Traits list
      */

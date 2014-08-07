@@ -13,8 +13,8 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     /**
      * Qualifies a model name
      *
-     * @param $class  string The lowercase, short model name
-     * @param $method string Method to append to the qualified model name
+     * @param string $class  The lowercase, short model name
+     * @param string $method Method to append to the qualified model name
      *
      * @return string The titlecased, namespaced model name
      */
@@ -28,7 +28,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     /**
      * Unqualifies a model name
      *
-     * @param $class string The titlecase, namespaced model name (the current class's if not provided)
+     * @param string $class The titlecase, namespaced model name (the current class's if not provided)
      *
      * @return string The lowercased, shortened model name
      */
@@ -44,7 +44,9 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     /**
      * Gets the current class's used traits list
      *
-     * @param $unqualified bool
+     * @param bool $unqualified Whether to unqualify the traits' names or not
+     *
+     * @return array Traits list
      */
     protected static function getTraits($unqualified = true)
     {
@@ -67,7 +69,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     /**
      * Determines if the current class uses a given trait
      *
-     * @param $trait string Trait full name
+     * @param string $trait Trait full name
      *
      * @return bool Whether this trait is in use in the current class
      */
@@ -82,8 +84,8 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      * Magic method
      * Catches calls to update and deletion methods to dispatch them first
      *
-     * @param $method    string Called method
-     * @param $arguments array  Paramaters
+     * @param string $method    Called method
+     * @param array  $arguments Paramaters
      *
      * @return void
      */
@@ -100,7 +102,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     /**
      * Calls a given method on all the current's class used traits, based on a prefix
      *
-     * @param $method Method name
+     * @param string $method Method name
      *
      * @return void
      */
@@ -197,6 +199,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      * Validates this bean's values against the model's asserts
      *
      * @throws Patchwork\Exception
+     * @return void
      */
     protected function validate()
     {

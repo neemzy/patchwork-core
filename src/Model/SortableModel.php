@@ -9,7 +9,7 @@ trait SortableModel
     /**
      * Moves this bean up or down by position
      *
-     * @param $up bool Move way
+     * @param bool $up Move way
      *
      * @return void
      */

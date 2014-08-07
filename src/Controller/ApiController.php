@@ -18,7 +18,7 @@ class ApiController extends AbstractController
     /**
      * Maps an instance of this controller to a model
      *
-     * @param $class string Model unqualified classname
+     * @param string $class Model unqualified classname
      *
      * @return Patchwork\Controller\ApiController Mapped instance
      */
@@ -35,8 +35,8 @@ class ApiController extends AbstractController
     /**
      * Crafts routes for this instance
      *
-     * @param $app   Silex\Application Application instance
-     * @param $class string            Model unqualified classname
+     * @param Silex\Application $app   Application instance
+     * @param string            $class Model unqualified classname
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */

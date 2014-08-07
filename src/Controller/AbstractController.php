@@ -57,7 +57,7 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Maps an instance of this controller to a model
      *
-     * @param $class string Model unqualified classname
+     * @param string $class Model unqualified classname
      *
      * @return Patchwork\Controller\AbstractController Mapped instance
      */
@@ -74,7 +74,7 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Silex method that binds the controller to the app
      *
-     * @param $app Silex\Application Application instance
+     * @param Silex\Application $app Application instance
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
@@ -88,8 +88,7 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Crafts routes for this instance
      *
-     * @param $app   Silex\Application Application instance
-     * @param $class string            Model unqualified classname
+     * @param Silex\Application $app Application instance
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */

@@ -91,8 +91,8 @@ trait FileModel
     /**
      * Deletes this bean's uploaded file
      *
-     * @param $key     string File to delete
-     * @param $persist bool   Whether to persist the deletion into database
+     * @param string $key     File to delete
+     * @param bool   $persist Whether to persist the deletion into database
      *
      * @return void
      */
@@ -124,8 +124,8 @@ trait FileModel
     /**
      * Saves an uploaded file for this bean
      *
-     * @param $key          string                                             Key under which to save the file
-     * @param $uploadedFile Symfony\Component\HttpFoundation\File\UploadedFile File to save
+     * @param string                                             $key          Key under which to save the file
+     * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile File to save
      *
      * @return void
      */
@@ -150,7 +150,7 @@ trait FileModel
     /**
      * Copies this bean's file for another bean
      *
-     * @param Patchwork\Model\AbstractModel string Target bean
+     * @param Patchwork\Model\AbstractModel $clone Target bean
      *
      * @return void
      */
