@@ -129,7 +129,7 @@ class AdminController extends AbstractController
          * Create/update item
          */
         $ctrl
-            ->post(
+            ->match(
                 '/post/{bean}',
                 function ($bean) use ($app) {
                     if ($app['request']->getMethod() == 'POST') {
