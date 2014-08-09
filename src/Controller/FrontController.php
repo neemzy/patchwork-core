@@ -11,7 +11,6 @@ class FrontController extends AbstractController
      * Crafts routes for this instance
      *
      * @param Silex\Application $app   Application instance
-     * @param string            $class Model unqualified classname
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
