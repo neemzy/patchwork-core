@@ -235,6 +235,7 @@ trait FileModel
                 throw new Exception('Files are errored :', 0, null, $errors);
             }
         } catch (\RuntimeException $e) {
+            $app['logger']->error($e->getMessage());
         }
     }
 
