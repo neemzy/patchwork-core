@@ -19,7 +19,7 @@ trait TogglableModel
 
 
     /**
-     * Toggles this bean's state
+     * Defines the model's default state
      *
      * @return void
      */
