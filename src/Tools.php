@@ -87,6 +87,10 @@ class Tools
             $traits = array_merge($traits, static::getRecursiveTraits($trait));
         }
 
+        if ($parent = $reflection->getParentClass()) {
+            $traits = array_merge($traits, static::getRecursiveTraits($parent->getName()));
+        }
+
         return $traits;
     }
 }
