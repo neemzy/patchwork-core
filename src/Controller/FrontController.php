@@ -10,7 +10,7 @@ class FrontController extends AbstractController
     /**
      * Crafts routes for this instance
      *
-     * @param Silex\Application $app   Application instance
+     * @param Silex\Application $app Application instance
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
