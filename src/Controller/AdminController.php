@@ -132,7 +132,7 @@ class AdminController extends AbstractController
             ->match(
                 '/post/{bean}',
                 function ($bean) use ($app) {
-                    if ($app['request']->getMethod() == 'POST') {
+                    if ('POST' == $app['request']->getMethod()) {
                         $redirect = true;
                         $bean->hydrate();
 
