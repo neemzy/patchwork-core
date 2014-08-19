@@ -206,7 +206,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         $fields = $this->bean->export();
 
         foreach ($fields as &$field) {
-            $field = strip_tags($field);
+            is_string($field) && $field = strip_tags($field);
         }
 
         $errors = App::getInstance()['validator']->validateValue(
