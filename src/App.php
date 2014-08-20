@@ -4,7 +4,7 @@ namespace Patchwork;
 
 use Silex\Application;
 
-class App
+class App extends Application
 {
     /**
      * @var string Default instance name
@@ -35,7 +35,7 @@ class App
         }
 
         if (! array_key_exists($name, self::$instances)) {
-            self::$instances[$name] = new Application($param);
+            self::$instances[$name] = new App($param);
         }
 
         return self::$instances[$name];
