@@ -10,8 +10,19 @@ use Patchwork\App;
 
 abstract class AbstractController implements ControllerProviderInterface
 {
+    /**
+     * @var string Unqualified model name
+     */
     protected $class;
+
+    /**
+     * @var closure Authentication callback
+     */
     protected $auth;
+
+    /**
+     * @var closure Bean provider
+     */
     protected $beanProvider;
 
 

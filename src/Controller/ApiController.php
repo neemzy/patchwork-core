@@ -10,7 +10,9 @@ use Patchwork\Tools;
 
 class ApiController extends AbstractController
 {
-    protected $class;
+    /**
+     * @var bool Route attribution flag
+     */
     protected $readonly;
 
 
