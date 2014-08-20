@@ -82,4 +82,27 @@ class Exception extends \Exception
 
         return $html;
     }
+
+
+
+    /**
+     * Displays the message and details list as JSON
+     *
+     * @return array Generated JSON-ready array
+     */
+    public function getJSON()
+    {
+        $app = App::getInstance();
+        $data = ['message' => $app['translator']->trans($this->getMessage())];
+
+        if (count($errors = $this->getDetails())) {
+            $data['details'] = [];
+
+            foreach ($errors as $error) {
+                $data['details'][$app['translator']->trans($error->getPropertyPath())] = $app['translator']->trans($error->getMessage());
+            }
+        }
+
+        return $data;
+    }
 }
