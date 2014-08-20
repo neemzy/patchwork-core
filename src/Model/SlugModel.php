@@ -26,7 +26,7 @@ trait SlugModel
      */
     public static function findBySlug($slug)
     {
-        return R::findOne(static::unqualify(), 'slug = ?', $slug);
+        return R::findOne(static::unqualify(), 'slug = ?', [$slug]);
     }
 
 
