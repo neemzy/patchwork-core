@@ -104,10 +104,12 @@ trait FileModel
 
                 foreach ($asserts[$key] as $constraint) {
                     if ($constraint instanceof Assert\NotBlank) {
-                        $errors = [];
-                        $errors[] = new ConstraintViolation('This value should not be blank.', null, [], null, '['.$key.']', null);
-
-                        throw new Exception('Files are errored :', 0, null, $errors);
+                        throw new Exception(
+                            'Files are errored :',
+                            0,
+                            null,
+                            [new ConstraintViolation('This value should not be blank.', null, [], null, '['.$key.']', null)]
+                        );
                     }
                 }
             }
