@@ -20,7 +20,7 @@ class ControllerCollection extends \Silex\ControllerCollection
             $route = $controller->getRoute();
 
             if (($route->getPath() == $path) && (count(array_intersect($methods, $route->getMethods())))) {
-                if (! count($methods_diff = array_diff($route->getMethods(), $methods))) {
+                if (!count($methods_diff = array_diff($route->getMethods(), $methods))) {
                     unset($this->controllers[$key]);
                 } else {
                     $controller->getRoute()->setMethods($methods_diff);

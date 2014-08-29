@@ -20,7 +20,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      */
     public static function qualify($class, $method = null)
     {
-        return REDBEAN_MODEL_PREFIX.mb_convert_case($class, MB_CASE_TITLE).(!$method ?: '::'.$method);
+        return $app['config']['redbean_prefix'].mb_convert_case($class, MB_CASE_TITLE).(!$method ?: '::'.$method);
     }
 
 

@@ -47,7 +47,7 @@ class FrontController extends AbstractController
             ->get(
                 '/admin',
                 function () use ($app) {
-                    return $app->redirect($app['url_generator']->generate(ADMIN_ROOT));
+                    return $app->redirect($app['url_generator']->generate($app['config']['admin_root']));
                 }
             );
 
@@ -59,7 +59,14 @@ class FrontController extends AbstractController
             ->get(
                 '/robots.txt',
                 function () use ($app) {
-                    $response = new Response('User-agent: *'.PHP_EOL.($app['debug'] ? 'Disallow: /' : 'Sitemap: '.$app['url_generator']->generate('home').'sitemap.xml'));
+                    $response = new Response(
+                        'User-agent: *'.PHP_EOL.(
+                            $app['debug']
+                                ? 'Disallow: /'
+                                : 'Sitemap: '.$app['url_generator']->generate('home').'sitemap.xml'
+                        )
+                    );
+
                     $response->headers->set('Content-Type', 'text/plain');
                     return $response;
                 }
