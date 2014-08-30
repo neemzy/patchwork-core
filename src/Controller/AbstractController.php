@@ -38,7 +38,7 @@ abstract class AbstractController implements ControllerProviderInterface
         $this->auth = function () {
             $app = App::getInstance();
 
-            if (! $app['debug']) {
+            if (!$app['debug']) {
                 $username = $app['request']->server->get('PHP_AUTH_USER', false);
                 $password = $app['request']->server->get('PHP_AUTH_PW');
 
