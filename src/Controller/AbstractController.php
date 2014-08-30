@@ -39,17 +39,17 @@ abstract class AbstractController implements ControllerProviderInterface
             $app = App::getInstance();
 
             if (!$app['debug']) {
-                $user = $app['request']->server->get('PHP_AUTH_USER', false);
-                $pass = $app['request']->server->get('PHP_AUTH_PW');
+                $username = $app['request']->server->get('PHP_AUTH_USER', false);
+                $password = $app['request']->server->get('PHP_AUTH_PW');
 
-                if ((!$user || !$pass) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
-                    list($user, $pass) = explode(':', base64_decode($matches[1]));
+                if ((!$username || !$password) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
+                    list($username, $password) = explode(':', base64_decode($matches[1]));
 
-                    $user = strip_tags($user);
-                    $pass = strip_tags($pass);
+                    $username = strip_tags($username);
+                    $password = strip_tags($password);
                 }
 
-                if (($user != $app['config']['admin_user']) || ($pass != $app['config']['admin_pass'])) {
+                if (($username != $app['config']['admin_user']) || ($password != $app['config']['admin_pass'])) {
                     $response = new Response(null, Response::HTTP_UNAUTHORIZED);
                     $response->headers->set('WWW-Authenticate', 'Basic realm="Administration"');
 
