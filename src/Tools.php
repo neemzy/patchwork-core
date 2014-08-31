@@ -72,6 +72,21 @@ class Tools
 
 
     /**
+     * Formats a date by the current locale
+     *
+     * @param string $date   Date in any standard format
+     * @param string $format Format to apply
+     *
+     * @return void
+     */
+    public static function localeDate($date, $format)
+    {
+        return strftime($format, strtotime($date));
+    }
+
+
+
+    /**
      * Gets a recursive used traits list for a class
      *
      * @param string $class Class full name
