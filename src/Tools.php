@@ -77,7 +77,7 @@ class Tools
      * @param string $date   Date in any standard format
      * @param string $format Format to apply
      *
-     * @return void
+     * @return string Formatted date
      */
     public static function localeDate($date, $format)
     {
