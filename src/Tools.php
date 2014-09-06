@@ -35,20 +35,20 @@ class Tools
     {
         return trim(
             preg_replace(
-                '~(-+)~',
+                '/(-+)/',
                 '-',
                 preg_replace(
-                    '~([^a-z0-9-]*)~',
+                    '/([^a-z0-9-]*)/',
                     '',
                     preg_replace(
-                        '~((\s|\.|\')+)~',
+                        '/((\s|\.|\'|\/)+)/',
                         '-',
                         html_entity_decode(
                             preg_replace(
-                                '~&(a|o)elig;~',
+                                '/&(a|o)elig;/',
                                 '$1e',
                                 preg_replace(
-                                    '~&([a-z])(uml|acute|grave|circ|tilde|ring|cedil|slash);~',
+                                    '/&([a-z])(uml|acute|grave|circ|tilde|ring|cedil|slash);/',
                                     '$1',
                                     strtolower(
                                         htmlentities(
