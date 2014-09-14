@@ -211,7 +211,7 @@ trait FileModel
                             $messages[] = $error->getMessage();
                         }
                     }
-                    
+
                     if (!$exception && !count($messages)) {
                         $this->upload($key, $file);
                     }
