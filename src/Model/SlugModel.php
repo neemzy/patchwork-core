@@ -14,7 +14,7 @@ trait SlugModel
      */
     public function slugify()
     {
-        return Tools::vulgarize($this->__toString());
+        return Tools::vulgarize($this->__toString()) ?: $slug = static::unqualify().'-'.$this->id;
     }
 
 
