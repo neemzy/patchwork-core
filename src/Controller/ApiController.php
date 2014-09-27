@@ -45,7 +45,7 @@ class ApiController extends AbstractController
     protected function route(Application $app, $class = null)
     {
         $ctrl = parent::route($app);
-        
+
         if ($class) {
             $this->class = $class;
         }
