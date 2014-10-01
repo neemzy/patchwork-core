@@ -3,7 +3,6 @@
 namespace Patchwork\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
-use \RedBean_Facade as R;
 use Patchwork\App;
 use Patchwork\Exception;
 use Patchwork\Tools;
@@ -140,7 +139,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      */
     public static function getAll()
     {
-        return R::findAll(static::unqualify(), 'ORDER BY '.static::orderBy());
+        return App::getInstance()['redbean']->findAll(static::unqualify(), 'ORDER BY '.static::orderBy());
     }
 
 
@@ -168,7 +167,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      */
     public function save()
     {
-        return R::store($this);
+        return App::getInstance()['redbean']->store($this);
     }
 
     /**
@@ -178,7 +177,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      */
     public function trash()
     {
-        R::trash($this);
+        App::getInstance()['redbean']->trash($this);
     }
 
 

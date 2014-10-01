@@ -2,7 +2,7 @@
 
 namespace Patchwork\Model;
 
-use \RedBean_Facade as R;
+use Patchwork\App;
 
 trait TogglableModel
 {
@@ -13,7 +13,7 @@ trait TogglableModel
      */
     public static function getActive($active = true)
     {
-        return R::find(static::unqualify(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
+        return App::getInstance()['redbean']->find(static::unqualify(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
     }
 
 

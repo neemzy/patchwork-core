@@ -2,7 +2,7 @@
 
 namespace Patchwork\Model;
 
-use \RedBean_Facade as R;
+use Patchwork\App;
 
 trait ClonableModel
 {
@@ -13,7 +13,7 @@ trait ClonableModel
      */
     public function dup()
     {
-        $clone = R::dup($this->bean);
+        $clone = App::getInstance()['redbean']->dup($this->bean);
         $clone->save();
 
         if (static::uses('file')) {

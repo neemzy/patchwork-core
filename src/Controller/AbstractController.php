@@ -5,7 +5,6 @@ namespace Patchwork\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
-use \RedBean_Facade as R;
 use Patchwork\App;
 
 abstract class AbstractController implements ControllerProviderInterface
@@ -35,9 +34,9 @@ abstract class AbstractController implements ControllerProviderInterface
      */
     public function __construct()
     {
-        $this->auth = function () {
-            $app = App::getInstance();
+        $app = App::getInstance();
 
+        $this->auth = function () use ($app) {
             if (!$app['debug']) {
                 $username = $app['request']->server->get('PHP_AUTH_USER', false);
                 $password = $app['request']->server->get('PHP_AUTH_PW');
@@ -58,8 +57,8 @@ abstract class AbstractController implements ControllerProviderInterface
             }
         };
 
-        $this->beanProvider = function ($id) {
-            return R::load($this->class, $id);
+        $this->beanProvider = function ($id) use ($app) {
+            return $app['redbean']->load($this->class, $id);
         };
     }
 

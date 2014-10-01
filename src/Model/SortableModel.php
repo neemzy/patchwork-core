@@ -2,7 +2,7 @@
 
 namespace Patchwork\Model;
 
-use \RedBean_Facade as R;
+use Patchwork\App;
 
 trait SortableModel
 {
@@ -15,14 +15,15 @@ trait SortableModel
      */
     public function move($up)
     {
+        $app = App::getInstance();
         $class = static::unqualify();
 
         if ($up && ($this->position > 1)) {
             $this->position--;
-            R::exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', [$this->position]);
-        } else if ((! $up) && ($this->position < R::count($class))) {
+            $app['redbean']->exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', [$this->position]);
+        } else if ((! $up) && ($this->position < $app['redbean']->count($class))) {
             $this->position++;
-            R::exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', [$this->position]);
+            $app['redbean']->exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', [$this->position]);
         }
 
         $this->save();
@@ -50,8 +51,10 @@ trait SortableModel
      */
     protected function sortableUpdate()
     {
-        if ((! $this->position) || ($this->position && count(R::find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
-            $position = R::getCell('SELECT position FROM '.static::unqualify().' ORDER BY position DESC LIMIT 1');
+        $app = App::getInstance();
+
+        if ((! $this->position) || ($this->position && count($app['redbean']->find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
+            $position = $app['redbean']->getCell('SELECT position FROM '.static::unqualify().' ORDER BY position DESC LIMIT 1');
             $this->position = $position + 1;
         }
     }
@@ -66,6 +69,6 @@ trait SortableModel
      */
     protected function sortableDelete()
     {
-        R::exec('UPDATE '.static::unqualify().' SET position = position - 1 WHERE position > ?', [$this->position]);
+        App::getInstance()['redbean']->exec('UPDATE '.static::unqualify().' SET position = position - 1 WHERE position > ?', [$this->position]);
     }
 }

@@ -4,7 +4,6 @@ namespace Patchwork\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use \RedBean_Facade as R;
 use Patchwork\Exception;
 use Patchwork\Tools;
 
@@ -59,7 +58,7 @@ class ApiController extends AbstractController
             ->get(
                 '{uri}',
                 function () use ($app) {
-                    $response = new JsonResponse(R::findAndExport($this->class, 1));
+                    $response = new JsonResponse($app['redbean']->findAndExport($this->class, 1));
                     $response->setEncodingOptions(JSON_NUMERIC_CHECK);
 
                     return $response;
@@ -78,7 +77,7 @@ class ApiController extends AbstractController
             ->get(
                 '/{bean}',
                 function ($bean) use ($app) {
-                    if (!$data = R::findAndExport($this->class, 'id = ?', [$bean->id])) {
+                    if (!$data = $app['redbean']->findAndExport($this->class, 'id = ?', [$bean->id])) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
@@ -136,7 +135,7 @@ class ApiController extends AbstractController
             ->delete(
                 '/{id}',
                 function ($id) use ($app) {
-                    $bean = R::load($this->class, $id);
+                    $bean = $app['redbean']->load($this->class, $id);
 
                     if (! $bean->id) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
