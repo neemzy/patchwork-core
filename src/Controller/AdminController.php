@@ -3,7 +3,6 @@
 namespace Patchwork\Controller;
 
 use Silex\Application;
-use \RedBean_Facade as R;
 use Patchwork\Exception;
 use Patchwork\Model\AbstractModel;
 
@@ -20,7 +19,7 @@ class AdminController extends AbstractController
     protected function route(Application $app, $class = null)
     {
         $ctrl = parent::route($app);
-        
+
         if ($class) {
             $this->class = $class;
         }
@@ -53,7 +52,7 @@ class AdminController extends AbstractController
                 '/move/{bean}/{up}',
                 function ($bean, $up) use ($app) {
                     $bean->move($up);
-                    
+
                     return $app->redirect($app['url_generator']->generate($this->class.'.list'));
                 }
             )
@@ -182,7 +181,7 @@ class AdminController extends AbstractController
                         $app['session']->getFlashBag()->set('error', true);
                         $app['session']->getFlashBag()->set('message', $e->getHTML());
                     }
-                    
+
                     return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
                 }
             )
@@ -190,7 +189,7 @@ class AdminController extends AbstractController
             ->convert('bean', $this->beanProvider)
             ->before($this->auth);
 
-        
+
 
         return $ctrl;
     }
