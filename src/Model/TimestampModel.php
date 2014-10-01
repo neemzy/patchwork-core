@@ -2,8 +2,6 @@
 
 namespace Patchwork\Model;
 
-use \RedBean_Facade as R;
-
 trait TimestampModel
 {
     /**
