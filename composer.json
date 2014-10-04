@@ -26,7 +26,8 @@
         "deralex/yaml-config-service-provider": "1.0.*@dev",
         "entea/silex-twig-simple-asset-extension": "dev-master",
         "sybio/image-workshop": "*",
-        "neemzy/environ": "dev-master"
+        "neemzy/environ": "dev-master",
+        "neemzy/redbean-service-provider": "dev-master"
     },
 
     "autoload": {
