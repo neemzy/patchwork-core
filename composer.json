@@ -22,12 +22,13 @@
         "symfony/yaml": "~2.3",
         "monolog/monolog": "dev-master",
         "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
-        "gabordemooij/redbean": "*",
         "deralex/yaml-config-service-provider": "1.0.*@dev",
         "entea/silex-twig-simple-asset-extension": "dev-master",
         "sybio/image-workshop": "*",
+        "gabordemooij/redbean": "*",
+        "neemzy/redbean-service-provider": "dev-master",
         "neemzy/environ": "dev-master",
-        "neemzy/redbean-service-provider": "dev-master"
+        "neemzy/environ-service-provider": "dev-master"
     },
 
     "autoload": {
