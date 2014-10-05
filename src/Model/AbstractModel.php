@@ -170,6 +170,8 @@ abstract class AbstractModel extends \RedBean_SimpleModel
         return App::getInstance()['redbean']->store($this);
     }
 
+
+
     /**
      * Deletes this bean from database
      *
