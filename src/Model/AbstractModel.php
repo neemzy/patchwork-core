@@ -225,7 +225,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      *
      * @return void
      */
-    private function update()
+    protected function update()
     {
         $errors = $this->validate();
 
@@ -241,7 +241,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      *
      * @return void
      */
-    private function delete()
+    protected function delete()
     {
     }
 }
