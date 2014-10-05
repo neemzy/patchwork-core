@@ -197,10 +197,9 @@ abstract class AbstractModel extends \RedBean_SimpleModel
     /**
      * Validates this bean's values against the model's asserts
      *
-     * @throws Patchwork\Exception
-     * @return void
+     * @return array Validation errors
      */
-    protected function validate()
+    public function validate()
     {
         $fields = $this->bean->export();
 
@@ -208,7 +207,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
             is_string($field) && $field = trim(strip_tags($field));
         }
 
-        $errors = App::getInstance()['validator']->validateValue(
+        return App::getInstance()['validator']->validateValue(
             $fields,
             new Assert\Collection(
                 [
@@ -217,10 +216,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel
                 ]
             )
         );
-
-        if (count($errors)) {
-            throw new Exception('Save failed for the following reasons :', 0, null, $errors);
-        }
     }
 
 
@@ -232,7 +227,11 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      */
     private function update()
     {
-        $this->validate();
+        $errors = $this->validate();
+
+        if (count($errors)) {
+            throw new Exception('Save failed for the following reasons :', 0, null, $errors);
+        }
     }
 
 
