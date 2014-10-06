@@ -133,11 +133,10 @@ class AdminController extends AbstractController
                 function ($bean) use ($app) {
                     if ('POST' == $app['request']->getMethod()) {
                         $redirect = true;
-                        $bean->hydrate();
-
                         $app['session']->getFlashBag()->clear();
 
                         try {
+                            $bean->hydrate();
                             $bean->save();
 
                             $app['session']->getFlashBag()->set('message', $app['translator']->trans('Save successful.'));

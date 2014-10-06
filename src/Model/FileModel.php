@@ -12,27 +12,15 @@ use Patchwork\Model\AbstractModel;
 trait FileModel
 {
     /**
-     * @var array File asserts keys list
-     */
-    protected $fileFields = [];
-
-
-
-    /**
-     * Trait-overrideable assert list getter
+     * Assert collection getter
      *
-     * @return array Asserts
+     * @param bool $files Whether to only keep files or scalar fields
+     *
+     * @return array Assert collection
      */
-    protected function getAsserts($classic = true, $files = false)
+    protected function getAsserts($files = false)
     {
-        $asserts = $this->asserts();
-
-        if ($classic && $files) {
-            return $asserts;
-        }
-
-        $classicAsserts = [];
-        $fileAsserts = [];
+        $asserts = parent::getAsserts();
 
         foreach ($asserts as $key => $assert) {
             $isFile = $assert instanceof Assert\File;
@@ -46,20 +34,12 @@ trait FileModel
                 }
             }
 
-            if ($isFile) {
-                $fileAsserts[$key] = $assert;
-            } else {
-                $classicAsserts[$key] = $assert;
+            if ($isFile != $files) {
+                unset($asserts[$key]);
             }
         }
 
-        if ($classic) {
-            return $classicAsserts;
-        }
-
-        if ($files) {
-            return $fileAsserts;
-        }
+        return $asserts;
     }
 
 
@@ -99,25 +79,14 @@ trait FileModel
     public function deleteFile($key, $persist = false)
     {
         if ($this->$key) {
-            if ($persist) {
-                $asserts = $this->getAsserts(false, true);
+            $path = $this->getFilePath($key);
 
-                foreach ($asserts[$key] as $constraint) {
-                    if ($constraint instanceof Assert\NotBlank) {
-                        throw new Exception(
-                            'Files are errored :',
-                            0,
-                            null,
-                            [new ConstraintViolation('This value should not be blank.', null, [], null, '['.$key.']', null)]
-                        );
-                    }
-                }
+            if ($persist) {
+                $this->$key = null;
+                $this->save();
             }
 
-            unlink($this->getFilePath($key));
-            $this->$key = null;
-
-            $persist && $this->save();
+            file_exists($path) && unlink($path);
         }
     }
 
@@ -144,7 +113,9 @@ trait FileModel
 
         $this->deleteFile($key);
         $uploadedFile->move($dir, $file);
-        $this->$key = $file;
+
+        $this->$key = $dir.$file;
+        $this->bean->$key = $file;
     }
 
 
@@ -156,15 +127,14 @@ trait FileModel
      *
      * @return void
      */
-    public function cloneFilesFor(Patchwork\Model\AbstractModel $clone)
+    public function cloneFilesFor(AbstractModel $clone)
     {
-        foreach ($this->getAsserts(false, true) as $key => $asserts) {
+        foreach ($this->getAsserts(true) as $key => $assert) {
             if ($this->$key) {
                 while (file_exists($clone->getFilePath($key))) {
-                    $clone->$key = uniqid().'.'.array_pop(explode('.', $this->$key));
+                    $clone->$key = uniqid().'.'.@array_pop(explode('.', $this->$key));
                 }
 
-                $clone->save();
                 copy($this->getFilePath($key), $clone->getFilePath($key));
             }
         }
@@ -173,71 +143,67 @@ trait FileModel
 
 
     /**
+     * RedBean loading method
+     * Truncates file paths
+     *
+     * @return void
+     */
+    protected function fileOpen()
+    {
+        $app = App::getInstance();
+
+        foreach ($this->getAsserts(true) as $key => $assert) {
+            $this->$key = $this->bean->$key;
+        }
+    }
+
+
+
+    /**
+     * Valorizes this bean with request data
+     * Uploads files
+     *
+     * @return void
+     */
+    protected function fileHydrate()
+    {
+        $app = App::getInstance();
+        $asserts = $this->getAsserts(true);
+        $files = [];
+
+        foreach ($asserts as $key => $assert) {
+            if ($app['request']->files->has($key) && ($files[$key] = $app['request']->files->get($key))) {
+                $this->$key = $files[$key]->getPathName();
+            }
+        }
+
+        $this->hydrate();
+        $errors = $app['validator']->validate($this);
+
+        if (count($errors)) {
+            throw new Exception('Save failed for the following reasons :', 0, null, $errors);
+        }
+
+        foreach ($files as $key => $file) {
+            $this->upload($key, $file);
+        }
+    }
+
+
+
+    /**
      * RedBean update method
-     * Uploads and validates files
+     * Truncates file paths
      *
      * @return void
      */
     protected function fileUpdate()
     {
-        $app = App::getInstance();
-        $exception = null;
-
-        try {
-            $this->validate();
-        } catch (Exception $e) {
-            $exception = $e;
-        }
-
-        try {
-            $errors = [];
-
-            foreach ($this->getAsserts(false, true) as $key => $asserts) {
-                $messages = [];
-                $required = false;
-
-                foreach ($asserts as $constraint) {
-                    if ($constraint instanceof Assert\NotBlank) {
-                        $required = true;
-                        break;
-                    }
-                }
-
-                if ($app['request']->files->has($key) && ($file = $app['request']->files->get($key))) {
-                    if ($error = $file->getError()) {
-                        $messages[] = $error;
-                    } else {
-                        foreach ($app['validator']->validateValue($file, $asserts) as $error) {
-                            $messages[] = $error->getMessage();
-                        }
-                    }
-
-                    if (!$exception && !count($messages)) {
-                        $this->upload($key, $file);
-                    }
-                } else {
-                    if ($required && !$this->$key) {
-                        $messages[] = 'This value should not be blank.';
-                    }
-                }
-
-                foreach ($messages as $message) {
-                    $errors[] = new ConstraintViolation($message, null, [], null, '['.$key.']', null);
-                }
+        foreach ($this->getAsserts(true) as $key => $assert) {
+            if ($this->$key && (basename($this->$key) == $this->$key)) {
+                // No new file was uploaded, retrieve the full path for validation
+                $this->$key = $this->getFilePath($key);
             }
-
-            if ($exception) {
-                $details = $exception->getDetails();
-                $exception->setDetails(array_merge($details, $errors));
-
-                throw $exception;
-            }
-
-            if (count($errors)) {
-                throw new Exception('Files are errored :', 0, null, $errors);
-            }
-        } catch (\RuntimeException $e) {
-            $app['logger']->error($e->getMessage());
         }
     }
 
@@ -251,13 +217,8 @@ trait FileModel
      */
     protected function fileDelete()
     {
-        try {
-            foreach ($this->getAsserts(false, true) as $key => $asserts) {
-                if ($this->$key) {
-                    $this->deleteFile($key);
-                }
-            }
-        } catch (Exception $e) {
+        foreach ($this->getAsserts(true) as $key => $assert) {
+            $this->deleteFile($key);
         }
     }
 }

@@ -81,16 +81,16 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
     /**
      * Magic method
-     * Catches calls to update and deletion methods to dispatch them first
+     * Catches calls to loading, valorization, update and deletion methods to dispatch them first
      *
      * @param string $method    Called method
-     * @param array  $arguments Paramaters
+     * @param array  $arguments Parameters
      *
      * @return void
      */
     public function __call($method, $arguments)
     {
-        if (in_array($method, array('update', 'delete'))) {
+        if (in_array($method, array('open', 'hydrate', 'update', 'delete'))) {
             $this->dispatch($method);
             $this->$method();
         }
@@ -145,28 +145,16 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
     /**
-     * Hydrates this bean with request data
-     *
-     * @return void
-     */
-    public function hydrate()
-    {
-        $app = App::getInstance();
-
-        foreach ($this->getAsserts() as $key => $assert) {
-            $this->$key = $app['request']->get($key);
-        }
-    }
-
-
-
-    /**
      * Saves this bean to database
      *
      * @return int|string bean id
      */
     public function save()
     {
+        foreach ($this->getAsserts() as $key => $assert) {
+            $this->bean->$key = $this->$key;
+        }
+
         return App::getInstance()['redbean']->store($this);
     }
 
@@ -185,39 +173,54 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
     /**
-     * Trait-overrideable assert list getter
+     * Assert collection getter
      *
-     * @return array Asserts
+     * @return array Assert collection
      */
     protected function getAsserts()
     {
-        return $this->asserts();
+        $asserts = [];
+        $metadata = App::getInstance()['validator.mapping.class_metadata_factory']->getMetadataFor(get_class($this));
+
+        foreach ($metadata->members as $field => $member) {
+            $asserts[$field] = [];
+
+            foreach ($member as $group) {
+                $asserts[$field] = array_merge($asserts[$field], $group->constraints);
+            }
+        }
+
+        return $asserts;
     }
 
 
 
     /**
-     * Validates this bean's values against the model's asserts
+     * RedBean loading method
      *
-     * @return array Validation errors
+     * @return void
      */
-    public function validate()
+    protected function open()
     {
-        $fields = $this->bean->export();
-
-        foreach ($fields as &$field) {
-            is_string($field) && $field = trim(strip_tags($field));
+        foreach ($this->getAsserts() as $key => $assert) {
+            $this->$key = $this->bean->$key;
         }
+    }
 
-        return App::getInstance()['validator']->validateValue(
-            $fields,
-            new Assert\Collection(
-                [
-                    'fields' => $this->getAsserts(),
-                    'allowExtraFields' => true
-                ]
-            )
-        );
+
+
+    /**
+     * Valorizes this bean with request data
+     *
+     * @return void
+     */
+    protected function hydrate()
+    {
+        $app = App::getInstance();
+
+        foreach ($this->getAsserts() as $key => $assert) {
+            $this->$key = trim(strip_tags($app['request']->get($key)));
+        }
     }
 
 
@@ -229,7 +232,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      */
     protected function update()
     {
-        $errors = $this->validate();
+        $errors = App::getInstance()['validator']->validate($this);
 
         if (count($errors)) {
             throw new Exception('Save failed for the following reasons :', 0, null, $errors);

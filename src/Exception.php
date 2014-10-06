@@ -74,7 +74,7 @@ class Exception extends \Exception
             $html .= '<ul>';
 
             foreach ($errors as $error) {
-                $html .= '<li><b>'.$app['translator']->trans($error->getPropertyPath()).'</b> : '.$app['translator']->trans($error->getMessage()).'</li>';
+                $html .= '<li><b>'.$app['translator']->trans($error->getPropertyPath()).'</b> : '.$error->getMessage().'</li>';
             }
 
             $html .= '</ul>';
