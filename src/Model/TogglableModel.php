@@ -9,7 +9,7 @@ trait TogglableModel
     /**
      * Gets active instances of the model
      *
-     * @return array Instance collection
+     * @return array
      */
     public static function getActive($active = true)
     {

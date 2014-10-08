@@ -72,8 +72,8 @@ class FrontController extends AbstractController
                 }
             );
 
-        
-        
+
+
         return $ctrl;
     }
 }

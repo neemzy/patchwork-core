@@ -26,7 +26,7 @@ trait SortableModel
             $app['redbean']->exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', [$this->position]);
         }
 
-        $this->save();
+        $app['redbean']->store($this);
     }
 
 
@@ -53,7 +53,7 @@ trait SortableModel
     {
         $app = App::getInstance();
 
-        if ((! $this->position) || ($this->position && count($app['redbean']->find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
+        if (!$this->position || ($this->position && count($app['redbean']->find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
             $position = $app['redbean']->getCell('SELECT position FROM '.static::unqualify().' ORDER BY position DESC LIMIT 1');
             $this->position = $position + 1;
         }

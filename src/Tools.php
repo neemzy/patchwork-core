@@ -2,6 +2,8 @@
 
 namespace Patchwork;
 
+use PHPImageWorkshop\ImageWorkshop;
+
 class Tools
 {
     /**
@@ -10,7 +12,7 @@ class Tools
      * @param mixed $var Variable to dump
      * @param bool  $pre Whether to wrap the result in a HTML <pre> tag or not
      *
-     * @return string Dumped variable
+     * @return string
      */
     public static function dump($var, $pre = false)
     {
@@ -29,7 +31,7 @@ class Tools
      *
      * @param string $string String to vulgarize
      *
-     * @return string Vulgarized string
+     * @return string
      */
     public static function vulgarize($string)
     {
@@ -72,11 +74,48 @@ class Tools
 
 
     /**
+     * Resizes an image
+     *
+     * @param string $file Full file path
+     * @param int    $width   Maximum width
+     * @param int    $height  Maximum height
+     * @param int    $quality Quality ratio
+     */
+    public static function resize($file, $width = null, $height = null, $quality = 90)
+    {
+        if ($width || $height) {
+            $finalWidth = $width;
+            $finalHeight = $height;
+            $crop = $width && $height;
+
+            $iw = ImageWorkshop::initFromPath($file);
+
+            if ($crop) {
+                $originalRatio = $iw->getWidth() / $iw->getHeight();
+                $finalRatio = $finalWidth / $finalHeight;
+
+                if ($originalRatio > $finalRatio) {
+                    $width = null;
+                } else {
+                    $height = null;
+                }
+            }
+
+            $iw->resizeInPixel($width, $height, true, 0, 0, 'MM');
+            $crop && $iw->cropInPixel($finalWidth, $finalHeight, 0, 0, 'MM');
+
+            $iw->save(dirname($file), basename($file), false, null, $quality);
+        }
+    }
+
+
+
+    /**
      * Gets a recursive used traits list for a class
      *
      * @param string $class Class full name
      *
-     * @return array Traits list
+     * @return array
      */
     public static function getRecursiveTraits($class)
     {

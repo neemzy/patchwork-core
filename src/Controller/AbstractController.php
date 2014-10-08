@@ -5,7 +5,12 @@ namespace Patchwork\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints\Image;
+use PHPImageWorkshop\Exception\ImageWorkshopException;
 use Patchwork\App;
+use Patchwork\Tools;
+use Patchwork\Model\AbstractModel;
 
 abstract class AbstractController implements ControllerProviderInterface
 {
@@ -58,8 +63,86 @@ abstract class AbstractController implements ControllerProviderInterface
         };
 
         $this->beanProvider = function ($id) use ($app) {
-            return $app['redbean']->load($this->class, $id);
+            return $app['redbean']->load($this->class, $id)->box();
         };
+    }
+
+
+
+    /**
+     * Hydrates a bean from current request
+     *
+     * @param Patchwork\Model\AbstractModel $bean Bean to hydrate
+     *
+     * @return void
+     */
+    protected static function hydrate(AbstractModel &$bean)
+    {
+        $app = App::getInstance();
+
+        foreach ($bean->getAsserts() as $field => $asserts) {
+            if ($app['request']->files->has($field)) {
+                $file = $app['request']->files->get($field);
+
+                if ($file instanceof UploadedFile) {
+                    // Keep current file path to be able to delete it
+                    $tempField = '_'.$field;
+                    $bean->$tempField = $bean->$field;
+                    $bean->$field = $file;
+
+                    if (UPLOAD_ERR_OK == $file->getError()) {
+                        foreach ($asserts as $assert) {
+                            // Detect image size constraints and resize accordingly
+                            if ($assert instanceof Image) {
+                                $path = $file->getPathname();
+                                $pathWithExtension = $path.'.'.$file->guessExtension();
+                                rename($path, $pathWithExtension);
+
+                                // ImageWorkshop relies on the file's extension for encoding
+                                try {
+                                    Tools::resize($pathWithExtension, $assert->maxWidth, $assert->maxHeight);
+                                } catch (ImageWorkshopException $e) {
+                                }
+
+                                rename($pathWithExtension, $path);
+                            }
+                        }
+                    }
+                }
+            } else {
+                $value = trim($app['request']->get($field));
+
+                // Detect HTML fields without actual content
+                if (empty(strip_tags($value))) {
+                    $value = '';
+                }
+
+                $bean->$field = $value;
+            }
+        }
+    }
+
+
+
+    /**
+     * Gets validation errors for a bean
+     *
+     * @param Patchwork\Model\AbstractModel $bean Bean to validate
+     *
+     * @return array
+     */
+    protected static function validate(AbstractModel $bean)
+    {
+        $app = App::getInstance();
+        $errors = [];
+
+        foreach ($app['validator']->validate($bean) as $error) {
+            $errors[] = [
+                $app['translator']->trans($error->getPropertyPath()) => $error->getMessage()
+            ];
+        }
+
+        return $errors;
     }
 
 
@@ -69,7 +152,7 @@ abstract class AbstractController implements ControllerProviderInterface
      *
      * @param string $class Model unqualified classname
      *
-     * @return Patchwork\Controller\AbstractController Mapped instance
+     * @return Patchwork\Controller\AbstractController
      */
     public static function getInstanceFor($class)
     {

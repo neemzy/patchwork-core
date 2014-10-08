@@ -2,28 +2,14 @@
 
 namespace Patchwork\Model;
 
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Patchwork\App;
-use Patchwork\Exception;
+use Patchwork\ValidatableInterface;
 use Patchwork\Tools;
 
-abstract class AbstractModel extends \RedBean_SimpleModel
+abstract class AbstractModel extends \RedBean_SimpleModel implements ValidatableInterface
 {
-    /**
-     * Qualifies a model name
-     *
-     * @param string $class  The lowercase, short model name
-     * @param string $method Method to append to the qualified model name
-     *
-     * @return string The titlecased, namespaced model name
-     */
-    public static function qualify($class, $method = null)
-    {
-        return App::getInstance()['config']['redbean_prefix'].mb_convert_case($class, MB_CASE_TITLE).(!$method ?: '::'.$method);
-    }
-
-
-
     /**
      * Unqualifies a model name
      *
@@ -41,59 +27,22 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
     /**
-     * Gets the current class's used traits list
+     * Gets unqualified used traits list
      *
-     * @param bool $unqualified Whether to unqualify the traits' names or not
-     *
-     * @return array Traits list
+     * @return array
      */
-    protected static function getTraits($unqualified = true)
+    protected static function getTraits()
     {
         $traits = Tools::getRecursiveTraits(get_called_class());
 
-        if ($unqualified) {
-            array_walk(
-                $traits,
-                function (&$trait) {
-                    $trait = static::unqualify($trait);
-                }
-            );
-        }
+        array_walk(
+            $traits,
+            function (&$trait) {
+                $trait = static::unqualify($trait);
+            }
+        );
 
         return $traits;
-    }
-
-
-
-    /**
-     * Determines if the current class uses a given trait
-     *
-     * @param string $trait Trait full name
-     *
-     * @return bool Whether this trait is in use in the current class
-     */
-    protected static function uses($trait)
-    {
-        return in_array($trait, static::getTraits());
-    }
-
-
-
-    /**
-     * Magic method
-     * Catches calls to loading, valorization, update and deletion methods to dispatch them first
-     *
-     * @param string $method    Called method
-     * @param array  $arguments Parameters
-     *
-     * @return void
-     */
-    public function __call($method, $arguments)
-    {
-        if (in_array($method, array('open', 'hydrate', 'update', 'delete'))) {
-            $this->dispatch($method);
-            $this->$method();
-        }
     }
 
 
@@ -133,93 +82,94 @@ abstract class AbstractModel extends \RedBean_SimpleModel
 
 
     /**
-     * Gets all instances of the model
+     * Model validation metadata getter
      *
-     * @return array Instance collection
+     * @return array
      */
-    public static function getAll()
+    public function getAsserts()
     {
-        return App::getInstance()['redbean']->findAll(static::unqualify(), 'ORDER BY '.static::orderBy());
-    }
-
-
-
-    /**
-     * Saves this bean to database
-     *
-     * @return int|string bean id
-     */
-    public function save()
-    {
-        foreach ($this->getAsserts() as $key => $assert) {
-            $this->bean->$key = $this->$key;
-        }
-
-        return App::getInstance()['redbean']->store($this);
-    }
-
-
-
-    /**
-     * Deletes this bean from database
-     *
-     * @return void
-     */
-    public function trash()
-    {
-        App::getInstance()['redbean']->trash($this);
-    }
-
-
-
-    /**
-     * Assert collection getter
-     *
-     * @return array Assert collection
-     */
-    protected function getAsserts()
-    {
-        $asserts = [];
         $metadata = App::getInstance()['validator.mapping.class_metadata_factory']->getMetadataFor(get_class($this));
 
-        foreach ($metadata->members as $field => $member) {
-            $asserts[$field] = [];
+        return array_map(
+            function ($member) {
+                return $member[0]->constraints;
+            },
+            $metadata->members
+        );
+    }
 
-            foreach ($member as $group) {
-                $asserts[$field] = array_merge($asserts[$field], $group->constraints);
+
+
+    /**
+     * Gets the upload directory path for the current class
+     *
+     * @return string
+     */
+    public static function getUploadDir($absolute = true)
+    {
+        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.static::unqualify().'/';
+    }
+
+
+
+    /**
+     * Gets a file's web path
+     *
+     * @return string
+     */
+    public function getWebPath($field)
+    {
+        return static::getUploadDir(false).str_replace(static::getUploadDir(), '', $this->$field);
+    }
+
+
+
+    /**
+     * Uploads a file
+     *
+     * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile File to save
+     *
+     * @return void
+     */
+    public function upload(UploadedFile $uploadedFile)
+    {
+        $extension = $uploadedFile->guessExtension();
+
+        $dir = $this->getUploadDir();
+        $file = '';
+
+        while (file_exists($dir.$file)) {
+            $file = uniqid().'.'.$extension;
+        }
+
+        $uploadedFile->move($dir, $file);
+        return $dir.$file;
+    }
+
+
+
+    /**
+     * Copies this bean's files for another bean
+     *
+     * @param Patchwork\Model\AbstractModel $clone Target bean
+     *
+     * @return void
+     */
+    public function cloneFilesFor(AbstractModel $clone)
+    {
+        foreach ($this->getAsserts() as $field => $asserts) {
+            if (is_file($this->$field)) {
+                $dir = static::getUploadDir();
+                $file = basename($this->$field);
+                $extension = @array_pop(explode('.', $file));
+
+                while (file_exists($dir.$file)) {
+                    $file = uniqid().'.'.$extension;
+                }
+
+                $clone->$field = $dir.$file;
+                copy($this->$field, $clone->$field);
             }
-        }
-
-        return $asserts;
-    }
-
-
-
-    /**
-     * RedBean loading method
-     *
-     * @return void
-     */
-    protected function open()
-    {
-        foreach ($this->getAsserts() as $key => $assert) {
-            $this->$key = $this->bean->$key;
-        }
-    }
-
-
-
-    /**
-     * Valorizes this bean with request data
-     *
-     * @return void
-     */
-    protected function hydrate()
-    {
-        $app = App::getInstance();
-
-        foreach ($this->getAsserts() as $key => $assert) {
-            $this->$key = trim(strip_tags($app['request']->get($key)));
         }
     }
 
@@ -230,12 +180,19 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      *
      * @return void
      */
-    protected function update()
+    public function update()
     {
-        $errors = App::getInstance()['validator']->validate($this);
+        $this->dispatch('update');
 
-        if (count($errors)) {
-            throw new Exception('Save failed for the following reasons :', 0, null, $errors);
+        // Upload files
+        foreach ($this->getAsserts() as $field => $asserts) {
+            if ($this->$field instanceof UploadedFile) {
+                $tempField = '_'.$field;
+                is_file($this->$tempField) && unlink($this->$tempField);
+                $this->bean->removeProperty($tempField);
+
+                $this->$field = $this->upload($this->$field);
+            }
         }
     }
 
@@ -246,7 +203,13 @@ abstract class AbstractModel extends \RedBean_SimpleModel
      *
      * @return void
      */
-    protected function delete()
+    public function delete()
     {
+        $this->dispatch('delete');
+
+        // Delete files
+        foreach ($this->getAsserts() as $field => $asserts) {
+            is_file($this->$field) && unlink($this->$field);
+        }
     }
 }

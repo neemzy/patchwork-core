@@ -10,7 +10,7 @@ trait SlugModel
     /**
      * Vulgarizes this bean's string representation
      *
-     * @return string Vulgarized string
+     * @return string
      */
     public function slugify()
     {
@@ -22,7 +22,7 @@ trait SlugModel
     /**
      * Finds a bean of the current class by its slug
      *
-     * @return Patchwork\Model\AbstractModel Found bean (if any)
+     * @return Patchwork\Model\AbstractModel
      */
     public static function findBySlug($slug)
     {

@@ -4,7 +4,6 @@ namespace Patchwork\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Patchwork\Exception;
 use Patchwork\Tools;
 
 class ApiController extends AbstractController
@@ -21,7 +20,7 @@ class ApiController extends AbstractController
      *
      * @param string $class Model unqualified classname
      *
-     * @return Patchwork\Controller\ApiController Mapped instance
+     * @return Patchwork\Controller\ApiController
      */
     public static function getInstanceFor($class, $readonly = false)
     {
@@ -99,20 +98,16 @@ class ApiController extends AbstractController
             ->match(
                 '/{bean}',
                 function ($bean) use ($app) {
-                    $bean->hydrate();
-                    $code = $bean->id ? Response::HTTP_OK : Response::HTTP_CREATED;
+                    static::hydrate($bean);
+                    $errors = static::validate($bean);
 
-                    try {
-                        $bean->save();
-                        $data = $bean->export();
-                    } catch (Exception $e) {
-                        $errors = $e->getDetails();
-                        $data = ['errors' => []];
+                    if (!count($errors)) {
+                        $code = $bean->id ? Response::HTTP_OK : Response::HTTP_CREATED;
+                        $app['redbean']->store($bean);
+                        $data = $bean->unbox()->export();
+                    } else {
                         $code = Response::HTTP_BAD_REQUEST;
-
-                        foreach ($errors as $error) {
-                            $data['errors'][$error->getPropertyPath()] = $app['translator']->trans($error->getMessage());
-                        }
+                        $data = $errors;
                     }
 
                     $response = new JsonResponse($data, $code);
@@ -137,11 +132,11 @@ class ApiController extends AbstractController
                 function ($id) use ($app) {
                     $bean = $app['redbean']->load($this->class, $id);
 
-                    if (! $bean->id) {
+                    if (!$bean->id) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
-                    $bean->trash();
+                    $app['redbean']->trash($bean);
 
                     $response = new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
                     $response->setEncodingOptions(JSON_NUMERIC_CHECK);
