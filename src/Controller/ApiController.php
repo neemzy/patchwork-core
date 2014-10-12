@@ -33,16 +33,16 @@ class ApiController extends AbstractController
 
 
     /**
-     * Crafts routes for this instance
+     * Silex method that exposes routes to the app
      *
      * @param Silex\Application $app   Application instance
      * @param string            $class Model unqualified classname
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    protected function route(Application $app, $class = null)
+    public function connect(Application $app, $class = null)
     {
-        $ctrl = parent::route($app);
+        $ctrl = parent::connect($app);
 
         if ($class) {
             $this->class = $class;
@@ -98,8 +98,8 @@ class ApiController extends AbstractController
             ->match(
                 '/{bean}',
                 function ($bean) use ($app) {
-                    static::hydrate($bean);
-                    $errors = static::validate($bean);
+                    $this->hydrate($bean);
+                    $errors = $this->validate($bean);
 
                     if (!count($errors)) {
                         $code = $bean->id ? Response::HTTP_OK : Response::HTTP_CREATED;

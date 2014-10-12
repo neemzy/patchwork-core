@@ -8,15 +8,15 @@ use Symfony\Component\HttpFoundation\Response;
 class FrontController extends AbstractController
 {
     /**
-     * Crafts routes for this instance
+     * Silex method that exposes routes to the app
      *
      * @param Silex\Application $app Application instance
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    protected function route(Application $app)
+    public function connect(Application $app)
     {
-        $ctrl = parent::route($app);
+        $ctrl = parent::connect($app);
 
 
 

@@ -32,15 +32,32 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
     /**
-     * Constructor
+     * Maps an instance of this controller to a model
+     *
+     * @param string $class Model unqualified classname
+     *
+     * @return Patchwork\Controller\AbstractController
+     */
+    public static function getInstanceFor($class)
+    {
+        $instance = new static();
+        $instance->class = $class;
+
+        return $instance;
+    }
+
+
+
+    /**
+     * Silex method that exposes routes to the app
      * Attaches a model provider and an authentication method to the controller
      *
-     * @return void
+     * @param Silex\Application $app Application instance
+     *
+     * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    public function __construct()
+    public function connect(Application $app)
     {
-        $app = App::getInstance();
-
         $this->auth = function () use ($app) {
             if (!$app['debug']) {
                 $username = $app['request']->server->get('PHP_AUTH_USER', false);
@@ -65,6 +82,8 @@ abstract class AbstractController implements ControllerProviderInterface
         $this->beanProvider = function ($id) use ($app) {
             return $app['redbean']->load($this->class, $id)->box();
         };
+
+        return $app['controllers_factory'];
     }
 
 
@@ -76,7 +95,7 @@ abstract class AbstractController implements ControllerProviderInterface
      *
      * @return void
      */
-    protected static function hydrate(AbstractModel &$bean)
+    protected function hydrate(AbstractModel &$bean)
     {
         $app = App::getInstance();
 
@@ -131,7 +150,7 @@ abstract class AbstractController implements ControllerProviderInterface
      *
      * @return array
      */
-    protected static function validate(AbstractModel $bean)
+    protected function validate(AbstractModel $bean)
     {
         $app = App::getInstance();
         $errors = [];
@@ -143,50 +162,5 @@ abstract class AbstractController implements ControllerProviderInterface
         }
 
         return $errors;
-    }
-
-
-
-    /**
-     * Maps an instance of this controller to a model
-     *
-     * @param string $class Model unqualified classname
-     *
-     * @return Patchwork\Controller\AbstractController
-     */
-    public static function getInstanceFor($class)
-    {
-        $instance = new static();
-        $instance->class = $class;
-
-        return $instance;
-    }
-
-
-
-    /**
-     * Silex method that binds the controller to the app
-     *
-     * @param Silex\Application $app Application instance
-     *
-     * @return Silex\ControllerCollection Object encapsulating crafted routes
-     */
-    public function connect(Application $app)
-    {
-        return $this->route($app);
-    }
-
-
-
-    /**
-     * Crafts routes for this instance
-     *
-     * @param Silex\Application $app Application instance
-     *
-     * @return Silex\ControllerCollection Object encapsulating crafted routes
-     */
-    protected function route(Application $app)
-    {
-        return $app['controllers_factory'];
     }
 }

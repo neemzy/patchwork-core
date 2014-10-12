@@ -9,16 +9,16 @@ use Patchwork\Model\AbstractModel;
 class AdminController extends AbstractController
 {
     /**
-     * Crafts routes for this instance
+     * Silex method that exposes routes to the app
      *
      * @param Silex\Application $app   Application instance
      * @param string            $class Model unqualified classname
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    protected function route(Application $app, $class = null)
+    public function connect(Application $app, $class = null)
     {
-        $ctrl = parent::route($app);
+        $ctrl = parent::connect($app);
 
         if ($class) {
             $this->class = $class;
@@ -140,8 +140,8 @@ class AdminController extends AbstractController
                     if ('POST' == $app['request']->getMethod()) {
                         $app['session']->getFlashBag()->clear();
 
-                        static::hydrate($bean);
-                        $errors = static::validate($bean);
+                        $this->hydrate($bean);
+                        $errors = $this->validate($bean);
 
                         if (!count($errors)) {
                             $app['redbean']->store($bean);
@@ -177,7 +177,7 @@ class AdminController extends AbstractController
 
                     $file = $bean->$field;
                     $bean->$field = null;
-                    $errors = static::validate($bean);
+                    $errors = $this->validate($bean);
 
                     if (!count($errors)) {
                         is_file($file) && unlink($file);
