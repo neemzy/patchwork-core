@@ -177,6 +177,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
 
     /**
      * RedBean update method
+     * Uploads validated files
      *
      * @return void
      */
@@ -184,7 +185,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
     {
         $this->dispatch('update');
 
-        // Upload files
         foreach ($this->getAsserts() as $field => $asserts) {
             if ($this->$field instanceof UploadedFile) {
                 $tempField = '_'.$field;
@@ -200,6 +200,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
 
     /**
      * RedBean deletion method
+     * Deletes files
      *
      * @return void
      */
@@ -207,7 +208,6 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
     {
         $this->dispatch('delete');
 
-        // Delete files
         foreach ($this->getAsserts() as $field => $asserts) {
             is_file($this->$field) && unlink($this->$field);
         }
