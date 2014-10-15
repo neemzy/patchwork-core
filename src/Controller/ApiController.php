@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Controller;
+namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,13 +17,13 @@ class ApiController extends AbstractController
     /**
      * Maps an instance of this controller to a model
      *
-     * @param string $class Model unqualified classname
+     * @param string $table Table name
      *
-     * @return Patchwork\Controller\ApiController
+     * @return Neemzy\Patchwork\Controller\ApiController
      */
-    public static function getInstance($class, $readonly = false)
+    public static function getInstance($table, $readonly = false)
     {
-        $instance = parent::getInstance($class);
+        $instance = parent::getInstance($table);
         $instance->readonly = $readonly;
 
         return $instance;
@@ -34,18 +34,13 @@ class ApiController extends AbstractController
     /**
      * Silex method that exposes routes to the app
      *
-     * @param Silex\Application $app   Application instance
-     * @param string            $class Model unqualified classname
+     * @param Silex\Application $app Application instance
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    public function connect(Application $app, $class = null)
+    public function connect(Application $app, $table = null)
     {
         $ctrl = parent::connect($app);
-
-        if ($class) {
-            $this->class = $class;
-        }
 
 
 
@@ -56,13 +51,13 @@ class ApiController extends AbstractController
             ->get(
                 '{uri}',
                 function () use ($app) {
-                    $response = new JsonResponse($app['redbean']->findAndExport($this->class, 1));
+                    $response = new JsonResponse($app['redbean']->findAndExport($this->table, 1));
                     $response->setEncodingOptions(JSON_NUMERIC_CHECK);
 
                     return $response;
                 }
             )
-            ->bind('api.'.$this->class.'.list')
+            ->bind('api.'.$this->table.'.list')
             ->assert('uri', '.{0}')
             ->value('uri', '');
 
@@ -75,7 +70,7 @@ class ApiController extends AbstractController
             ->get(
                 '/{model}',
                 function ($model) use ($app) {
-                    if (!$data = $app['redbean']->findAndExport($this->class, 'id = ?', [$model->id])) {
+                    if (!$data = $app['redbean']->findAndExport($this->table, 'id = ?', [$model->id])) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
@@ -85,7 +80,7 @@ class ApiController extends AbstractController
                     return $response;
                 }
             )
-            ->bind('api.'.$this->class.'.read')
+            ->bind('api.'.$this->table.'.read')
             ->convert('model', $this->modelProvider);
 
 
@@ -115,7 +110,7 @@ class ApiController extends AbstractController
                     return $response;
                 }
             )
-            ->bind('api.'.$this->class.'.post')
+            ->bind('api.'.$this->table.'.post')
             ->convert('model', $this->modelProvider)
             ->value('model', 0)
             ->method('POST|PUT');
@@ -129,7 +124,7 @@ class ApiController extends AbstractController
             ->delete(
                 '/{id}',
                 function ($id) use ($app) {
-                    $model = $app['redbean']->load($this->class, $id);
+                    $model = $app['redbean']->load($this->table, $id);
 
                     if (!$model->id) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
@@ -143,7 +138,7 @@ class ApiController extends AbstractController
                     return $response;
                 }
             )
-            ->bind('api.'.$this->class.'.delete')
+            ->bind('api.'.$this->table.'.delete')
             ->convert('model', $this->modelProvider);
 
 

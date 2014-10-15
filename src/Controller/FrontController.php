@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Controller;
+namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;

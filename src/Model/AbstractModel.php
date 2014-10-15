@@ -1,10 +1,10 @@
 <?php
 
-namespace Patchwork\Model;
+namespace Neemzy\Patchwork\Model;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Patchwork\ValidatableInterface;
+use Neemzy\Patchwork\ValidatableInterface;
 use Neemzy\Silex\Provider\RedBean\Model;
 
 abstract class AbstractModel extends Model implements ValidatableInterface

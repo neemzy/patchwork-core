@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Model;
+namespace Neemzy\Patchwork\Model;
 
 trait TimestampModel
 {

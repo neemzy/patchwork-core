@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Controller;
+namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
 
@@ -17,18 +17,13 @@ class AdminController extends AbstractController
      * Silex method that exposes routes to the app
      * Attaches an authentication method to the controller
      *
-     * @param Silex\Application $app   Application instance
-     * @param string            $class Model unqualified classname
+     * @param Silex\Application $app Application instance
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    public function connect(Application $app, $class = null)
+    public function connect(Application $app)
     {
         $ctrl = parent::connect($app);
-
-        if ($class) {
-            $this->class = $class;
-        }
 
 
 
@@ -63,15 +58,15 @@ class AdminController extends AbstractController
                 '/list',
                 function () use ($app) {
                     return $app['twig']->render(
-                        'admin/'.$this->class.'/list.twig',
-                        [$this->class.'s' => $app['redbean']->findAll(
-                            $this->class,
-                            'ORDER BY '.call_user_func($app['config']['redbean']['prefix'].mb_convert_case($this->class, MB_CASE_TITLE).'::orderBy')
+                        'admin/'.$this->table.'/list.twig',
+                        [$this->table.'s' => $app['redbean']->findAll(
+                            $this->table,
+                            'ORDER BY '.call_user_func($app['config']['redbean']['prefix'].mb_convert_case($this->table, MB_CASE_TITLE).'::orderBy')
                         )]
                     );
                 }
             )
-            ->bind($this->class.'.list')
+            ->bind($this->table.'.list')
             ->before($this->auth);
 
 
@@ -85,10 +80,10 @@ class AdminController extends AbstractController
                 function ($model, $up) use ($app) {
                     $model->move($up);
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.move')
+            ->bind($this->table.'.move')
             ->convert('model', $this->modelProvider)
             ->assert('up', '0|1')
             ->before($this->auth);
@@ -110,10 +105,10 @@ class AdminController extends AbstractController
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->add('success', $app['translator']->trans('success.cloning'));
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.clone')
+            ->bind($this->table.'.clone')
             ->convert('model', $this->modelProvider)
             ->before($this->auth);
 
@@ -129,10 +124,10 @@ class AdminController extends AbstractController
                     $model->toggle();
                     $app['redbean']->store($model);
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.toggle')
+            ->bind($this->table.'.toggle')
             ->convert('model', $this->modelProvider)
             ->before($this->auth);
 
@@ -150,10 +145,10 @@ class AdminController extends AbstractController
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->add('success', $app['translator']->trans('success.deletion'));
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.delete')
+            ->bind($this->table.'.delete')
             ->convert('model', $this->modelProvider)
             ->before($this->auth);
 
@@ -176,7 +171,7 @@ class AdminController extends AbstractController
                             $app['redbean']->store($model);
                             $app['session']->getFlashBag()->add('success', $app['translator']->trans('success.save'));
 
-                            return $app->redirect($app['url_generator']->generate($this->class.'.post', ['model' => $model->id]));
+                            return $app->redirect($app['url_generator']->generate($this->table.'.post', ['model' => $model->id]));
                         }
 
                         foreach ($errors as $error) {
@@ -184,10 +179,10 @@ class AdminController extends AbstractController
                         }
                     }
 
-                    return $app['twig']->render('admin/'.$this->class.'/post.twig', [$this->class => $model]);
+                    return $app['twig']->render('admin/'.$this->table.'/post.twig', [$this->table => $model]);
                 }
             )
-            ->bind($this->class.'.post')
+            ->bind($this->table.'.post')
             ->convert('model', $this->modelProvider)
             ->value('model', 0)
             ->before($this->auth)
@@ -218,10 +213,10 @@ class AdminController extends AbstractController
                         $app['session']->getFlashBag()->add('error', $error);
                     }
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.post', ['model' => $model->id]));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.post', ['model' => $model->id]));
                 }
             )
-            ->bind($this->class.'.delete_file')
+            ->bind($this->table.'.delete_file')
             ->convert('model', $this->modelProvider)
             ->before($this->auth);
 

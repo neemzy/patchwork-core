@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork;
+namespace Neemzy\Patchwork;
 
 use Silex\ControllerCollection as BaseControllerCollection;
 
@@ -12,7 +12,7 @@ class ControllerCollection extends BaseControllerCollection
      * @param string       $path    Route URI
      * @param array|string $methods HTTP method(s)
      *
-     * @return Patchwork\ControllerCollection Itself (for chaining)
+     * @return Neemzy\Patchwork\ControllerCollection Itself (for chaining)
      */
     public function cancel($path, $methods = ['GET', 'POST', 'PUSH', 'DELETE'])
     {

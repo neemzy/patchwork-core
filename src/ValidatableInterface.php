@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork;
+namespace Neemzy\Patchwork;
 
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 

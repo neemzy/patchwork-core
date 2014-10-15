@@ -1,13 +1,13 @@
 <?php
 
-namespace Patchwork\Model;
+namespace Neemzy\Patchwork\Model;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait FileModel
 {
     /**
-     * Gets the upload directory path for the current class
+     * Gets the upload directory path
      *
      * @return string
      */
@@ -33,7 +33,7 @@ trait FileModel
     /**
      * Copies this model's files for another model
      *
-     * @param Patchwork\Model\AbstractModel $clone Target model
+     * @param Neemzy\Patchwork\Model\AbstractModel $clone Target model
      *
      * @return void
      */
@@ -62,7 +62,7 @@ trait FileModel
      *
      * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile File to move
      *
-     * @return void
+     * @return string New file name
      */
     public function moveFile(UploadedFile $uploadedFile)
     {

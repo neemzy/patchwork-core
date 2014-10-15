@@ -33,7 +33,7 @@
 
     "autoload": {
         "psr-4": {
-            "Patchwork\\": "src/"
+            "Neemzy\\Patchwork\\": "src/"
         }
     }
 }

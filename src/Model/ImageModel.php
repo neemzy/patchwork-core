@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Model;
+namespace Neemzy\Patchwork\Model;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\Image;

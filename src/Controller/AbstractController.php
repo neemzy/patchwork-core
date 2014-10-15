@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Controller;
+namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
@@ -8,14 +8,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator;
-use Patchwork\Model\AbstractModel;
+use Neemzy\Patchwork\Model\AbstractModel;
 
 abstract class AbstractController implements ControllerProviderInterface
 {
     /**
-     * @var string Unqualified model name
+     * @var string Table name
      */
-    protected $class;
+    protected $table;
 
     /**
      * @var closure Model provider
@@ -27,14 +27,14 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Maps an instance of this controller to a model
      *
-     * @param string $class Model unqualified classname
+     * @param string $table Table name
      *
-     * @return Patchwork\Controller\AbstractController
+     * @return Neemzy\Patchwork\Controller\AbstractController
      */
-    public static function getInstance($class)
+    public static function getInstance($table)
     {
         $instance = new static();
-        $instance->class = $class;
+        $instance->table = $table;
 
         return $instance;
     }
@@ -52,7 +52,7 @@ abstract class AbstractController implements ControllerProviderInterface
     public function connect(Application $app)
     {
         $this->modelProvider = function ($id) use ($app) {
-            return $app['redbean']->load($this->class, $id);
+            return $app['redbean']->load($this->table, $id);
         };
 
         return $app['controllers_factory'];
@@ -63,7 +63,7 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Hydrates a model from a request
      *
-     * @param Patchwork\Model\AbstractModel            $model   Model to hydrate
+     * @param Neemzy\Patchwork\Model\AbstractModel     $model   Model to hydrate
      * @param Symfony\Component\HttpFoundation\Request $request Request to grab data from
      *
      * @return void
@@ -95,7 +95,7 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Gets validation errors for a model
      *
-     * @param Patchwork\Model\AbstractModel         $model     Model to validate
+     * @param Neemzy\Patchwork\Model\AbstractModel  $model     Model to validate
      * @param Symfony\Component\Validator\Validator $validator Validator instance
      *
      * @return array

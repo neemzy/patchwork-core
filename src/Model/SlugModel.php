@@ -1,13 +1,13 @@
 <?php
 
-namespace Patchwork\Model;
+namespace Neemzy\Patchwork\Model;
 
 trait SlugModel
 {
     /**
      * Finds a model by its slug
      *
-     * @return Patchwork\Model\AbstractModel
+     * @return Neemzy\Patchwork\Model\AbstractModel
      */
     public static function findBySlug($slug)
     {
