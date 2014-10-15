@@ -103,8 +103,6 @@ abstract class EntityController implements ControllerProviderInterface
 
         foreach ($validator->validate($model) as $error) {
             $errors[] = [
-                //$app['translator']->trans($error->getPropertyPath()) => $error->getMessage()
-                // translation should be done elsewhere (in the template, with a function/filter instead of a tag ?)
                 $error->getPropertyPath() => $error->getMessage()
             ];
         }
