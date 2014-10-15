@@ -5,18 +5,6 @@ namespace Neemzy\Patchwork\Model;
 trait TogglableModel
 {
     /**
-     * Gets active instances of the model
-     *
-     * @return array
-     */
-    public static function getActive($active = true)
-    {
-        return $this->app['redbean']->find($this->getTableName(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
-    }
-
-
-
-    /**
      * Defines the model's default state
      *
      * @return void

@@ -29,18 +29,6 @@ trait SortableModel
 
 
     /**
-     * Overrideable method to get the default sorting index and way
-     *
-     * @return string SQL snippet
-     */
-    public static function orderBy()
-    {
-        return 'position ASC';
-    }
-
-
-
-    /**
      * RedBean update method
      * Automates position assigning
      *

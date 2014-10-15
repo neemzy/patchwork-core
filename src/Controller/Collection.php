@@ -1,10 +1,10 @@
 <?php
 
-namespace Neemzy\Patchwork;
+namespace Neemzy\Patchwork\Controller;
 
-use Silex\ControllerCollection as BaseControllerCollection;
+use Silex\ControllerCollection;
 
-class ControllerCollection extends BaseControllerCollection
+class Collection extends ControllerCollection
 {
     /**
      * Cancels a route (or more)

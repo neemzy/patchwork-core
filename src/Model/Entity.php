@@ -7,18 +7,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Neemzy\Patchwork\ValidatableInterface;
 use Neemzy\Silex\Provider\RedBean\Model;
 
-abstract class AbstractModel extends Model implements ValidatableInterface
+abstract class Entity extends Model implements ValidatableInterface
 {
     /**
      * Gets the model's database table name
      *
      * @return string
      */
-    public static function getTableName()
+    public function getTableName()
     {
-        $class = explode('\\', get_called_class());
-
-        return strtolower(array_pop($class));
+        return $this->bean->getMeta('type');
     }
 
 
@@ -46,18 +44,6 @@ abstract class AbstractModel extends Model implements ValidatableInterface
                 call_user_func_array([$this, $method], $parameters);
             }
         }
-    }
-
-
-
-    /**
-     * Overrideable method to get the default sorting index and way
-     *
-     * @return string SQL snippet
-     */
-    public static function orderBy()
-    {
-        return 'id ASC';
     }
 
 

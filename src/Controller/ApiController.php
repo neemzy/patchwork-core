@@ -5,7 +5,7 @@ namespace Neemzy\Patchwork\Controller;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class ApiController extends AbstractController
+class ApiController extends EntityController
 {
     /**
      * @var bool Route attribution flag
@@ -15,18 +15,17 @@ class ApiController extends AbstractController
 
 
     /**
-     * Maps an instance of this controller to a model
+     * Constructor
      *
-     * @param string $table Table name
+     * @param string $readonly Whether to only map consultative actions
      *
-     * @return Neemzy\Patchwork\Controller\ApiController
+     * @return void
      */
-    public static function getInstance($table, $readonly = false)
+    public function __construct($readonly = false)
     {
-        $instance = parent::getInstance($table);
-        $instance->readonly = $readonly;
+        parent::__construct();
 
-        return $instance;
+        $this->readonly = $readonly;
     }
 
 

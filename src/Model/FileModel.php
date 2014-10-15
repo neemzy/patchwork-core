@@ -37,11 +37,11 @@ trait FileModel
     /**
      * Copies this model's files for another model
      *
-     * @param Neemzy\Patchwork\Model\AbstractModel $clone Target model
+     * @param Neemzy\Patchwork\Model\Entity $clone Target model
      *
      * @return void
      */
-    public function cloneFilesFor(AbstractModel $clone)
+    public function cloneFilesFor(Entity $clone)
     {
         foreach ($this->getAsserts() as $field => $asserts) {
             if (is_file($this->$field)) {

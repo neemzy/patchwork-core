@@ -5,18 +5,6 @@ namespace Neemzy\Patchwork\Model;
 trait SlugModel
 {
     /**
-     * Finds a model by its slug
-     *
-     * @return Neemzy\Patchwork\Model\AbstractModel
-     */
-    public static function findBySlug($slug)
-    {
-        return $this->app['redbean']->findOne(static::getTableName(), 'slug = ?', [$slug]);
-    }
-
-
-
-    /**
      * Generates a slug for the model
      *
      * @return string

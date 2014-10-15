@@ -8,9 +8,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator;
-use Neemzy\Patchwork\Model\AbstractModel;
+use Neemzy\Patchwork\Model\Entity;
 
-abstract class AbstractController implements ControllerProviderInterface
+abstract class EntityController implements ControllerProviderInterface
 {
     /**
      * @var string Table name
@@ -25,18 +25,15 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
     /**
-     * Maps an instance of this controller to a model
+     * Constructor
      *
      * @param string $table Table name
      *
-     * @return Neemzy\Patchwork\Controller\AbstractController
+     * @return void
      */
-    public static function getInstance($table)
+    public function __construct($table = null)
     {
-        $instance = new static();
-        $instance->table = $table;
-
-        return $instance;
+        $this->table = $table;
     }
 
 
@@ -63,12 +60,12 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Hydrates a model from a request
      *
-     * @param Neemzy\Patchwork\Model\AbstractModel     $model   Model to hydrate
+     * @param Neemzy\Patchwork\Model\Entity             $model   Model to hydrate
      * @param Symfony\Component\HttpFoundation\Request $request Request to grab data from
      *
      * @return void
      */
-    protected function hydrate(AbstractModel &$model, Request $request)
+    protected function hydrate(Entity &$model, Request $request)
     {
         foreach ($model->getAsserts() as $field => $asserts) {
             if ($request->files->has($field)) {
@@ -95,12 +92,12 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Gets validation errors for a model
      *
-     * @param Neemzy\Patchwork\Model\AbstractModel  $model     Model to validate
+     * @param Neemzy\Patchwork\Model\Entity          $model     Model to validate
      * @param Symfony\Component\Validator\Validator $validator Validator instance
      *
      * @return array
      */
-    protected function validate(AbstractModel $model, Validator $validator)
+    protected function validate(Entity $model, Validator $validator)
     {
         $errors = [];
 

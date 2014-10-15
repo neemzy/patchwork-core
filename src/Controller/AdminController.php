@@ -4,7 +4,7 @@ namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
 
-class AdminController extends AbstractController
+class AdminController extends EntityController
 {
     /**
      * @var closure Authentication callback
@@ -61,7 +61,7 @@ class AdminController extends AbstractController
                         'admin/'.$this->table.'/list.twig',
                         [$this->table.'s' => $app['redbean']->findAll(
                             $this->table,
-                            'ORDER BY '.call_user_func($app['config']['redbean']['prefix'].mb_convert_case($this->table, MB_CASE_TITLE).'::orderBy')
+                            'ORDER BY '.(array_key_exists('position', $app['redbean']->getColumns($this->table)) ? 'position' : 'id')
                         )]
                     );
                 }

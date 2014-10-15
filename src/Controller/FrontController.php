@@ -3,9 +3,10 @@
 namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
+use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-class FrontController extends AbstractController
+class FrontController implements ControllerProviderInterface
 {
     /**
      * Silex method that exposes routes to the app
@@ -16,7 +17,7 @@ class FrontController extends AbstractController
      */
     public function connect(Application $app)
     {
-        $ctrl = parent::connect($app);
+        $ctrl = $app['controllers_factory'];
 
 
 
