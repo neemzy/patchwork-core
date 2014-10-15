@@ -13,7 +13,7 @@ trait TogglableModel
      */
     public static function getActive($active = true)
     {
-        return App::getInstance()['redbean']->find(static::unqualify(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
+        return App::getInstance()['redbean']->find($this->getTableName(), 'active = ? ORDER BY '.static::orderBy(), [+$active]);
     }
 
 

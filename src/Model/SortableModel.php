@@ -16,14 +16,14 @@ trait SortableModel
     public function move($up)
     {
         $app = App::getInstance();
-        $class = static::unqualify();
+        $table = $this->getTableName();
 
         if ($up && ($this->position > 1)) {
             $this->position--;
-            $app['redbean']->exec('UPDATE '.$class.' SET position = position + 1 WHERE position = ?', [$this->position]);
-        } else if ((! $up) && ($this->position < $app['redbean']->count($class))) {
+            $app['redbean']->exec('UPDATE '.$table.' SET position = position + 1 WHERE position = ?', [$this->position]);
+        } else if ((! $up) && ($this->position < $app['redbean']->count($table))) {
             $this->position++;
-            $app['redbean']->exec('UPDATE '.$class.' SET position = position - 1 WHERE position = ?', [$this->position]);
+            $app['redbean']->exec('UPDATE '.$table.' SET position = position - 1 WHERE position = ?', [$this->position]);
         }
 
         $app['redbean']->store($this);
@@ -52,9 +52,10 @@ trait SortableModel
     protected function sortableUpdate()
     {
         $app = App::getInstance();
+        $table = $this->getTableName();
 
-        if (!$this->position || ($this->position && count($app['redbean']->find(static::unqualify(), 'position = ? AND id != ?', [$this->position, $this->id])))) {
-            $position = $app['redbean']->getCell('SELECT position FROM '.static::unqualify().' ORDER BY position DESC LIMIT 1');
+        if (!$this->position || ($this->position && count($app['redbean']->find($table, 'position = ? AND id != ?', [$this->position, $this->id])))) {
+            $position = $app['redbean']->getCell('SELECT position FROM '.$table.' ORDER BY position DESC LIMIT 1');
             $this->position = $position + 1;
         }
     }
@@ -69,6 +70,6 @@ trait SortableModel
      */
     protected function sortableDelete()
     {
-        App::getInstance()['redbean']->exec('UPDATE '.static::unqualify().' SET position = position - 1 WHERE position > ?', [$this->position]);
+        App::getInstance()['redbean']->exec('UPDATE '.$this->getTableName().' SET position = position - 1 WHERE position > ?', [$this->position]);
     }
 }

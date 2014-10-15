@@ -11,38 +11,13 @@ use Patchwork\Tools;
 abstract class AbstractModel extends \RedBean_SimpleModel implements ValidatableInterface
 {
     /**
-     * Unqualifies a model name
+     * Gets the model's database table name
      *
-     * @param string $class The titlecase, namespaced model name (the current class's if not provided)
-     *
-     * @return string The lowercased, shortened model name
+     * @return string
      */
-    public static function unqualify($class = null)
+    public function getTableName()
     {
-        $class = explode('\\', $class ?: get_called_class());
-
-        return str_replace('model', '', strtolower(array_pop($class)));
-    }
-
-
-
-    /**
-     * Gets unqualified used traits list
-     *
-     * @return array
-     */
-    protected static function getTraits()
-    {
-        $traits = Tools::getRecursiveTraits(get_called_class());
-
-        array_walk(
-            $traits,
-            function (&$trait) {
-                $trait = static::unqualify($trait);
-            }
-        );
-
-        return $traits;
+        return strtolower(get_class($this));
     }
 
 
@@ -57,8 +32,10 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
     protected function dispatch($method)
     {
         $base = ucfirst($method);
+        $traits = Tools::getRecursiveTraits(get_class($this));
 
-        foreach ($traits = static::getTraits() as $trait) {
+        foreach ($traits as $trait) {
+            $trait = str_replace('model', '', strtolower(@array_pop(explode('\\', $trait))));
             $method = $trait.$base;
 
             if (method_exists($this, $method)) {
@@ -105,9 +82,9 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
      *
      * @return string
      */
-    public static function getUploadDir($absolute = true)
+    public function getUploadDir($absolute = true)
     {
-        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.static::unqualify().'/';
+        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.$this->getTableName().'/';
     }
 
 
@@ -119,7 +96,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
      */
     public function getWebPath($field)
     {
-        return static::getUploadDir(false).str_replace(static::getUploadDir(), '', $this->$field);
+        return $this->getUploadDir(false).str_replace($this->getUploadDir(), '', $this->$field);
     }
 
 
@@ -159,7 +136,7 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
     {
         foreach ($this->getAsserts() as $field => $asserts) {
             if (is_file($this->$field)) {
-                $dir = static::getUploadDir();
+                $dir = $this->getUploadDir();
                 $file = basename($this->$field);
                 $extension = @array_pop(explode('.', $file));
 

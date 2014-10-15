@@ -3,8 +3,6 @@
 namespace Patchwork\Controller;
 
 use Silex\Application;
-use Patchwork\Exception;
-use Patchwork\Model\AbstractModel;
 
 class AdminController extends AbstractController
 {
@@ -140,8 +138,8 @@ class AdminController extends AbstractController
                     if ('POST' == $app['request']->getMethod()) {
                         $app['session']->getFlashBag()->clear();
 
-                        $this->hydrate($bean);
-                        $errors = $this->validate($bean);
+                        $this->hydrate($bean, $app['request']);
+                        $errors = $this->validate($bean, $app['validator']);
 
                         if (!count($errors)) {
                             $app['redbean']->store($bean);

@@ -4,8 +4,10 @@ namespace Patchwork\Controller;
 
 use Silex\Application;
 use Silex\ControllerProviderInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Validator;
 use Symfony\Component\Validator\Constraints\Image;
 use PHPImageWorkshop\Exception\ImageWorkshopException;
 use Patchwork\App;
@@ -89,19 +91,18 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
     /**
-     * Hydrates a bean from current request
+     * Hydrates a bean from a request
      *
-     * @param Patchwork\Model\AbstractModel $bean Bean to hydrate
+     * @param Patchwork\Model\AbstractModel            $bean    Bean to hydrate
+     * @param Symfony\Component\HttpFoundation\Request $request Request to grab data from
      *
      * @return void
      */
-    protected function hydrate(AbstractModel &$bean)
+    protected function hydrate(AbstractModel &$bean, Request $request)
     {
-        $app = App::getInstance();
-
         foreach ($bean->getAsserts() as $field => $asserts) {
-            if ($app['request']->files->has($field)) {
-                $file = $app['request']->files->get($field);
+            if ($request->files->has($field)) {
+                $file = $request->files->get($field);
 
                 if ($file instanceof UploadedFile) {
                     // Keep current file path to be able to delete it
@@ -129,7 +130,7 @@ abstract class AbstractController implements ControllerProviderInterface
                     }
                 }
             } else {
-                $value = trim($app['request']->get($field));
+                $value = trim($request->get($field));
 
                 // Detect HTML fields without actual content
                 if (empty(strip_tags($value))) {
@@ -146,18 +147,20 @@ abstract class AbstractController implements ControllerProviderInterface
     /**
      * Gets validation errors for a bean
      *
-     * @param Patchwork\Model\AbstractModel $bean Bean to validate
+     * @param Patchwork\Model\AbstractModel         $bean      Bean to validate
+     * @param Symfony\Component\Validator\Validator $validator Validator instance
      *
      * @return array
      */
-    protected function validate(AbstractModel $bean)
+    protected function validate(AbstractModel $bean, Validator $validator)
     {
-        $app = App::getInstance();
         $errors = [];
 
-        foreach ($app['validator']->validate($bean) as $error) {
+        foreach ($validator->validate($bean) as $error) {
             $errors[] = [
-                $app['translator']->trans($error->getPropertyPath()) => $error->getMessage()
+                //$app['translator']->trans($error->getPropertyPath()) => $error->getMessage()
+                // translation should be done elsewhere (in the template, with a function/filter instead of a tag ?)
+                $error->getPropertyPath() => $error->getMessage()
             ];
         }
 
