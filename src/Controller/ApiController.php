@@ -4,7 +4,6 @@ namespace Patchwork\Controller;
 
 use Silex\Application;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Patchwork\Tools;
 
 class ApiController extends AbstractController
 {

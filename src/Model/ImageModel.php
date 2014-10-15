@@ -5,7 +5,6 @@ namespace Patchwork\Model;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\Image;
 use PHPImageWorkshop\Exception\ImageWorkshopException;
-use Patchwork\Tools;
 
 trait ImageModel
 {
@@ -34,7 +33,7 @@ trait ImageModel
 
                     // ImageWorkshop relies on the file's extension for encoding
                     try {
-                        Tools::resize($pathWithExtension, $assert->maxWidth, $assert->maxHeight);
+                        $this->app['tools']->resize($pathWithExtension, $assert->maxWidth, $assert->maxHeight);
                     } catch (ImageWorkshopException $e) {
                     }
 

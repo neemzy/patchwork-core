@@ -2,8 +2,6 @@
 
 namespace Patchwork\Model;
 
-use Patchwork\Tools;
-
 trait SlugModel
 {
     /**
@@ -25,7 +23,7 @@ trait SlugModel
      */
     public function slugify()
     {
-        return Tools::vulgarize($this->__toString()) ?: $slug = $this->getTableName().'-'.$this->id;
+        return $this->app['tools']->vulgarize($this->__toString()) ?: $slug = $this->getTableName().'-'.$this->id;
     }
 
 

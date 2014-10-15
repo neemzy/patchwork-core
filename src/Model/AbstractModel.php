@@ -5,7 +5,6 @@ namespace Patchwork\Model;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 use Patchwork\ValidatableInterface;
-use Patchwork\Tools;
 use Neemzy\Silex\Provider\RedBean\Model;
 
 abstract class AbstractModel extends Model implements ValidatableInterface
@@ -35,7 +34,7 @@ abstract class AbstractModel extends Model implements ValidatableInterface
     public function dispatch($method, $parameters = [])
     {
         $base = ucfirst($method);
-        $traits = Tools::getRecursiveTraits(get_class($this));
+        $traits = $this->app['tools']->getRecursiveTraits(get_class($this));
 
         foreach ($traits as $trait) {
             $trait = explode('\\', $trait);
