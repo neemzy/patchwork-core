@@ -102,7 +102,7 @@ class AdminController extends AbstractController
             ->get(
                 '/clone/{bean}',
                 function ($bean) use ($app) {
-                    $clone = $app['redbean']->dup($bean->unbox())->box();
+                    $clone = $app['redbean']->dup($bean->unbox());
                     $bean->cloneFilesFor($clone);
 
                     $app['redbean']->store($clone);

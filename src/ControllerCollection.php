@@ -2,7 +2,9 @@
 
 namespace Patchwork;
 
-class ControllerCollection extends \Silex\ControllerCollection
+use Silex\ControllerCollection as BaseControllerCollection;
+
+class ControllerCollection extends BaseControllerCollection
 {
     /**
      * Cancels a route (or more)

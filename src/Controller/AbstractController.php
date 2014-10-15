@@ -8,10 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator;
-use Symfony\Component\Validator\Constraints\Image;
-use PHPImageWorkshop\Exception\ImageWorkshopException;
-use Patchwork\App;
-use Patchwork\Tools;
 use Patchwork\Model\AbstractModel;
 
 abstract class AbstractController implements ControllerProviderInterface
@@ -65,43 +61,21 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
     /**
-     * Hydrates a bean from a request
+     * Hydrates a model from a request
      *
-     * @param Patchwork\Model\AbstractModel            $bean    Bean to hydrate
+     * @param Patchwork\Model\AbstractModel            $model   Model to hydrate
      * @param Symfony\Component\HttpFoundation\Request $request Request to grab data from
      *
      * @return void
      */
-    protected function hydrate(AbstractModel &$bean, Request $request)
+    protected function hydrate(AbstractModel &$model, Request $request)
     {
-        foreach ($bean->getAsserts() as $field => $asserts) {
+        foreach ($model->getAsserts() as $field => $asserts) {
             if ($request->files->has($field)) {
                 $file = $request->files->get($field);
 
                 if ($file instanceof UploadedFile) {
-                    // Keep current file path to be able to delete it
-                    $tempField = '_'.$field;
-                    $bean->$tempField = $bean->$field;
-                    $bean->$field = $file;
-
-                    if (UPLOAD_ERR_OK == $file->getError()) {
-                        foreach ($asserts as $assert) {
-                            // Detect image size constraints and resize accordingly
-                            if ($assert instanceof Image) {
-                                $path = $file->getPathname();
-                                $pathWithExtension = $path.'.'.$file->guessExtension();
-                                rename($path, $pathWithExtension);
-
-                                // ImageWorkshop relies on the file's extension for encoding
-                                try {
-                                    Tools::resize($pathWithExtension, $assert->maxWidth, $assert->maxHeight);
-                                } catch (ImageWorkshopException $e) {
-                                }
-
-                                rename($pathWithExtension, $path);
-                            }
-                        }
-                    }
+                    $model->dispatch('upload', [$field, $file]);
                 }
             } else {
                 $value = trim($request->get($field));
@@ -111,7 +85,7 @@ abstract class AbstractController implements ControllerProviderInterface
                     $value = '';
                 }
 
-                $bean->$field = $value;
+                $model->$field = $value;
             }
         }
     }

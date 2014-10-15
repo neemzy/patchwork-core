@@ -19,6 +19,18 @@ trait SlugModel
 
 
     /**
+     * Finds a bean of the current class by its slug
+     *
+     * @return Patchwork\Model\AbstractModel
+     */
+    public static function findBySlug($slug)
+    {
+        return $this->app['redbean']->findOne(static::getTableName(), 'slug = ?', [$slug]);
+    }
+
+
+
+    /**
      * RedBean update method
      * Caches this bean's slug into one of its fields
      *
