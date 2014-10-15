@@ -1,11 +1,12 @@
 <?php
 
-namespace Patchwork\Controller;
+namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
+use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Response;
 
-class FrontController extends AbstractController
+class FrontController implements ControllerProviderInterface
 {
     /**
      * Silex method that exposes routes to the app
@@ -16,7 +17,7 @@ class FrontController extends AbstractController
      */
     public function connect(Application $app)
     {
-        $ctrl = parent::connect($app);
+        $ctrl = $app['controllers_factory'];
 
 
 
@@ -47,7 +48,7 @@ class FrontController extends AbstractController
             ->get(
                 '/admin',
                 function () use ($app) {
-                    return $app->redirect($app['url_generator']->generate($app['config']['admin_root']));
+                    return $app->redirect($app['url_generator']->generate($app['config']['admin']['root']));
                 }
             );
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork;
+namespace Neemzy\Patchwork;
 
 use PHPImageWorkshop\ImageWorkshop;
 
@@ -14,7 +14,7 @@ class Tools
      *
      * @return string
      */
-    public static function dump($var, $pre = false)
+    public function dump($var, $pre = false)
     {
         ob_start();
         var_dump($var);
@@ -33,7 +33,7 @@ class Tools
      *
      * @return string
      */
-    public static function vulgarize($string)
+    public function vulgarize($string)
     {
         return trim(
             preg_replace(
@@ -81,7 +81,7 @@ class Tools
      * @param int    $height  Maximum height
      * @param int    $quality Quality ratio
      */
-    public static function resize($file, $width = null, $height = null, $quality = 90)
+    public function resize($file, $width = null, $height = null, $quality = 90)
     {
         if ($width || $height) {
             $finalWidth = $width;
@@ -111,23 +111,23 @@ class Tools
 
 
     /**
-     * Gets a recursive used traits list for a class
+     * Gets a recursive list of traits used by a class
      *
-     * @param string $class Class full name
+     * @param string $class Full class name
      *
      * @return array
      */
-    public static function getRecursiveTraits($class)
+    public function getRecursiveTraits($class)
     {
         $reflection = new \ReflectionClass($class);
         $traits = array_keys($reflection->getTraits());
 
         foreach ($traits as $trait) {
-            $traits = array_merge($traits, static::getRecursiveTraits($trait));
+            $traits = array_merge($traits, $this->getRecursiveTraits($trait));
         }
 
         if ($parent = $reflection->getParentClass()) {
-            $traits = array_merge($traits, static::getRecursiveTraits($parent->getName()));
+            $traits = array_merge($traits, $this->getRecursiveTraits($parent->getName()));
         }
 
         return $traits;

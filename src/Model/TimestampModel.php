@@ -1,6 +1,6 @@
 <?php
 
-namespace Patchwork\Model;
+namespace Neemzy\Patchwork\Model;
 
 trait TimestampModel
 {
@@ -12,7 +12,7 @@ trait TimestampModel
      */
     protected function timestampUpdate()
     {
-        $this->updated = date('Y-m-d H:i:s');
+        $this->updated = 'NOW()';
         $this->id || $this->created = $this->updated;
     }
 }

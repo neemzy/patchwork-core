@@ -1,28 +1,52 @@
 <?php
 
-namespace Patchwork\Controller;
+namespace Neemzy\Patchwork\Controller;
 
 use Silex\Application;
-use Patchwork\Exception;
-use Patchwork\Model\AbstractModel;
 
-class AdminController extends AbstractController
+class AdminController extends EntityController
 {
     /**
+     * @var closure Authentication callback
+     */
+    protected $auth;
+
+
+
+    /**
      * Silex method that exposes routes to the app
+     * Attaches an authentication method to the controller
      *
-     * @param Silex\Application $app   Application instance
-     * @param string            $class Model unqualified classname
+     * @param Silex\Application $app Application instance
      *
      * @return Silex\ControllerCollection Object encapsulating crafted routes
      */
-    public function connect(Application $app, $class = null)
+    public function connect(Application $app)
     {
         $ctrl = parent::connect($app);
 
-        if ($class) {
-            $this->class = $class;
-        }
+
+
+        $this->auth = function () use ($app) {
+            if (!$app['debug']) {
+                $username = $app['request']->server->get('PHP_AUTH_USER', false);
+                $password = $app['request']->server->get('PHP_AUTH_PW');
+
+                if ((!$username || !$password) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
+                    list($username, $password) = explode(':', base64_decode($matches[1]));
+
+                    $username = strip_tags($username);
+                    $password = strip_tags($password);
+                }
+
+                if (($username != $app['config']['admin']['username']) || ($password != $app['config']['admin']['password'])) {
+                    $response = new Response(null, Response::HTTP_UNAUTHORIZED);
+                    $response->headers->set('WWW-Authenticate', 'Basic realm="Administration"');
+
+                    return $response;
+                }
+            }
+        };
 
 
 
@@ -34,15 +58,15 @@ class AdminController extends AbstractController
                 '/list',
                 function () use ($app) {
                     return $app['twig']->render(
-                        'admin/'.$this->class.'/list.twig',
-                        [$this->class.'s' => $app['redbean']->findAll(
-                            $this->class,
-                            'ORDER BY '.call_user_func($app['config']['redbean_prefix'].mb_convert_case($this->class, MB_CASE_TITLE).'::orderBy')
+                        'admin/'.$this->table.'/list.twig',
+                        [$this->table.'s' => $app['redbean']->findAll(
+                            $this->table,
+                            'ORDER BY '.(array_key_exists('position', $app['redbean']->getColumns($this->table)) ? 'position' : 'id')
                         )]
                     );
                 }
             )
-            ->bind($this->class.'.list')
+            ->bind($this->table.'.list')
             ->before($this->auth);
 
 
@@ -52,15 +76,15 @@ class AdminController extends AbstractController
          */
         $ctrl
             ->get(
-                '/move/{bean}/{up}',
-                function ($bean, $up) use ($app) {
-                    $bean->move($up);
+                '/move/{model}/{up}',
+                function ($model, $up) use ($app) {
+                    $model->move($up);
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.move')
-            ->convert('bean', $this->beanProvider)
+            ->bind($this->table.'.move')
+            ->convert('model', $this->modelProvider)
             ->assert('up', '0|1')
             ->before($this->auth);
 
@@ -71,21 +95,21 @@ class AdminController extends AbstractController
          */
         $ctrl
             ->get(
-                '/clone/{bean}',
-                function ($bean) use ($app) {
-                    $clone = $app['redbean']->dup($bean->unbox())->box();
-                    $bean->cloneFilesFor($clone);
+                '/clone/{model}',
+                function ($model) use ($app) {
+                    $clone = $app['redbean']->dup($model->unbox());
+                    $model->cloneFilesFor($clone);
 
                     $app['redbean']->store($clone);
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->add('success', $app['translator']->trans('success.cloning'));
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.clone')
-            ->convert('bean', $this->beanProvider)
+            ->bind($this->table.'.clone')
+            ->convert('model', $this->modelProvider)
             ->before($this->auth);
 
 
@@ -95,16 +119,16 @@ class AdminController extends AbstractController
          */
         $ctrl
             ->get(
-                '/toggle/{bean}',
-                function ($bean) use ($app) {
-                    $bean->toggle();
-                    $app['redbean']->store($bean);
+                '/toggle/{model}',
+                function ($model) use ($app) {
+                    $model->toggle();
+                    $app['redbean']->store($model);
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.toggle')
-            ->convert('bean', $this->beanProvider)
+            ->bind($this->table.'.toggle')
+            ->convert('model', $this->modelProvider)
             ->before($this->auth);
 
 
@@ -114,18 +138,18 @@ class AdminController extends AbstractController
          */
         $ctrl
             ->get(
-                '/delete/{bean}',
-                function ($bean) use ($app) {
-                    $app['redbean']->trash($bean);
+                '/delete/{model}',
+                function ($model) use ($app) {
+                    $app['redbean']->trash($model);
 
                     $app['session']->getFlashBag()->clear();
                     $app['session']->getFlashBag()->add('success', $app['translator']->trans('success.deletion'));
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.list'));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }
             )
-            ->bind($this->class.'.delete')
-            ->convert('bean', $this->beanProvider)
+            ->bind($this->table.'.delete')
+            ->convert('model', $this->modelProvider)
             ->before($this->auth);
 
 
@@ -135,19 +159,19 @@ class AdminController extends AbstractController
          */
         $ctrl
             ->match(
-                '/post/{bean}',
-                function ($bean) use ($app) {
+                '/post/{model}',
+                function ($model) use ($app) {
                     if ('POST' == $app['request']->getMethod()) {
                         $app['session']->getFlashBag()->clear();
 
-                        $this->hydrate($bean);
-                        $errors = $this->validate($bean);
+                        $this->hydrate($model, $app['request']);
+                        $errors = $this->validate($model, $app['validator']);
 
                         if (!count($errors)) {
-                            $app['redbean']->store($bean);
+                            $app['redbean']->store($model);
                             $app['session']->getFlashBag()->add('success', $app['translator']->trans('success.save'));
 
-                            return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
+                            return $app->redirect($app['url_generator']->generate($this->table.'.post', ['model' => $model->id]));
                         }
 
                         foreach ($errors as $error) {
@@ -155,12 +179,12 @@ class AdminController extends AbstractController
                         }
                     }
 
-                    return $app['twig']->render('admin/'.$this->class.'/post.twig', [$this->class => $bean]);
+                    return $app['twig']->render('admin/'.$this->table.'/post.twig', [$this->table => $model]);
                 }
             )
-            ->bind($this->class.'.post')
-            ->convert('bean', $this->beanProvider)
-            ->value('bean', 0)
+            ->bind($this->table.'.post')
+            ->convert('model', $this->modelProvider)
+            ->value('model', 0)
             ->before($this->auth)
             ->method('GET|POST');
 
@@ -171,17 +195,17 @@ class AdminController extends AbstractController
          */
         $ctrl
             ->get(
-                '/delete_file/{bean}/{field}',
-                function ($bean, $field) use ($app) {
+                '/delete_file/{model}/{field}',
+                function ($model, $field) use ($app) {
                     $app['session']->getFlashBag()->clear();
 
-                    $file = $bean->$field;
-                    $bean->$field = null;
-                    $errors = $this->validate($bean);
+                    $file = $model->$field;
+                    $model->$field = null;
+                    $errors = $this->validate($model);
 
                     if (!count($errors)) {
                         is_file($file) && unlink($file);
-                        $app['redbean']->store($bean);
+                        $app['redbean']->store($model);
                         $app['session']->getFlashBag()->add('success', $app['translator']->trans('success.file_deletion'));
                     }
 
@@ -189,11 +213,11 @@ class AdminController extends AbstractController
                         $app['session']->getFlashBag()->add('error', $error);
                     }
 
-                    return $app->redirect($app['url_generator']->generate($this->class.'.post', ['bean' => $bean->id]));
+                    return $app->redirect($app['url_generator']->generate($this->table.'.post', ['model' => $model->id]));
                 }
             )
-            ->bind($this->class.'.delete_file')
-            ->convert('bean', $this->beanProvider)
+            ->bind($this->table.'.delete_file')
+            ->convert('model', $this->modelProvider)
             ->before($this->auth);
 
 
