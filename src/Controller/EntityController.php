@@ -5,7 +5,6 @@ namespace Neemzy\Patchwork\Controller;
 use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator;
 use Neemzy\Patchwork\Model\Entity;
@@ -60,7 +59,7 @@ abstract class EntityController implements ControllerProviderInterface
     /**
      * Hydrates a model from a request
      *
-     * @param Neemzy\Patchwork\Model\Entity             $model   Model to hydrate
+     * @param Neemzy\Patchwork\Model\Entity            $model   Model to hydrate
      * @param Symfony\Component\HttpFoundation\Request $request Request to grab data from
      *
      * @return void
@@ -92,7 +91,7 @@ abstract class EntityController implements ControllerProviderInterface
     /**
      * Gets validation errors for a model
      *
-     * @param Neemzy\Patchwork\Model\Entity          $model     Model to validate
+     * @param Neemzy\Patchwork\Model\Entity         $model     Model to validate
      * @param Symfony\Component\Validator\Validator $validator Validator instance
      *
      * @return array
