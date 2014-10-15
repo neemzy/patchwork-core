@@ -74,9 +74,9 @@ class ApiController extends AbstractController
          */
         $ctrl
             ->get(
-                '/{bean}',
-                function ($bean) use ($app) {
-                    if (!$data = $app['redbean']->findAndExport($this->class, 'id = ?', [$bean->id])) {
+                '/{model}',
+                function ($model) use ($app) {
+                    if (!$data = $app['redbean']->findAndExport($this->class, 'id = ?', [$model->id])) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
@@ -87,7 +87,7 @@ class ApiController extends AbstractController
                 }
             )
             ->bind('api.'.$this->class.'.read')
-            ->convert('bean', $this->beanProvider);
+            ->convert('model', $this->modelProvider);
 
 
 
@@ -96,15 +96,15 @@ class ApiController extends AbstractController
          */
         $this->readonly || $ctrl
             ->match(
-                '/{bean}',
-                function ($bean) use ($app) {
-                    $this->hydrate($bean);
-                    $errors = $this->validate($bean);
+                '/{model}',
+                function ($model) use ($app) {
+                    $this->hydrate($model, $app['request']);
+                    $errors = $this->validate($model, $app['validator']);
 
                     if (!count($errors)) {
-                        $code = $bean->id ? Response::HTTP_OK : Response::HTTP_CREATED;
-                        $app['redbean']->store($bean);
-                        $data = $bean->unbox()->export();
+                        $code = $model->id ? Response::HTTP_OK : Response::HTTP_CREATED;
+                        $app['redbean']->store($model);
+                        $data = $model->unbox()->export();
                     } else {
                         $code = Response::HTTP_BAD_REQUEST;
                         $data = $errors;
@@ -117,8 +117,8 @@ class ApiController extends AbstractController
                 }
             )
             ->bind('api.'.$this->class.'.post')
-            ->convert('bean', $this->beanProvider)
-            ->value('bean', 0)
+            ->convert('model', $this->modelProvider)
+            ->value('model', 0)
             ->method('POST|PUT');
 
 
@@ -130,13 +130,13 @@ class ApiController extends AbstractController
             ->delete(
                 '/{id}',
                 function ($id) use ($app) {
-                    $bean = $app['redbean']->load($this->class, $id);
+                    $model = $app['redbean']->load($this->class, $id);
 
-                    if (!$bean->id) {
+                    if (!$model->id) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
-                    $app['redbean']->trash($bean);
+                    $app['redbean']->trash($model);
 
                     $response = new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
                     $response->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -145,7 +145,7 @@ class ApiController extends AbstractController
                 }
             )
             ->bind('api.'.$this->class.'.delete')
-            ->convert('bean', $this->beanProvider);
+            ->convert('model', $this->modelProvider);
 
 
 

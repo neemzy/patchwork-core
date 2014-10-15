@@ -31,9 +31,9 @@ trait FileModel
 
 
     /**
-     * Copies this bean's files for another bean
+     * Copies this model's files for another model
      *
-     * @param Patchwork\Model\AbstractModel $clone Target bean
+     * @param Patchwork\Model\AbstractModel $clone Target model
      *
      * @return void
      */

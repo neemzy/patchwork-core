@@ -18,9 +18,9 @@ abstract class AbstractController implements ControllerProviderInterface
     protected $class;
 
     /**
-     * @var closure Bean provider
+     * @var closure Model provider
      */
-    protected $beanProvider;
+    protected $modelProvider;
 
 
 
@@ -51,7 +51,7 @@ abstract class AbstractController implements ControllerProviderInterface
      */
     public function connect(Application $app)
     {
-        $this->beanProvider = function ($id) use ($app) {
+        $this->modelProvider = function ($id) use ($app) {
             return $app['redbean']->load($this->class, $id);
         };
 
@@ -93,18 +93,18 @@ abstract class AbstractController implements ControllerProviderInterface
 
 
     /**
-     * Gets validation errors for a bean
+     * Gets validation errors for a model
      *
-     * @param Patchwork\Model\AbstractModel         $bean      Bean to validate
+     * @param Patchwork\Model\AbstractModel         $model     Model to validate
      * @param Symfony\Component\Validator\Validator $validator Validator instance
      *
      * @return array
      */
-    protected function validate(AbstractModel $bean, Validator $validator)
+    protected function validate(AbstractModel $model, Validator $validator)
     {
         $errors = [];
 
-        foreach ($validator->validate($bean) as $error) {
+        foreach ($validator->validate($model) as $error) {
             $errors[] = [
                 //$app['translator']->trans($error->getPropertyPath()) => $error->getMessage()
                 // translation should be done elsewhere (in the template, with a function/filter instead of a tag ?)

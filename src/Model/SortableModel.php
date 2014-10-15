@@ -5,7 +5,7 @@ namespace Patchwork\Model;
 trait SortableModel
 {
     /**
-     * Moves this bean up or down by position
+     * Moves this model up or down in position
      *
      * @param bool $up Move way
      *

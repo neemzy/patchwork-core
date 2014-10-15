@@ -21,7 +21,7 @@ trait TogglableModel
      *
      * @return void
      */
-    public static function defaultState()
+    public function defaultState()
     {
         return false;
     }
@@ -29,25 +29,25 @@ trait TogglableModel
 
 
     /**
-     * Toggles this bean's state
+     * Toggles this model's state
      *
      * @return void
      */
     public function toggle($force = null)
     {
-        $this->active = ($force === null ? !$this->active : $force);
+        $this->active = (null === $force ? !$this->active : $force);
     }
 
 
 
     /**
      * RedBean update method
-     * Sets this bean to default state if it's just been created
+     * Sets this model to default state if it's just been created
      *
      * @return void
      */
     protected function togglableUpdate()
     {
-        $this->active = $this->id ? !!$this->active : static::defaultState();
+        $this->active = $this->id ? !!$this->active : $this->defaultState();
     }
 }

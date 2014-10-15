@@ -7,19 +7,7 @@ use Patchwork\Tools;
 trait SlugModel
 {
     /**
-     * Vulgarizes this bean's string representation
-     *
-     * @return string
-     */
-    public function slugify()
-    {
-        return Tools::vulgarize($this->__toString()) ?: $slug = $this->getTableName().'-'.$this->id;
-    }
-
-
-
-    /**
-     * Finds a bean of the current class by its slug
+     * Finds a model by its slug
      *
      * @return Patchwork\Model\AbstractModel
      */
@@ -31,8 +19,20 @@ trait SlugModel
 
 
     /**
+     * Generates a slug for the model
+     *
+     * @return string
+     */
+    public function slugify()
+    {
+        return Tools::vulgarize($this->__toString()) ?: $slug = $this->getTableName().'-'.$this->id;
+    }
+
+
+
+    /**
      * RedBean update method
-     * Caches this bean's slug into one of its fields
+     * Caches this model's slug into one of its fields
      *
      * @return void
      */
