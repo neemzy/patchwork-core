@@ -23,9 +23,13 @@ trait FileModel
      *
      * @return string
      */
-    public function getWebPath($field)
+    public function getFilePath($field, $absolute = false)
     {
-        return $this->getUploadDir(false).str_replace($this->getUploadDir(), '', $this->$field);
+        if (is_file($this->$field)) {
+            return $this->$field;
+        }
+
+        return $this->getUploadDir($absolute).$this->$field;
     }
 
 
@@ -42,7 +46,7 @@ trait FileModel
         foreach ($this->getAsserts() as $field => $asserts) {
             if (is_file($this->$field)) {
                 $dir = $this->getUploadDir();
-                $file = basename($this->$field);
+                $file = $this->$field;
                 $extension = @array_pop(explode('.', $file));
 
                 while (file_exists($dir.$file)) {
@@ -76,7 +80,7 @@ trait FileModel
         }
 
         $uploadedFile->move($dir, $file);
-        return $dir.$file;
+        return $file;
     }
 
 
@@ -103,7 +107,7 @@ trait FileModel
 
     /**
      * RedBean update method
-     * Uploads validated files
+     * Uploads files
      *
      * @return void
      */
@@ -131,7 +135,9 @@ trait FileModel
     public function fileDelete()
     {
         foreach ($this->getAsserts() as $field => $asserts) {
-            is_file($this->$field) && unlink($this->$field);
+            $file = $this->getFilePath($field);
+
+            is_file($file) && unlink($file);
         }
     }
 }
