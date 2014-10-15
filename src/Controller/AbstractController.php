@@ -22,11 +22,6 @@ abstract class AbstractController implements ControllerProviderInterface
     protected $class;
 
     /**
-     * @var closure Authentication callback
-     */
-    protected $auth;
-
-    /**
      * @var closure Bean provider
      */
     protected $beanProvider;
@@ -40,7 +35,7 @@ abstract class AbstractController implements ControllerProviderInterface
      *
      * @return Patchwork\Controller\AbstractController
      */
-    public static function getInstanceFor($class)
+    public static function getInstance($class)
     {
         $instance = new static();
         $instance->class = $class;
@@ -52,7 +47,7 @@ abstract class AbstractController implements ControllerProviderInterface
 
     /**
      * Silex method that exposes routes to the app
-     * Attaches a model provider and an authentication method to the controller
+     * Attaches a model provider to the controller
      *
      * @param Silex\Application $app Application instance
      *
@@ -60,29 +55,8 @@ abstract class AbstractController implements ControllerProviderInterface
      */
     public function connect(Application $app)
     {
-        $this->auth = function () use ($app) {
-            if (!$app['debug']) {
-                $username = $app['request']->server->get('PHP_AUTH_USER', false);
-                $password = $app['request']->server->get('PHP_AUTH_PW');
-
-                if ((!$username || !$password) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
-                    list($username, $password) = explode(':', base64_decode($matches[1]));
-
-                    $username = strip_tags($username);
-                    $password = strip_tags($password);
-                }
-
-                if (($username != $app['config']['admin_user']) || ($password != $app['config']['admin_pass'])) {
-                    $response = new Response(null, Response::HTTP_UNAUTHORIZED);
-                    $response->headers->set('WWW-Authenticate', 'Basic realm="Administration"');
-
-                    return $response;
-                }
-            }
-        };
-
         $this->beanProvider = function ($id) use ($app) {
-            return $app['redbean']->load($this->class, $id)->box();
+            return $app['redbean']->load($this->class, $id);
         };
 
         return $app['controllers_factory'];

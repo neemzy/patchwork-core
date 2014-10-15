@@ -7,8 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Patchwork\App;
 use Patchwork\ValidatableInterface;
 use Patchwork\Tools;
+use Neemzy\Silex\Provider\RedBean\Model;
 
-abstract class AbstractModel extends \RedBean_SimpleModel implements ValidatableInterface
+abstract class AbstractModel extends Model implements ValidatableInterface
 {
     /**
      * Gets the model's database table name
@@ -17,7 +18,9 @@ abstract class AbstractModel extends \RedBean_SimpleModel implements Validatable
      */
     public function getTableName()
     {
-        return strtolower(get_class($this));
+        $class = explode('\\', get_class($this));
+
+        return strtolower(array_pop($class));
     }
 
 

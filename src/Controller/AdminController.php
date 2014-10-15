@@ -7,7 +7,15 @@ use Silex\Application;
 class AdminController extends AbstractController
 {
     /**
+     * @var closure Authentication callback
+     */
+    protected $auth;
+
+
+
+    /**
      * Silex method that exposes routes to the app
+     * Attaches an authentication method to the controller
      *
      * @param Silex\Application $app   Application instance
      * @param string            $class Model unqualified classname
@@ -24,6 +32,29 @@ class AdminController extends AbstractController
 
 
 
+        $this->auth = function () use ($app) {
+            if (!$app['debug']) {
+                $username = $app['request']->server->get('PHP_AUTH_USER', false);
+                $password = $app['request']->server->get('PHP_AUTH_PW');
+
+                if ((!$username || !$password) && preg_match('/Basic\s+(.*)$/i', $_SERVER['REDIRECT_REMOTE_USER'], $matches)) {
+                    list($username, $password) = explode(':', base64_decode($matches[1]));
+
+                    $username = strip_tags($username);
+                    $password = strip_tags($password);
+                }
+
+                if (($username != $app['config']['admin']['username']) || ($password != $app['config']['admin']['password'])) {
+                    $response = new Response(null, Response::HTTP_UNAUTHORIZED);
+                    $response->headers->set('WWW-Authenticate', 'Basic realm="Administration"');
+
+                    return $response;
+                }
+            }
+        };
+
+
+
         /**
          * List items
          */
@@ -35,7 +66,7 @@ class AdminController extends AbstractController
                         'admin/'.$this->class.'/list.twig',
                         [$this->class.'s' => $app['redbean']->findAll(
                             $this->class,
-                            'ORDER BY '.call_user_func($app['config']['redbean_prefix'].mb_convert_case($this->class, MB_CASE_TITLE).'::orderBy')
+                            'ORDER BY '.call_user_func($app['config']['redbean']['prefix'].mb_convert_case($this->class, MB_CASE_TITLE).'::orderBy')
                         )]
                     );
                 }

@@ -22,9 +22,9 @@ class ApiController extends AbstractController
      *
      * @return Patchwork\Controller\ApiController
      */
-    public static function getInstanceFor($class, $readonly = false)
+    public static function getInstance($class, $readonly = false)
     {
-        $instance = parent::getInstanceFor($class);
+        $instance = parent::getInstance($class);
         $instance->readonly = $readonly;
 
         return $instance;

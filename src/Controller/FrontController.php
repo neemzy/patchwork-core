@@ -47,7 +47,7 @@ class FrontController extends AbstractController
             ->get(
                 '/admin',
                 function () use ($app) {
-                    return $app->redirect($app['url_generator']->generate($app['config']['admin_root']));
+                    return $app->redirect($app['url_generator']->generate($app['config']['admin']['root']));
                 }
             );
 
