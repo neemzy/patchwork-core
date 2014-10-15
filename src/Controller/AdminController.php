@@ -201,7 +201,7 @@ class AdminController extends EntityController
 
                     $file = $model->$field;
                     $model->$field = null;
-                    $errors = $this->validate($model);
+                    $errors = $this->validate($model, $app['validator']);
 
                     if (!count($errors)) {
                         is_file($file) && unlink($file);
