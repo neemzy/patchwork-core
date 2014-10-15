@@ -25,7 +25,7 @@ trait FileModel
      */
     public function getFilePath($field, $absolute = false)
     {
-        if (is_file($this->$field)) {
+        if (empty($this->$field) || is_file($this->$field)) {
             return $this->$field;
         }
 
