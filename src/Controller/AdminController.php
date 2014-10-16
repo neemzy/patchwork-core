@@ -79,6 +79,7 @@ class AdminController extends EntityController
                 '/move/{model}/{up}',
                 function ($model, $up) use ($app) {
                     $model->move($up);
+                    $app['redbean']->store($model);
 
                     return $app->redirect($app['url_generator']->generate($this->table.'.list'));
                 }

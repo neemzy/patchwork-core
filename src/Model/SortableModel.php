@@ -22,8 +22,6 @@ trait SortableModel
             $this->position++;
             $this->app['redbean']->exec('UPDATE '.$table.' SET position = position - 1 WHERE position = ?', [$this->position]);
         }
-
-        $this->app['redbean']->store($this);
     }
 
 
