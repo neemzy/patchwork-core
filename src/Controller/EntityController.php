@@ -6,7 +6,7 @@ use Silex\Application;
 use Silex\ControllerProviderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Validator;
+use Symfony\Component\Validator\ValidatorInterface;
 use Neemzy\Patchwork\Model\Entity;
 
 abstract class EntityController implements ControllerProviderInterface
@@ -91,12 +91,12 @@ abstract class EntityController implements ControllerProviderInterface
     /**
      * Gets validation errors for a model
      *
-     * @param Neemzy\Patchwork\Model\Entity         $model     Model to validate
-     * @param Symfony\Component\Validator\Validator $validator Validator instance
+     * @param Neemzy\Patchwork\Model\Entity                  $model     Model to validate
+     * @param Symfony\Component\Validator\ValidatorInterface $validator Validator instance
      *
      * @return array
      */
-    protected function validate(Entity $model, Validator $validator)
+    protected function validate(Entity $model, ValidatorInterface $validator)
     {
         $errors = [];
 
