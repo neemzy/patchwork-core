@@ -7,19 +7,9 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 trait FileModel
 {
     /**
-     * Gets the upload directory path
+     * Gets a file's path
      *
-     * @return string
-     */
-    public function getUploadDir($absolute = true)
-    {
-        return ($absolute ? BASE_PATH.'/public' : '').'/upload/'.$this->getTableName().'/';
-    }
-
-
-
-    /**
-     * Gets a file's web path
+     * @param bool $absolute Whether the path should be absolute
      *
      * @return string
      */
@@ -29,7 +19,7 @@ trait FileModel
             return $this->$field;
         }
 
-        return $this->getUploadDir($absolute).$this->$field;
+        return $this->getUploadPath($absolute).$this->$field;
     }
 
 
@@ -45,7 +35,7 @@ trait FileModel
     {
         foreach ($this->getAsserts() as $field => $asserts) {
             if (is_file($this->$field)) {
-                $dir = $this->getUploadDir();
+                $dir = $this->getUploadPath();
                 $file = $this->$field;
                 $extension = @array_pop(explode('.', $file));
 
@@ -72,7 +62,7 @@ trait FileModel
     {
         $extension = $uploadedFile->guessExtension();
 
-        $dir = $this->getUploadDir();
+        $dir = $this->getUploadPath();
         $file = '';
 
         while (file_exists($dir.$file)) {
@@ -139,5 +129,19 @@ trait FileModel
 
             is_file($file) && unlink($file);
         }
+    }
+
+
+
+    /**
+     * Gets upload path
+     *
+     * @param bool $absolute Whether the path should be absolute
+     *
+     * @return string
+     */
+    private function getUploadPath($absolute)
+    {
+        return ($absolute ? $app['base_path'].'/public' : '').'/upload/'.$this->getTableName().'/';
     }
 }
