@@ -111,7 +111,7 @@ trait FileModel
      *
      * @return void
      */
-    public function fileUpdate()
+    protected function fileUpdate()
     {
         foreach ($this->getAsserts() as $field => $asserts) {
             if ($this->$field instanceof UploadedFile) {
@@ -132,7 +132,7 @@ trait FileModel
      *
      * @return void
      */
-    public function fileDelete()
+    protected function fileDelete()
     {
         foreach ($this->getAsserts() as $field => $asserts) {
             $file = $this->getFilePath($field);

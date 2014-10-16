@@ -19,7 +19,7 @@ trait ImageModel
      *
      * @return void
      */
-    public function imageUpload($field, UploadedFile $file)
+    protected function imageUpload($field, UploadedFile $file)
     {
         if (UPLOAD_ERR_OK == $file->getError()) {
             $asserts = $this->getAsserts()[$field];
