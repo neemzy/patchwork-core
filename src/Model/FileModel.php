@@ -125,7 +125,7 @@ trait FileModel
     protected function fileDelete()
     {
         foreach ($this->getAsserts() as $field => $asserts) {
-            $file = $this->getFilePath($field);
+            $file = $this->getFilePath($field, true);
 
             is_file($file) && unlink($file);
         }
@@ -140,8 +140,8 @@ trait FileModel
      *
      * @return string
      */
-    private function getUploadPath($absolute)
+    private function getUploadPath($absolute = true)
     {
-        return ($absolute ? $app['base_path'].'/public' : '').'/upload/'.$this->getTableName().'/';
+        return ($absolute ? $this->app['base_path'].'/public' : '').'/upload/'.$this->getTableName().'/';
     }
 }
