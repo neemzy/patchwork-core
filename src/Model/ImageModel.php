@@ -4,6 +4,7 @@ namespace Neemzy\Patchwork\Model;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints\Image;
+use PHPImageWorkshop\ImageWorkshop;
 use PHPImageWorkshop\Exception\ImageWorkshopException;
 
 trait ImageModel
@@ -33,13 +34,50 @@ trait ImageModel
 
                     // ImageWorkshop relies on the file's extension for encoding
                     try {
-                        $this->app['tools']->resize($pathWithExtension, $assert->maxWidth, $assert->maxHeight);
+                        $this->resize($pathWithExtension, $assert->maxWidth, $assert->maxHeight);
                     } catch (ImageWorkshopException $e) {
                     }
 
                     rename($pathWithExtension, $path);
                 }
             }
+        }
+    }
+
+
+
+    /**
+     * Resizes an image
+     *
+     * @param string $file Full file path
+     * @param int    $width   Maximum width
+     * @param int    $height  Maximum height
+     * @param int    $quality Quality ratio
+     */
+    private function resize($file, $width = null, $height = null, $quality = 90)
+    {
+        if ($width || $height) {
+            $finalWidth = $width;
+            $finalHeight = $height;
+            $crop = $width && $height;
+
+            $iw = ImageWorkshop::initFromPath($file);
+
+            if ($crop) {
+                $originalRatio = $iw->getWidth() / $iw->getHeight();
+                $finalRatio = $finalWidth / $finalHeight;
+
+                if ($originalRatio > $finalRatio) {
+                    $width = null;
+                } else {
+                    $height = null;
+                }
+            }
+
+            $iw->resizeInPixel($width, $height, true, 0, 0, 'MM');
+            $crop && $iw->cropInPixel($finalWidth, $finalHeight, 0, 0, 'MM');
+
+            $iw->save(dirname($file), basename($file), false, null, $quality);
         }
     }
 }

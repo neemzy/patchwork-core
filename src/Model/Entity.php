@@ -32,7 +32,7 @@ abstract class Entity extends Model implements ValidatableInterface
     public function dispatch($method, $parameters = [])
     {
         $base = ucfirst($method);
-        $traits = $this->app['tools']->getRecursiveTraits(get_class($this));
+        $traits = $this->getRecursiveTraits(get_class($this));
 
         foreach ($traits as $trait) {
             $trait = explode('\\', $trait);
@@ -89,5 +89,30 @@ abstract class Entity extends Model implements ValidatableInterface
     public function delete()
     {
         $this->dispatch('delete');
+    }
+
+
+
+    /**
+     * Gets a recursive list of traits used by a class
+     *
+     * @param string $class Full class name
+     *
+     * @return array
+     */
+    private function getRecursiveTraits($class)
+    {
+        $reflection = new \ReflectionClass($class);
+        $traits = array_keys($reflection->getTraits());
+
+        foreach ($traits as $trait) {
+            $traits = array_merge($traits, $this->getRecursiveTraits($trait));
+        }
+
+        if ($parent = $reflection->getParentClass()) {
+            $traits = array_merge($traits, $this->getRecursiveTraits($parent->getName()));
+        }
+
+        return $traits;
     }
 }
