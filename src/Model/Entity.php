@@ -4,7 +4,6 @@ namespace Neemzy\Patchwork\Model;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use Neemzy\Patchwork\ValidatableInterface;
 use Neemzy\Silex\Provider\RedBean\Model;
 
 abstract class Entity extends Model implements ValidatableInterface
@@ -17,6 +16,25 @@ abstract class Entity extends Model implements ValidatableInterface
     public function getTableName()
     {
         return $this->bean->getMeta('type');
+    }
+
+
+
+    /**
+     * Model validation metadata getter
+     *
+     * @return array
+     */
+    public function getAsserts()
+    {
+        $metadata = $this->app['validator.mapping.class_metadata_factory']->getMetadataFor(get_class($this));
+
+        return array_map(
+            function ($member) {
+                return $member[0]->constraints;
+            },
+            $metadata->members
+        );
     }
 
 
@@ -44,25 +62,6 @@ abstract class Entity extends Model implements ValidatableInterface
                 call_user_func_array([$this, $method], $parameters);
             }
         }
-    }
-
-
-
-    /**
-     * Model validation metadata getter
-     *
-     * @return array
-     */
-    public function getAsserts()
-    {
-        $metadata = $this->app['validator.mapping.class_metadata_factory']->getMetadataFor(get_class($this));
-
-        return array_map(
-            function ($member) {
-                return $member[0]->constraints;
-            },
-            $metadata->members
-        );
     }
 
 

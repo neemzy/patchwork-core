@@ -1,0 +1,54 @@
+<?php
+
+namespace Neemzy\Patchwork\Tests\Model;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+class EntityTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * Checks model assert list retrieval
+     *
+     * @return void
+     */
+    public function testGetAsserts()
+    {
+        $factory = $this->getMock('Symfony\Component\Validator\Mapping\ClassMetadataFactory', ['getMetadataFor']);
+
+        $factory->expects($this->once())->method('getMetadataFor')->will(
+            $this->returnCallback(
+                function () {
+                    $member1 = new \stdClass();
+                    $member1->constraints = [new Assert\NotBlank()];
+
+                    $member2 = new \stdClass();
+                    $member2->constraints = [new Assert\NotBlank(), new Assert\Image()];
+
+                    $metadata = new \stdClass();
+
+                    $metadata->members = [
+                        'field1' => [$member1],
+                        'field2' => [$member2]
+                    ];
+
+                    return $metadata;
+                }
+            )
+        );
+
+        $model = $this->getMock('Neemzy\Patchwork\Tests\TestEntity', ['getTableName']); // specify method to trigger mocking
+        $model->app = ['validator.mapping.class_metadata_factory' => $factory];
+
+        $asserts = $model->getAsserts();
+        $this->assertCount(2, $asserts);
+
+        $this->assertArrayHasKey('field1', $asserts);
+        $this->assertCount(1, $asserts['field1']);
+        $this->assertInstanceOf('Symfony\Component\Validator\Constraints\NotBlank', $asserts['field1'][0]);
+
+        $this->assertArrayHasKey('field2', $asserts);
+        $this->assertCount(2, $asserts['field2']);
+        $this->assertInstanceOf('Symfony\Component\Validator\Constraints\NotBlank', $asserts['field2'][0]);
+        $this->assertInstanceOf('Symfony\Component\Validator\Constraints\Image', $asserts['field2'][1]);
+    }
+}

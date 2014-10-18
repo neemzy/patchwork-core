@@ -35,15 +35,15 @@ trait FileModel
     {
         foreach ($this->getAsserts() as $field => $asserts) {
             if (is_file($this->$field)) {
-                $dir = $this->getUploadPath();
+                $path = $this->getUploadPath();
                 $file = $this->$field;
                 $extension = @array_pop(explode('.', $file));
 
-                while (file_exists($dir.$file)) {
-                    $file = uniqid().'.'.$extension;
+                while (file_exists($path.$file)) {
+                    $file = $this->generateFilename($extension);
                 }
 
-                $clone->$field = $dir.$file;
+                $clone->$field = $path.$file;
                 copy($this->$field, $clone->$field);
             }
         }
@@ -52,25 +52,37 @@ trait FileModel
 
 
     /**
+     * Gets upload path
+     *
+     * @param bool $absolute Whether the path should be absolute
+     *
+     * @return string
+     */
+    protected function getUploadPath($absolute = true)
+    {
+        return ($absolute ? $this->app['base_path'].'/public' : '').'/upload/'.$this->getTableName().'/';
+    }
+
+
+
+    /**
      * Moves a file in its right place with a generated name
      *
-     * @param Symfony\Component\HttpFoundation\File\UploadedFile $uploadedFile File to move
+     * @param Symfony\Component\HttpFoundation\File\UploadedFile $file File to move
      *
      * @return string New file name
      */
-    public function moveFile(UploadedFile $uploadedFile)
+    protected function moveFile(UploadedFile $file)
     {
-        $extension = $uploadedFile->guessExtension();
+        $path = $this->getUploadPath();
+        $name = $this->generateFilename($path, $file->guessExtension());
 
-        $dir = $this->getUploadPath();
-        $file = '';
-
-        while (file_exists($dir.$file)) {
-            $file = uniqid().'.'.$extension;
+        while (file_exists($path.$name)) {
+            $name = $this->generateFilename($extension);
         }
 
-        $uploadedFile->move($dir, $file);
-        return $file;
+        $file->move($path, $name);
+        return $name;
     }
 
 
@@ -85,7 +97,7 @@ trait FileModel
      *
      * @return void
      */
-    public function fileUpload($field, UploadedFile $file)
+    protected function fileUpload($field, UploadedFile $file)
     {
         // Keep current file path to be able to delete it
         $tempField = '_'.$field;
@@ -134,14 +146,21 @@ trait FileModel
 
 
     /**
-     * Gets upload path
+     * Generates unique file name
      *
-     * @param bool $absolute Whether the path should be absolute
+     * @param string $path      Directory in which the file will be saved
+     * @param string $extension File extension
      *
      * @return string
      */
-    private function getUploadPath($absolute = true)
+    private function generateFilename($path, $extension)
     {
-        return ($absolute ? $this->app['base_path'].'/public' : '').'/upload/'.$this->getTableName().'/';
+        $file = '';
+
+        while (!$file || is_file($path.$file)) {
+            $file = uniqid().'.'.$extension;
+        }
+
+        return $file;
     }
 }

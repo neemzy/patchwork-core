@@ -4,18 +4,21 @@ namespace Neemzy\Patchwork\Tests;
 
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Neemzy\Patchwork\Model\Entity;
+use Neemzy\Patchwork\Model\FileModel;
 use Neemzy\Patchwork\Model\SlugModel;
 use Neemzy\Patchwork\Model\SortableModel;
 use Neemzy\Patchwork\Model\TogglableModel;
 
 class TestEntity extends Entity
 {
-    use SlugModel, SortableModel, TogglableModel;
+    use FileModel, SlugModel, SortableModel, TogglableModel;
 
 
 
     /**
      * Catch-all property getter to avoid reaching the inner bean
+     *
+     * @param string $name Property name
      *
      * @return mixed
      */
@@ -28,6 +31,9 @@ class TestEntity extends Entity
 
     /**
      * Catch-all property setter to avoid reaching the inner bean
+     *
+     * @param string $name  Property name
+     * @param mixed  $value Assigned value
      *
      * @return void
      */
