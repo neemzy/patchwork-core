@@ -18,7 +18,7 @@ trait SortableModel
         if ($up && ($this->position > 1)) {
             $this->position--;
             $this->app['redbean']->exec('UPDATE '.$table.' SET position = position + 1 WHERE position = ?', [$this->position]);
-        } else if ((! $up) && ($this->position < $this->app['redbean']->count($table))) {
+        } else if (!$up && ($this->position < $this->app['redbean']->count($table))) {
             $this->position++;
             $this->app['redbean']->exec('UPDATE '.$table.' SET position = position - 1 WHERE position = ?', [$this->position]);
         }
