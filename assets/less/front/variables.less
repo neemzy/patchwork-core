@@ -11,7 +11,7 @@
 @placeholder-color: @gray-light;
 
 @phone-max: 480px;
-@phone-down: ~'(max-width: @{phone-max})';
+@phone-only: ~'(max-width: @{phone-max})';
 
 @hybrid-min: (@phone-max + 1);
 @hybrid-max: (@tablet-min - 1);
@@ -32,7 +32,7 @@
 @desktop-down: ~'(max-width: @{desktop-max})';
 
 @large-min: 1200px;
-@large-up: ~'(min-width: @{large-min})';
+@large-only: ~'(min-width: @{large-min})';
 
 @hi-density: 2;
 @retina: ~'(-webkit-min-device-pixel-ratio: @hi-density), (min-resolution: 96dpi * @hi-density)';
