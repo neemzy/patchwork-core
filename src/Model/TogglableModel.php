@@ -5,18 +5,6 @@ namespace Neemzy\Patchwork\Model;
 trait TogglableModel
 {
     /**
-     * Defines the model's default state
-     *
-     * @return void
-     */
-    public function defaultState()
-    {
-        return false;
-    }
-
-
-
-    /**
      * Toggles this model's state
      *
      * @return void
@@ -29,6 +17,18 @@ trait TogglableModel
 
 
     /**
+     * Defines the model's default state
+     *
+     * @return void
+     */
+    protected function getDefaultState()
+    {
+        return false;
+    }
+
+
+
+    /**
      * RedBean update method
      * Sets this model to default state if it's just been created
      *
@@ -36,6 +36,6 @@ trait TogglableModel
      */
     protected function togglableUpdate()
     {
-        $this->active = $this->id ? !!$this->active : $this->defaultState();
+        $this->active = $this->id ? !!$this->active : $this->getDefaultState();
     }
 }
