@@ -15,11 +15,11 @@ class FeatureContext extends MinkContext
     /**
      * Waits for n seconds
      *
-     * @Then /^I wait (\d+) seconds?$/
+     * @Then /^wait (\d+) seconds?$/
      *
      * @return void
      */
-    public function iWaitSeconds($seconds)
+    public function waitSeconds($seconds)
     {
         $this->getSession()->getDriver()->wait($seconds * 1000, null);
     }
