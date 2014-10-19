@@ -3,6 +3,7 @@
 namespace Neemzy\Patchwork\Tests\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use Neemzy\Patchwork\Tests\TestEntity;
 
 class EntityTest extends \PHPUnit_Framework_TestCase
 {
@@ -50,5 +51,28 @@ class EntityTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(2, $asserts['field2']);
         $this->assertInstanceOf('Symfony\Component\Validator\Constraints\NotBlank', $asserts['field2'][0]);
         $this->assertInstanceOf('Symfony\Component\Validator\Constraints\Image', $asserts['field2'][1]);
+    }
+
+
+
+    /**
+     * Checks model recursive used trait list retrieval
+     *
+     * @return void
+     */
+    public function testGetRecursiveTraits()
+    {
+        $reflection = new \ReflectionClass('Neemzy\Patchwork\Tests\TestEntity');
+        $method = $reflection->getMethod('getRecursiveTraits');
+        $method->setAccessible(true);
+
+        $model = new TestEntity();
+        $traits = $method->invoke($model);
+
+        $this->assertCount(4, $traits);
+        $this->assertContains('Neemzy\Patchwork\Model\FileModel', $traits);
+        $this->assertContains('Neemzy\Patchwork\Model\SlugModel', $traits);
+        $this->assertContains('Neemzy\Patchwork\Model\SortableModel', $traits);
+        $this->assertContains('Neemzy\Patchwork\Model\TogglableModel', $traits);
     }
 }

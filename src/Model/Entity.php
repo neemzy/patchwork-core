@@ -50,7 +50,7 @@ abstract class Entity extends Model implements ValidatableInterface
     public function dispatch($method, $parameters = [])
     {
         $base = ucfirst($method);
-        $traits = $this->getRecursiveTraits(get_class($this));
+        $traits = $this->getRecursiveTraits();
 
         foreach ($traits as $trait) {
             $trait = explode('\\', $trait);
@@ -99,8 +99,12 @@ abstract class Entity extends Model implements ValidatableInterface
      *
      * @return array
      */
-    private function getRecursiveTraits($class)
+    private function getRecursiveTraits($class = null)
     {
+        if (null == $class) {
+            $class = get_class($this);
+        }
+
         $reflection = new \ReflectionClass($class);
         $traits = array_keys($reflection->getTraits());
 
