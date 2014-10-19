@@ -11,7 +11,19 @@ trait SlugModel
      */
     public function slugify()
     {
-        return $this->vulgarize($this->__toString()) ?: $slug = $this->getTableName().'-'.$this->id;
+        return $this->vulgarize($this->getSluggable()) ?: $slug = $this->getTableName().'-'.$this->id;
+    }
+
+
+
+    /**
+     * Defines the string to use for slug generation
+     *
+     * @return string
+     */
+    public function getSluggable()
+    {
+        return '';
     }
 
 
