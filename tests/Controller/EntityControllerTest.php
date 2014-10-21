@@ -7,7 +7,7 @@ use Neemzy\Patchwork\Tests\TestController;
 class EntityControllerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Checks model hydratation with scalar values
+     * Checks model hydration with scalar values
      *
      * @return void
      */
