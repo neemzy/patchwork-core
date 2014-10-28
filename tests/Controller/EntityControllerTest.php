@@ -55,37 +55,4 @@ class EntityControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('trim me', $model->field3);
         $this->assertEquals('', $model->field4);
     }
-
-
-
-    /**
-     * Checks model validation
-     *
-     * @return void
-     */
-    public function testValidate()
-    {
-        $model = $this->getMock('Neemzy\Patchwork\Tests\TestEntity');
-
-        $error1 = $this->getMock('Symfony\Component\Validator\ConstraintViolation', ['getPropertyPath', 'getMessage'], [], '', false);
-        $error1->expects($this->once())->method('getPropertyPath')->will($this->returnValue('field1'));
-        $error1->expects($this->once())->method('getMessage')->will($this->returnValue('First error message'));
-
-        $error2 = $this->getMock('Symfony\Component\Validator\ConstraintViolation', ['getPropertyPath', 'getMessage'], [], '', false);
-        $error2->expects($this->once())->method('getPropertyPath')->will($this->returnValue('field2'));
-        $error2->expects($this->once())->method('getMessage')->will($this->returnValue('Second error message'));
-
-        $validator = $this->getMock('Symfony\Component\Validator\Validator', ['validate'], [], '', false);
-        $validator->expects($this->once())->method('validate')->will($this->returnValue([$error1, $error2]))->with($this->equalTo($model));
-
-        $reflection = new \ReflectionClass('Neemzy\Patchwork\Tests\TestController');
-        $method = $reflection->getMethod('validate');
-        $method->setAccessible(true);
-
-        $controller = new TestController();
-        $errors = $method->invokeArgs($controller, [$model, $validator]);
-
-        $this->assertEquals('First error message', $errors[0]['field1']);
-        $this->assertEquals('Second error message', $errors[1]['field2']);
-    }
 }

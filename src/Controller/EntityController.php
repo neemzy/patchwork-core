@@ -85,27 +85,4 @@ abstract class EntityController implements ControllerProviderInterface
             }
         }
     }
-
-
-
-    /**
-     * Gets validation errors for a model
-     *
-     * @param Neemzy\Patchwork\Model\Entity                  $model     Model to validate
-     * @param Symfony\Component\Validator\ValidatorInterface $validator Validator instance
-     *
-     * @return array
-     */
-    protected function validate(Entity $model, ValidatorInterface $validator)
-    {
-        $errors = [];
-
-        foreach ($validator->validate($model) as $error) {
-            $errors[] = [
-                $error->getPropertyPath() => $error->getMessage()
-            ];
-        }
-
-        return $errors;
-    }
 }

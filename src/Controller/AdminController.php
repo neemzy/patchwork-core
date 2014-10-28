@@ -166,7 +166,14 @@ class AdminController extends EntityController
                         $app['session']->getFlashBag()->clear();
 
                         $this->hydrate($model, $app['request']);
-                        $errors = $this->validate($model, $app['validator']);
+                        $errors = [];
+
+                        // Format error array
+                        foreach ($app['validator']->validate($model) as $error) {
+                            $errors[] = [
+                                $error->getPropertyPath() => $error->getMessage()
+                            ];
+                        }
 
                         if (!count($errors)) {
                             $app['redbean']->store($model);
@@ -202,7 +209,14 @@ class AdminController extends EntityController
 
                     $file = $model->$field;
                     $model->$field = null;
-                    $errors = $this->validate($model, $app['validator']);
+                    $errors = [];
+
+                    // Format error array
+                    foreach ($app['validator']->validate($model) as $error) {
+                        $errors[] = [
+                            $error->getPropertyPath() => $error->getMessage()
+                        ];
+                    }
 
                     if (!count($errors)) {
                         is_file($file) && unlink($file);

@@ -92,7 +92,12 @@ class ApiController extends EntityController
                 '/{model}',
                 function ($model) use ($app) {
                     $this->hydrate($model, $app['request']);
-                    $errors = $this->validate($model, $app['validator']);
+                    $errors = [];
+
+                    // Format error array
+                    foreach ($app['validator']->validate($model) as $error) {
+                        $errors[$error->getPropertyPath()] = $error->getMessage();
+                    }
 
                     if (!count($errors)) {
                         $code = $model->id ? Response::HTTP_OK : Response::HTTP_CREATED;
