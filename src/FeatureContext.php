@@ -1,6 +1,6 @@
 <?php
 
-namespace Neemzy\Patchwork\Tests;
+namespace Neemzy\Patchwork;
 
 use Behat\Behat\Exception\PendingException;
 use Behat\MinkExtension\Context\MinkContext;
