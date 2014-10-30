@@ -1,10 +1,11 @@
 <?php
 
-namespace Neemzy\Patchwork\Tests\Controller;
+namespace Neemzy\Patchwork\Tests\Service\Hydrator;
 
-use Neemzy\Patchwork\Tests\TestController;
+use Silex\Application;
+use Neemzy\Patchwork\Service\Hydrator\Service;
 
-class EntityControllerTest extends \PHPUnit_Framework_TestCase
+class ServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Checks model hydration with scalar values
@@ -43,12 +44,11 @@ class EntityControllerTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        $reflection = new \ReflectionClass('Neemzy\Patchwork\Tests\TestController');
-        $method = $reflection->getMethod('hydrate');
-        $method->setAccessible(true);
+        $app = new Application();
+        $app['request'] = $request;
 
-        $controller = new TestController();
-        $method->invokeArgs($controller, [&$model, $request]);
+        $service = new Service($app);
+        $service->hydrate($model);
 
         $this->assertEquals('Value 1', $model->field1);
         $this->assertEquals('Value 2', $model->field2);

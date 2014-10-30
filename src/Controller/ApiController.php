@@ -91,7 +91,7 @@ class ApiController extends EntityController
             ->match(
                 '/{model}',
                 function ($model) use ($app) {
-                    $this->hydrate($model, $app['request']);
+                    $app['hydrator']->hydrate($model);
                     $errors = [];
 
                     // Format error array

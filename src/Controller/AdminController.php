@@ -165,7 +165,7 @@ class AdminController extends EntityController
                     if ('POST' == $app['request']->getMethod()) {
                         $app['session']->getFlashBag()->clear();
 
-                        $this->hydrate($model, $app['request']);
+                        $app['hydrator']->hydrate($model);
                         $errors = [];
 
                         // Format error array
