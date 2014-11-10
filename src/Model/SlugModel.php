@@ -11,7 +11,7 @@ trait SlugModel
      */
     public function slugify()
     {
-        return $this->vulgarize($this->getSluggable()) ?: $slug = $this->getTableName().'-'.$this->id;
+        return $this->vulgarize($this->getSluggable()) ?: $this->getTableName().'-'.$this->id;
     }
 
 
