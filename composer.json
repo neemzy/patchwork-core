@@ -1,7 +1,6 @@
 {
     "name": "neemzy/patchwork-core",
     "description": "Core files for Patchwork",
-    "minimum-stability": "dev",
 
     "authors": [
         {
@@ -11,21 +10,21 @@
     ],
 
     "require": {
-        "php": ">=5.3.0",
+        "php": "~5.4",
         "silex/silex": "~1.2",
-        "twig/twig": ">=1.8,<2.0-dev",
-        "twig/extensions": "1.1.*@dev",
+        "twig/twig": "~1.16",
+        "twig/extensions": "~1.2",
         "symfony/twig-bridge": "~2.3",
-        "symfony/validator": "~2.3,<2.6",
+        "symfony/validator": "~2.3",
         "symfony/translation": "~2.3",
         "symfony/config": "~2.3",
         "symfony/yaml": "~2.3",
-        "monolog/monolog": "dev-master",
-        "swiftmailer/swiftmailer": ">=4.1.2,<4.2-dev",
-        "deralex/yaml-config-service-provider": "1.0.*@dev",
-        "entea/silex-twig-simple-asset-extension": "dev-master",
-        "gabordemooij/redbean": "*",
-        "sybio/image-workshop": "*",
+        "monolog/monolog": "~1.12",
+        "swiftmailer/swiftmailer": "~4.1",
+        "deralex/yaml-config-service-provider": "~1.0",
+        "entea/silex-twig-simple-asset-extension": "~1.0",
+        "gabordemooij/redbean": "~3.5",
+        "sybio/image-workshop": "~2.0",
         "neemzy/redbean-service-provider": "dev-master",
         "neemzy/environ": "dev-master",
         "neemzy/environ-service-provider": "dev-master"
@@ -33,7 +32,12 @@
 
     "autoload": {
         "psr-4": {
-            "Neemzy\\Patchwork\\": "src/",
+            "Neemzy\\Patchwork\\": "src/"
+        }
+    },
+
+    "autoload-dev": {
+        "psr-4": {
             "Neemzy\\Patchwork\\Tests\\": "tests/"
         }
     }
