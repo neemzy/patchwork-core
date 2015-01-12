@@ -6,10 +6,6 @@ use Behat\Behat\Exception\PendingException;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ElementNotFoundException;
 
-require_once('PHPUnit/Util/Filesystem.php');
-require_once('PHPUnit/Autoload.php');
-require_once('PHPUnit/Framework/Assert/Functions.php');
-
 class FeatureContext extends MinkContext
 {
     /**
@@ -57,7 +53,7 @@ class FeatureContext extends MinkContext
             throw new ElementNotFoundException($session, 'Element "'.$selector.'"');
         }
 
-        assertTrue($element->isVisible());
+        \PHPUnit_Framework_TestCase::assertTrue($element->isVisible());
     }
 
 
@@ -79,7 +75,7 @@ class FeatureContext extends MinkContext
             throw new ElementNotFoundException($session, 'Element "'.$selector.'"');
         }
 
-        assertFalse($element->isVisible());
+        \PHPUnit_Framework_TestCase::assertFalse($element->isVisible());
     }
 
 
@@ -101,7 +97,7 @@ class FeatureContext extends MinkContext
             throw new ElementNotFoundException($session, 'Element "'.$selector.'"');
         }
 
-        assertTrue($element->hasClass($class));
+        \PHPUnit_Framework_TestCase::assertTrue($element->hasClass($class));
     }
 
 
@@ -123,6 +119,6 @@ class FeatureContext extends MinkContext
             throw new ElementNotFoundException($session, 'Element "'.$selector.'"');
         }
 
-        assertFalse($element->hasClass($class));
+        \PHPUnit_Framework_TestCase::assertFalse($element->hasClass($class));
     }
 }
