@@ -11,12 +11,17 @@ class SlugModelTest extends \PHPUnit_Framework_TestCase
      */
     public function testSlugify()
     {
-        $model = $this->getMock('Neemzy\Patchwork\Tests\TestEntity', ['getSluggable', 'getTableName']);
-        $model->expects($this->once())->method('getTableName')->will($this->returnValue('test'));
+        $model = $this->getMockBuilder('Neemzy\Patchwork\Tests\TestEntity')
+                      ->setMethods(['getSluggable', 'getTableName'])
+                      ->getMock();
 
-        $model->expects($this->any())->method('getSluggable')->will(
-            $this->onConsecutiveCalls(' Sample  string -representation-', '!$#@&%£?')
-        );
+        $model->expects($this->once())
+              ->method('getTableName')
+              ->will($this->returnValue('test'));
+
+        $model->expects($this->any())
+              ->method('getSluggable')
+              ->will($this->onConsecutiveCalls(' Sample  string -representation-', '!$#@&%£?'));
 
         $model->id = 12;
 

@@ -14,35 +14,49 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testHydrate()
     {
-        $model = $this->getMock('Neemzy\Patchwork\Tests\TestEntity', ['getAsserts']);
+        $model = $this->getMockBuilder('Neemzy\Patchwork\Tests\TestEntity')
+                      ->setMethods(['getAsserts'])
+                      ->getMock();
 
-        $model->expects($this->once())->method('getAsserts')->will(
-            $this->returnValue(
-                [
-                    'field1' => null,
-                    'field2' => null,
-                    'field3' => null,
-                    'field4' => null
-                ]
-            )
-        );
+        $model->expects($this->once())
+              ->method('getAsserts')
+              ->will(
+                  $this->returnValue(
+                      [
+                          'field1' => null,
+                          'field2' => null,
+                          'field3' => null,
+                          'field4' => null
+                      ]
+                  )
+              );
 
-        $filebag = $this->getMock('FileBag', ['has']);
-        $filebag->expects($this->any())->method('has')->will($this->returnValue(false));
+        $filebag = $this->getMockBuilder('FileBag')
+                        ->setMethods(['has'])
+                        ->getMock();
 
-        $request = $this->getMock('Symfony\Component\HttpFoundation\Request', ['get']);
+        $filebag->expects($this->any())
+                ->method('has')
+                ->will($this->returnValue(false));
+
+        $request = $this->getMockBuilder('Symfony\Component\HttpFoundation\Request')
+                        ->setMethods(['get'])
+                        ->getMock();
+
         $request->files = $filebag;
 
-        $request->expects($this->any())->method('get')->will(
-            $this->returnValueMap(
-                [
-                    ['field1', null, false, 'Value 1'],
-                    ['field2', null, false, 'Value 2'],
-                    ['field3', null, false, " trim me\n"],
-                    ['field4', null, false, '<br />']
-                ]
-            )
-        );
+        $request->expects($this->any())
+                ->method('get')
+                ->will(
+                    $this->returnValueMap(
+                        [
+                            ['field1', null, false, 'Value 1'],
+                            ['field2', null, false, 'Value 2'],
+                            ['field3', null, false, " trim me\n"],
+                            ['field4', null, false, '<br />']
+                        ]
+                    )
+                );
 
         $app = new Application();
         $app['request'] = $request;

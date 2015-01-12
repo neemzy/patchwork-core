@@ -13,16 +13,20 @@ class FileModelTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetFilePath()
     {
-        $model = $this->getMock('Neemzy\Patchwork\Tests\TestEntity', ['getUploadPath']);
+        $model = $this->getMockBuilder('Neemzy\Patchwork\Tests\TestEntity')
+                      ->setMethods(['getUploadPath'])
+                      ->getMock();
 
-        $model->expects($this->any())->method('getUploadPath')->will(
-            $this->returnValueMap(
-                [
-                    [true, '/absolute/path/to/files/'],
-                    [false, 'path/to/files/']
-                ]
-            )
-        );
+        $model->expects($this->any())
+              ->method('getUploadPath')
+              ->will(
+                  $this->returnValueMap(
+                      [
+                          [true, '/absolute/path/to/files/'],
+                          [false, 'path/to/files/']
+                      ]
+                  )
+              );
 
         $model->file = 'filename.jpg';
         $this->assertEquals('/absolute/path/to/files/filename.jpg', $model->getFilePath('file', true));

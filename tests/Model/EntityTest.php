@@ -14,30 +14,37 @@ class EntityTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetAsserts()
     {
-        $factory = $this->getMock('Symfony\Component\Validator\Mapping\ClassMetadataFactory', ['getMetadataFor']);
+        $factory = $this->getMockBuilder('Symfony\Component\Validator\Mapping\ClassMetadataFactory')
+                        ->setMethods(['getMetadataFor'])
+                        ->getMock();
 
-        $factory->expects($this->once())->method('getMetadataFor')->will(
-            $this->returnCallback(
-                function () {
-                    $member1 = new \stdClass();
-                    $member1->constraints = [new Assert\NotBlank()];
+        $factory->expects($this->once())
+                ->method('getMetadataFor')
+                ->will(
+                    $this->returnCallback(
+                        function () {
+                            $member1 = new \stdClass();
+                            $member1->constraints = [new Assert\NotBlank()];
 
-                    $member2 = new \stdClass();
-                    $member2->constraints = [new Assert\NotBlank(), new Assert\Image()];
+                            $member2 = new \stdClass();
+                            $member2->constraints = [new Assert\NotBlank(), new Assert\Image()];
 
-                    $metadata = new \stdClass();
+                            $metadata = new \stdClass();
 
-                    $metadata->members = [
-                        'field1' => [$member1],
-                        'field2' => [$member2]
-                    ];
+                            $metadata->members = [
+                                'field1' => [$member1],
+                                'field2' => [$member2]
+                            ];
 
-                    return $metadata;
-                }
-            )
-        );
+                            return $metadata;
+                        }
+                    )
+                );
 
-        $model = $this->getMock('Neemzy\Patchwork\Tests\TestEntity', ['getTableName']); // specify method to trigger mocking
+        $model = $this->getMockBuilder('Neemzy\Patchwork\Tests\TestEntity')
+                      ->setMethods(['getTableName']) // specify method to trigger mocking
+                      ->getMock();
+
         $model->app = ['validator.mapping.class_metadata_factory' => $factory];
 
         $asserts = $model->getAsserts();

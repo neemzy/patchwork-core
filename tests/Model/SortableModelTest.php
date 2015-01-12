@@ -11,12 +11,24 @@ class SortableModelTest extends \PHPUnit_Framework_TestCase
      */
     public function testMove()
     {
-        $redbean = $this->getMock('RedBean', ['exec', 'count']);
-        $redbean->expects($this->any())->method('exec');
-        $redbean->expects($this->any())->method('count')->will($this->returnValue(2));
+        $redbean = $this->getMockBuilder('RedBean')
+                        ->setMethods(['exec', 'count'])
+                        ->getMock();
 
-        $model = $this->getMock('Neemzy\Patchwork\Tests\TestEntity', ['getTableName']);
-        $model->expects($this->any())->method('getTableName');
+        $redbean->expects($this->any())
+                ->method('exec');
+
+        $redbean->expects($this->any())
+                ->method('count')
+                ->will($this->returnValue(2));
+
+        $model = $this->getMockBuilder('Neemzy\Patchwork\Tests\TestEntity')
+                      ->setMethods(['getTableName'])
+                      ->getMock();
+
+        $model->expects($this->any())
+              ->method('getTableName');
+
         $model->app = compact('redbean');
         $model->position = 1;
 
