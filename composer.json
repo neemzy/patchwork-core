@@ -22,7 +22,7 @@
         "monolog/monolog": "~1.12",
         "swiftmailer/swiftmailer": "~4.1",
         "deralex/yaml-config-service-provider": "~1.0",
-        "entea/silex-twig-simple-asset-extension": "~1.0",
+        "entea/silex-twig-simple-asset-extension": "dev-master",
         "gabordemooij/redbean": "~3.5",
         "sybio/image-workshop": "~2.0",
         "neemzy/redbean-service-provider": "dev-master",
