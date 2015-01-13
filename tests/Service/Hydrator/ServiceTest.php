@@ -31,7 +31,7 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
                   )
               );
 
-        $filebag = $this->getMockBuilder('FileBag')
+        $filebag = $this->getMockBuilder('Symfony\Component\HttpFoundation\FileBag')
                         ->setMethods(['has'])
                         ->getMock();
 
