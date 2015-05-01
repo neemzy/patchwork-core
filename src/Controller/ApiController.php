@@ -8,29 +8,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ApiController extends EntityController
 {
     /**
-     * @var bool Route attribution flag
-     */
-    protected $readonly;
-
-
-
-    /**
-     * Constructor
-     *
-     * @param string $readonly Whether to only map consultative actions
-     *
-     * @return void
-     */
-    public function __construct($readonly = false)
-    {
-        parent::__construct();
-
-        $this->readonly = $readonly;
-    }
-
-
-
-    /**
      * Silex method that exposes routes to the app
      *
      * @param Silex\Application $app Application instance
@@ -50,7 +27,7 @@ class ApiController extends EntityController
             ->get(
                 '{uri}',
                 function () use ($app) {
-                    $response = new JsonResponse($app['redbean']->findAndExport($this->table, 1));
+                    $response = new JsonResponse($app['serializer']->serialize($app['redbean']->findAll($this->table)));
                     $response->setEncodingOptions(JSON_NUMERIC_CHECK);
 
                     return $response;
@@ -69,80 +46,17 @@ class ApiController extends EntityController
             ->get(
                 '/{model}',
                 function ($model) use ($app) {
-                    if (!$data = $app['redbean']->findAndExport($this->table, 'id = ?', [$model->id])) {
+                    if (0 == $model->id) {
                         $app->abort(JsonResponse::HTTP_NOT_FOUND);
                     }
 
-                    $response = new JsonResponse($data);
+                    $response = new JsonResponse($app['serializer']->serialize($model));
                     $response->setEncodingOptions(JSON_NUMERIC_CHECK);
 
                     return $response;
                 }
             )
             ->bind('api.'.$this->table.'.read')
-            ->convert('model', $this->modelProvider);
-
-
-
-        /**
-         * Create/update item
-         */
-        $this->readonly || $ctrl
-            ->match(
-                '/{model}',
-                function ($model) use ($app) {
-                    $app['hydrator']->hydrate($model);
-                    $errors = [];
-
-                    // Format error array
-                    foreach ($app['validator']->validate($model) as $error) {
-                        $errors[$error->getPropertyPath()] = $error->getMessage();
-                    }
-
-                    if (!count($errors)) {
-                        $code = $model->id ? Response::HTTP_OK : Response::HTTP_CREATED;
-                        $app['redbean']->store($model);
-                        $data = $model->unbox()->export();
-                    } else {
-                        $code = Response::HTTP_BAD_REQUEST;
-                        $data = $errors;
-                    }
-
-                    $response = new JsonResponse($data, $code);
-                    $response->setEncodingOptions(JSON_NUMERIC_CHECK);
-
-                    return $response;
-                }
-            )
-            ->bind('api.'.$this->table.'.post')
-            ->convert('model', $this->modelProvider)
-            ->value('model', 0)
-            ->method('POST|PUT');
-
-
-
-        /**
-         * Delete item
-         */
-        $this->readonly || $ctrl
-            ->delete(
-                '/{id}',
-                function ($id) use ($app) {
-                    $model = $app['redbean']->load($this->table, $id);
-
-                    if (!$model->id) {
-                        $app->abort(JsonResponse::HTTP_NOT_FOUND);
-                    }
-
-                    $app['redbean']->trash($model);
-
-                    $response = new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
-                    $response->setEncodingOptions(JSON_NUMERIC_CHECK);
-
-                    return $response;
-                }
-            )
-            ->bind('api.'.$this->table.'.delete')
             ->convert('model', $this->modelProvider);
 
 
