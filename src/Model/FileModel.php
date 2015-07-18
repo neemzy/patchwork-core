@@ -118,7 +118,8 @@ trait FileModel
         foreach ($this->getAsserts() as $field => $asserts) {
             if ($this->$field instanceof UploadedFile) {
                 $tempField = '_'.$field;
-                is_file($this->$tempField) && unlink($this->$tempField);
+                $tempFile = $this->getFilePath($tempField, true);
+                is_file($tempFile) && unlink($tempFile);
                 $this->bean->removeProperty($tempField);
 
                 $this->$field = $this->moveFile($this->$field);
