@@ -12,7 +12,7 @@ trait TimestampModel
      */
     protected function timestampUpdate()
     {
-        $this->updated = 'NOW()';
+        $this->updated = date('Y-m-d H:i:s');
         $this->id || $this->created = $this->updated;
     }
 }
