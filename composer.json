@@ -1,6 +1,7 @@
 {
     "name": "neemzy/patchwork-core",
     "description": "Core files for Patchwork",
+    "license": "MIT",
 
     "authors": [
         {
